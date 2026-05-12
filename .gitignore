@@ -1,0 +1,30 @@
+# Track only our custom themes, plugins, and mu-plugins inside wp-content.
+# WP core files, uploads, cache, vendor plugins, and default themes are ignored.
+
+# Ignore everything at the wp-content root by default
+/*
+
+# Track this file + repo docs at the root
+!/.gitignore
+!/README.md
+
+# Track the three buckets so git can descend into them
+!/themes/
+!/plugins/
+!/mu-plugins/
+
+# In themes/, ignore everything except our custom theme
+themes/*
+!themes/workernu/
+
+# In plugins/, ignore everything except our workernu-* plugins
+plugins/*
+!plugins/workernu-*/
+
+# OS / IDE noise (recursive)
+**/.DS_Store
+**/Thumbs.db
+**/.idea/
+**/.vscode/
+**/node_modules/
+**/*.log

@@ -1,0 +1,122 @@
+/* Example Hero — baseline CSS demonstrating the modifier pattern.
+ * Each modifier value gets its own rule. Replace these with figma-accurate values.
+ *
+ * Class structure produced by workernu_section_classes():
+ *   .section
+ *   .section--example-hero
+ *   .section--example-hero--layout-right | --layout-left
+ *   .section--example-hero--spacing-tight | --spacing-normal | --spacing-loose
+ *   .section--example-hero--align-left   | --align-center
+ */
+
+/* ─── Base ─── */
+.section--example-hero {
+    overflow: hidden;
+}
+.section--example-hero__inner {
+    display: grid;
+    grid-template-columns: 60fr 40fr;
+    gap: var(--space-6);
+    align-items: center;
+}
+
+/* ─── Modifier: layout ─── */
+.section--example-hero--layout-left .section--example-hero__inner {
+    grid-template-columns: 40fr 60fr;
+}
+.section--example-hero--layout-left .section--example-hero__media {
+    order: -1;
+}
+
+/* ─── Modifier: spacing ─── */
+.section--example-hero--spacing-tight  { padding: var(--space-5) 0; }
+.section--example-hero--spacing-normal { padding: var(--space-7) 0; }
+.section--example-hero--spacing-loose  { padding: var(--space-7) 0 calc(var(--space-7) * 1.5); }
+
+/* ─── Modifier: align ─── */
+.section--example-hero--align-center .section--example-hero__content {
+    text-align: center;
+    align-items: center;
+}
+
+/* ─── Content column ─── */
+.section--example-hero__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+.section--example-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    width: fit-content;
+}
+.section--example-hero__heading {
+    margin: 0;
+    font-size: clamp(2.25rem, 5vw, 3.75rem);
+    line-height: 1.05;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+}
+.section--example-hero__sub {
+    margin: 0;
+    max-width: 56ch;
+    font-size: 1.125rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+}
+
+/* ─── CTAs (flex) ─── */
+.section--example-hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+}
+.section--example-hero__cta {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 0.875rem 1.75rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-weight: 500; font-size: 0.9375rem; line-height: 1;
+    text-decoration: none;
+    transition: opacity .2s, background-color .2s, color .2s;
+}
+.section--example-hero__cta--primary   { background: var(--color-accent); color: var(--color-accent-fg); }
+.section--example-hero__cta--primary:hover { opacity: 0.88; }
+.section--example-hero__cta--secondary { background: transparent; color: var(--color-fg); border-color: var(--color-fg); }
+.section--example-hero__cta--secondary:hover { background: var(--color-fg); color: var(--color-bg); }
+.section--example-hero__cta--ghost     { background: transparent; color: var(--color-fg); padding-inline: 0; }
+.section--example-hero__cta--ghost:hover { text-decoration: underline; }
+
+/* ─── Users count ─── */
+.section--example-hero__users {
+    display: flex; align-items: baseline; gap: var(--space-2);
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-line);
+}
+.section--example-hero__users-number {
+    font-size: 1.5rem; font-weight: 600; letter-spacing: -0.02em;
+}
+.section--example-hero__users-label {
+    color: var(--color-muted); font-size: 0.9375rem;
+}
+
+/* ─── Media column ─── */
+.section--example-hero__media img {
+    width: 100%; height: auto;
+    border-radius: 8px;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    background: var(--color-line);
+}
+
+@media (max-width: 768px) {
+    .section--example-hero__inner { grid-template-columns: 1fr; gap: var(--space-5); }
+    .section--example-hero--layout-left .section--example-hero__media { order: 0; }
+}

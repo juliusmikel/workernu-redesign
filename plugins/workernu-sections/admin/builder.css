@@ -1,0 +1,239 @@
+/* workernu-sections — admin builder UI */
+
+/* Patch: when the section meta box is tall, WP's absolutely-positioned admin
+   footer ends up mid-page. Force it into normal flow on these screens. */
+body.has-workernu-sections #wpfooter {
+    position: static;
+    margin-top: 20px;
+}
+
+.ws-builder { font-size: 13px; }
+
+.ws-empty-registry {
+    padding: 12px;
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    color: #50575e;
+}
+.ws-empty-registry code {
+    background: #fff;
+    padding: 2px 4px;
+    border-radius: 3px;
+    border: 1px solid #dcdcde;
+}
+
+/* ─── Toolbar ─── */
+
+.ws-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #dcdcde;
+    flex-wrap: wrap;
+}
+.ws-toolbar__add { display: flex; gap: 8px; align-items: center; }
+.ws-toolbar__select { min-width: 200px; }
+
+.ws-toolbar__lang { display: flex; align-items: center; gap: 4px; }
+.ws-toolbar__lang-label { color: #50575e; margin-right: 4px; }
+
+.ws-lang-tab {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    padding: 4px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    border-radius: 3px;
+    font-weight: 500;
+    color: #50575e;
+}
+.ws-lang-tab.is-active {
+    background: #2271b1;
+    border-color: #2271b1;
+    color: #fff;
+}
+
+/* ─── Section cards ─── */
+
+.ws-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ws-card {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.ws-card--ghost { opacity: 0.4; background: #f0f0f1; }
+
+.ws-card__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #f6f7f7;
+    border-bottom: 1px solid #dcdcde;
+}
+.ws-card.is-collapsed .ws-card__header { border-bottom: none; }
+.ws-card__handle { cursor: grab; color: #757575; }
+.ws-card__handle:active { cursor: grabbing; }
+.ws-card__title { flex: 0 0 auto; font-weight: 600; }
+.ws-card__type {
+    flex: 1;
+    color: #757575;
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-size: 11px;
+}
+.ws-card__btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0 6px;
+    color: #50575e;
+}
+.ws-card__btn:hover { color: #2271b1; }
+.ws-card__remove { color: #b32d2e; }
+.ws-card__remove:hover { color: #d63638; }
+
+.ws-card__body { padding: 14px; }
+.ws-card.is-collapsed .ws-card__body { display: none; }
+
+/* ─── Fields ─── */
+
+.ws-field { margin-bottom: 14px; }
+.ws-field:last-child { margin-bottom: 0; }
+.ws-field__label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #1d2327;
+}
+.ws-field__hint {
+    margin: -2px 0 6px 0;
+    color: #757575;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.ws-input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #8c8f94;
+    border-radius: 3px;
+    font-size: 13px;
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+.ws-input:focus { border-color: #2271b1; outline: 2px solid #2271b1; outline-offset: -1px; }
+.ws-input--textarea { resize: vertical; font-family: inherit; }
+.ws-input--number { width: 120px; }
+
+/* ─── Translatable ─── */
+
+.ws-translatable { position: relative; }
+.ws-translatable__panel { display: none; }
+.ws-translatable__panel.is-active { display: block; }
+
+/* ─── Image ─── */
+
+.ws-image {
+    border: 1px dashed #c3c4c7;
+    background: #fafafa;
+    padding: 12px;
+    border-radius: 3px;
+}
+.ws-image__preview { margin-bottom: 8px; }
+.ws-image__preview[hidden] { display: none; }
+.ws-image__preview img {
+    max-width: 100%;
+    max-height: 220px;
+    height: auto;
+    border-radius: 3px;
+    border: 1px solid #dcdcde;
+}
+.ws-image__controls { display: flex; gap: 8px; align-items: center; }
+.ws-image__remove { color: #b32d2e; }
+.ws-image__remove[hidden] { display: none; }
+
+/* ─── Link ─── */
+
+.ws-link { display: flex; flex-direction: column; gap: 8px; }
+.ws-link__row { display: flex; flex-direction: column; gap: 4px; }
+.ws-link__sublabel { font-size: 11px; color: #757575; text-transform: uppercase; letter-spacing: 0.04em; }
+.ws-link__check { display: flex; gap: 6px; align-items: center; font-weight: normal; }
+
+/* ─── Boolean ─── */
+
+.ws-boolean { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+
+/* ─── Repeater ─── */
+
+.ws-field--repeater > .ws-field__label { margin-bottom: 8px; }
+.ws-repeater__list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.ws-repeater__item {
+    display: grid;
+    grid-template-columns: 24px 1fr 32px;
+    gap: 10px;
+    align-items: start;
+    padding: 10px;
+    background: #fafafa;
+    border: 1px solid #dcdcde;
+    border-radius: 3px;
+}
+.ws-repeater__item--ghost { opacity: 0.4; }
+.ws-repeater__handle {
+    cursor: grab;
+    color: #757575;
+    padding-top: 4px;
+}
+.ws-repeater__handle:active { cursor: grabbing; }
+.ws-repeater__fields > .ws-field { margin-bottom: 8px; }
+.ws-repeater__fields > .ws-field:last-child { margin-bottom: 0; }
+.ws-repeater__remove {
+    color: #b32d2e;
+    font-size: 18px;
+    line-height: 1;
+    padding: 0 6px;
+    align-self: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.ws-repeater__add {
+    margin-top: 4px;
+}
+
+/* ─── Modifiers (display knobs, below the fields) ─── */
+
+.ws-modifiers {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px dashed #dcdcde;
+}
+.ws-modifiers__header {
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #757575;
+    margin-bottom: 10px;
+}

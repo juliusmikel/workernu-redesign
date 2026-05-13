@@ -60,6 +60,7 @@ A single `$data` array containing every field and modifier value for this sectio
 |---|---|
 | `text`, `textarea` (not translatable) | string |
 | `text`, `textarea` (translatable) | `['lt' => '...', 'en' => '...']` — always pass through `workernu_t()` |
+| `rich_text` | `['value' => string\|{lt,en}, 'display' => 'paragraph'\|'bullets'\|'numbered']` — render with `workernu_text()` |
 | `icon` | string (FA class) OR raw HTML `<i>` / `<svg>` — pass through `workernu_icon()` |
 | `image` | int (attachment ID) — pass through `workernu_image_url()` / `workernu_image_alt()` |
 | `link` | `['label' => ..., 'url' => ..., 'target' => '_self|_blank']` — `label` is translatable |
@@ -80,6 +81,7 @@ All of these are global PHP functions:
 | Function | Use case |
 |---|---|
 | `workernu_t($value)` | Unwrap a translatable value. Returns the current-language string. |
+| `workernu_text($field_value, $class)` | Render a `rich_text` field as `<p>`/`<ul>`/`<ol>` with `$class` + auto-appended `--<variant>` modifier. |
 | `workernu_image_url($value, $size = 'full')` | Resolve an image field → URL. `$size` is a registered WP image size. |
 | `workernu_image_alt($value)` | Resolve an image field → alt text. |
 | `workernu_icon($value)` | Resolve an icon field → safe HTML `<i>...</i>` or pre-built snippet. |
@@ -126,6 +128,60 @@ Modifiers are display knobs the editor controls per section instance — layout 
 ```
 
 Adding a new modifier value = one entry in `section.php`'s options + one CSS rule.
+
+---
+
+## The `rich_text` field type
+
+A text field that the **editor** can switch between display modes — paragraph, bulleted list, or numbered list — without touching code. The framework controls the HTML structure; you control the CSS.
+
+**Declared in `section.php` (Julius writes this):**
+
+```php
+['name' => 'body', 'type' => 'rich_text', 'translatable' => true, 'rows' => 4]
+```
+
+**In the editor:** a textarea plus a "Display as" dropdown right beneath it. The editor puts each item on its own line if they pick bullets/numbered.
+
+**Stored shape:**
+
+```php
+$data['body'] = [
+    'value'   => ['lt' => "Line 1\nLine 2", 'en' => "..."],
+    'display' => 'bullets',
+];
+```
+
+**In `template.php` you write one line:**
+
+```php
+<?php echo workernu_text($data['body'] ?? null, 'section--<slug>__body'); ?>
+```
+
+The helper outputs one of:
+
+```html
+<p  class="section--<slug>__body section--<slug>__body--paragraph">…</p>
+<ul class="section--<slug>__body section--<slug>__body--bullets"><li>…</li>…</ul>
+<ol class="section--<slug>__body section--<slug>__body--numbered"><li>…</li>…</ol>
+```
+
+Same BEM pattern as section modifiers: **base class + auto-appended `--<variant>` modifier**.
+
+**Your CSS** writes rules for each variant against the modifier classes:
+
+```css
+.section--hero__body                 { font-size: 1.125rem; color: var(--color-muted); }
+.section--hero__body--paragraph      { max-width: 56ch; line-height: 1.55; }
+.section--hero__body--bullets        { padding-left: 1.25rem; }
+.section--hero__body--bullets li     { margin-bottom: var(--space-2); }
+.section--hero__body--numbered       { padding-left: 1.25rem; }
+.section--hero__body--numbered li    { margin-bottom: var(--space-2); }
+```
+
+**What you don't control:** the wrapping tag (`<p>` vs `<ul>` vs `<ol>`), the `<li>` structure, escaping. The framework owns those so output is consistent and safe across every section that uses `rich_text`.
+
+**Where to put it in the DOM:** wherever you want. The helper returns a string of HTML — `echo` it inside any wrapper. See `sections/example-hero/template.php` for a working reference.
 
 ---
 

@@ -62,12 +62,35 @@
     font-weight: 600;
     letter-spacing: -0.025em;
 }
-.section--example-hero__sub {
+/* ─── Body (rich_text field — paragraph | bullets | numbered) ───
+ * The editor picks a display mode in the admin; workernu_text() outputs
+ * the matching tag with both base class and a variant modifier class:
+ *   .section--example-hero__body                  ← shared
+ *   .section--example-hero__body--paragraph       ← <p>
+ *   .section--example-hero__body--bullets         ← <ul>
+ *   .section--example-hero__body--numbered        ← <ol>
+ */
+.section--example-hero__body {
     margin: 0;
     max-width: 56ch;
     font-size: 1.125rem;
     line-height: 1.55;
     color: var(--color-muted);
+}
+.section--example-hero__body--paragraph {
+    /* paragraph mode inherits the base; nothing extra */
+}
+.section--example-hero__body--bullets,
+.section--example-hero__body--numbered {
+    padding-left: 1.25rem;
+}
+.section--example-hero__body--bullets li,
+.section--example-hero__body--numbered li {
+    margin-bottom: var(--space-2);
+}
+.section--example-hero__body--bullets li:last-child,
+.section--example-hero__body--numbered li:last-child {
+    margin-bottom: 0;
 }
 
 /* ─── CTAs (flex) ─── */

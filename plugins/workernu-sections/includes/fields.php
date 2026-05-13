@@ -13,15 +13,16 @@ if (!defined('ABSPATH')) exit;
  */
 function types(): array {
     return [
-        'text'     => ['render' => __NAMESPACE__ . '\\render_text',     'sanitize' => __NAMESPACE__ . '\\sanitize_text'],
-        'textarea' => ['render' => __NAMESPACE__ . '\\render_textarea', 'sanitize' => __NAMESPACE__ . '\\sanitize_textarea'],
-        'icon'     => ['render' => __NAMESPACE__ . '\\render_icon',     'sanitize' => __NAMESPACE__ . '\\sanitize_icon'],
-        'image'    => ['render' => __NAMESPACE__ . '\\render_image',    'sanitize' => __NAMESPACE__ . '\\sanitize_image'],
-        'link'     => ['render' => __NAMESPACE__ . '\\render_link',     'sanitize' => __NAMESPACE__ . '\\sanitize_link'],
-        'select'   => ['render' => __NAMESPACE__ . '\\render_select',   'sanitize' => __NAMESPACE__ . '\\sanitize_select'],
-        'boolean'  => ['render' => __NAMESPACE__ . '\\render_boolean',  'sanitize' => __NAMESPACE__ . '\\sanitize_boolean'],
-        'number'   => ['render' => __NAMESPACE__ . '\\render_number',   'sanitize' => __NAMESPACE__ . '\\sanitize_number'],
-        'repeater' => ['render' => __NAMESPACE__ . '\\render_repeater', 'sanitize' => __NAMESPACE__ . '\\sanitize_repeater'],
+        'text'      => ['render' => __NAMESPACE__ . '\\render_text',      'sanitize' => __NAMESPACE__ . '\\sanitize_text'],
+        'textarea'  => ['render' => __NAMESPACE__ . '\\render_textarea',  'sanitize' => __NAMESPACE__ . '\\sanitize_textarea'],
+        'rich_text' => ['render' => __NAMESPACE__ . '\\render_rich_text', 'sanitize' => __NAMESPACE__ . '\\sanitize_rich_text'],
+        'icon'      => ['render' => __NAMESPACE__ . '\\render_icon',      'sanitize' => __NAMESPACE__ . '\\sanitize_icon'],
+        'image'     => ['render' => __NAMESPACE__ . '\\render_image',     'sanitize' => __NAMESPACE__ . '\\sanitize_image'],
+        'link'      => ['render' => __NAMESPACE__ . '\\render_link',      'sanitize' => __NAMESPACE__ . '\\sanitize_link'],
+        'select'    => ['render' => __NAMESPACE__ . '\\render_select',    'sanitize' => __NAMESPACE__ . '\\sanitize_select'],
+        'boolean'   => ['render' => __NAMESPACE__ . '\\render_boolean',   'sanitize' => __NAMESPACE__ . '\\sanitize_boolean'],
+        'number'    => ['render' => __NAMESPACE__ . '\\render_number',    'sanitize' => __NAMESPACE__ . '\\sanitize_number'],
+        'repeater'  => ['render' => __NAMESPACE__ . '\\render_repeater',  'sanitize' => __NAMESPACE__ . '\\sanitize_repeater'],
     ];
 }
 
@@ -185,6 +186,83 @@ function sanitize_textarea(array $field, $raw): mixed {
         return $clean;
     }
     return sanitize_textarea_field((string) $raw);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   RICH TEXT
+   A textarea bundled with a "Display as" select. Stored shape:
+     ['value' => string|['lt'=>..,'en'=>..], 'display' => 'paragraph'|'bullets'|'numbered']
+   Templates render via workernu_text($data['<field>'], $class) — the helper
+   reads both keys and outputs <p>/<ul>/<ol> with the variant class appended.
+   ───────────────────────────────────────────────────────────────── */
+
+function rich_text_default_variants(): array {
+    return [
+        'paragraph' => 'Paragraph',
+        'bullets'   => 'Bullet list',
+        'numbered'  => 'Numbered list',
+    ];
+}
+
+function rich_text_variants(array $field): array {
+    $variants = $field['variants'] ?? null;
+    return is_array($variants) && $variants ? $variants : rich_text_default_variants();
+}
+
+function render_rich_text(array $field, $value, string $input_name): void {
+    $value      = is_array($value) ? $value : [];
+    $text_value = $value['value'] ?? (is_translatable($field) ? [] : '');
+    $display    = (string) ($value['display'] ?? '');
+    $variants   = rich_text_variants($field);
+    if (!array_key_exists($display, $variants)) $display = (string) array_key_first($variants);
+
+    $rows = (int) ($field['rows'] ?? 5);
+
+    open_field($field, 'ws-field--rich-text');
+
+    if (is_translatable($field)) {
+        render_translatable($field, $text_value, $input_name . '[value]', function ($name, $val) use ($rows) {
+            echo '<textarea class="ws-input ws-input--textarea" name="' . esc_attr($name) . '" rows="' . $rows . '">' . esc_textarea((string) $val) . '</textarea>';
+        });
+    } else {
+        $val = is_array($text_value) ? '' : (string) $text_value;
+        echo '<textarea class="ws-input ws-input--textarea" name="' . esc_attr($input_name . '[value]') . '" rows="' . $rows . '">' . esc_textarea($val) . '</textarea>';
+    }
+
+    echo '<div class="ws-rich-text__display">';
+    echo '<span class="ws-rich-text__display-label">' . esc_html__('Display as', 'workernu-sections') . '</span>';
+    echo '<select class="ws-input" name="' . esc_attr($input_name . '[display]') . '">';
+    foreach ($variants as $key => $label) {
+        $selected = $display === (string) $key ? ' selected' : '';
+        echo '<option value="' . esc_attr((string) $key) . '"' . $selected . '>' . esc_html((string) $label) . '</option>';
+    }
+    echo '</select>';
+    echo '</div>';
+
+    close_field();
+}
+
+function sanitize_rich_text(array $field, $raw): array {
+    $raw       = is_array($raw) ? $raw : [];
+    $value_raw = $raw['value'] ?? '';
+
+    if (is_translatable($field) && is_array($value_raw)) {
+        $value = [];
+        foreach (\WorkerNu\Lang\LANGUAGES as $lang) {
+            $value[$lang] = sanitize_textarea_field((string) ($value_raw[$lang] ?? ''));
+        }
+    } else {
+        $value = sanitize_textarea_field((string) (is_array($value_raw) ? '' : $value_raw));
+    }
+
+    $variants    = rich_text_variants($field);
+    $display_raw = (string) ($raw['display'] ?? '');
+    $display     = array_key_exists($display_raw, $variants) ? $display_raw : (string) array_key_first($variants);
+
+    return [
+        'value'   => $value,
+        'display' => $display,
+    ];
 }
 
 /* ─────────────────────────────────────────────────────────────────

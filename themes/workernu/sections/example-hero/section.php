@@ -9,7 +9,7 @@
  *   badge_icon            — FA class string or full <i>/<svg> HTML (icon field type)
  *   badge_label           — text next to the icon
  *   heading               — the H1
- *   subheading            — body copy below the heading
+ *   body                  — rich_text: paragraph | bullet list | numbered list (editor picks)
  *   ctas[]                — repeater of buttons (label, url, variant, target)
  *   users_count_number    — e.g. "10,000+"
  *   users_count_label     — e.g. "satisfied customers"
@@ -29,8 +29,9 @@ return [
         ['name' => 'badge_icon',          'type' => 'icon',     'label' => 'Badge icon',  'hint' => 'Font Awesome class or full <i> HTML. Blank hides icon.'],
         ['name' => 'badge_label',         'type' => 'text',     'label' => 'Badge label', 'translatable' => true, 'hint' => 'Blank hides the whole badge if no icon either.'],
 
-        ['name' => 'heading',             'type' => 'text',     'label' => 'Heading',     'translatable' => true],
-        ['name' => 'subheading',          'type' => 'textarea', 'label' => 'Subheading',  'translatable' => true, 'rows' => 3],
+        ['name' => 'heading',             'type' => 'text',      'label' => 'Heading',     'translatable' => true],
+        ['name' => 'body',                'type' => 'rich_text', 'label' => 'Body',        'translatable' => true, 'rows' => 3,
+         'hint' => 'For bullet/numbered display, put each item on its own line.'],
 
         [
             'name'      => 'ctas',

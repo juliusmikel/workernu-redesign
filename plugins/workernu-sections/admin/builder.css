@@ -145,6 +145,26 @@ body.has-workernu-sections #wpfooter {
 .ws-translatable__panel { display: none; }
 .ws-translatable__panel.is-active { display: block; }
 
+/* ─── Rich text (textarea + display-as select) ─── */
+
+.ws-rich-text__display {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.ws-rich-text__display-label {
+    font-size: 11px;
+    color: #757575;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex: 0 0 auto;
+}
+.ws-rich-text__display select {
+    flex: 0 1 200px;
+    max-width: 200px;
+}
+
 /* ─── Image ─── */
 
 .ws-image {

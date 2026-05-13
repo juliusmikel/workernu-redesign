@@ -119,6 +119,11 @@ body.has-workernu-sections #wpfooter {
     margin-bottom: 4px;
     color: #1d2327;
 }
+.ws-field__required {
+    color: #b32d2e;
+    margin-left: 2px;
+    font-weight: 700;
+}
 .ws-field__hint {
     margin: -2px 0 6px 0;
     color: #757575;

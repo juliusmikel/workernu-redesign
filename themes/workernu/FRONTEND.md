@@ -72,6 +72,17 @@ A single `$data` array containing every field and modifier value for this sectio
 
 **Always escape on output.** `esc_html()`, `esc_url()`, `esc_attr()`. Never echo raw user content.
 
+**Optional vs required fields.** All fields are technically optional at the storage layer — the editor can leave any of them blank. A red `*` in the meta-box label means the field is marked `required` (an editor hint, not enforced). Your template must still defensively skip empty values:
+
+```php
+$heading = workernu_t($data['heading'] ?? '');
+if ($heading !== '') {
+    echo '<h1>' . esc_html($heading) . '</h1>';
+}
+```
+
+Empty-check by type: `text`/`textarea` → `''`, `rich_text` → `workernu_text()` returns `''`, `image` → `workernu_image_url()` returns `''`, `link` → `empty($link['url'])`, `repeater` → `empty($items)`, `icon` → `''`.
+
 ---
 
 ## Helpers you can call

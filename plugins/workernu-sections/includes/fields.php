@@ -56,10 +56,12 @@ function is_translatable(array $field): bool {
 }
 
 function open_field(array $field, string $extra_class = ''): void {
-    $type = $field['type'] ?? 'text';
-    echo '<div class="ws-field ws-field--' . esc_attr($type) . ($extra_class ? ' ' . esc_attr($extra_class) : '') . '">';
+    $type     = $field['type'] ?? 'text';
+    $required = !empty($field['required']) ? ' ws-field--required' : '';
+    echo '<div class="ws-field ws-field--' . esc_attr($type) . $required . ($extra_class ? ' ' . esc_attr($extra_class) : '') . '">';
     if (!empty($field['label'])) {
-        echo '<label class="ws-field__label">' . label_for($field) . '</label>';
+        $required_mark = !empty($field['required']) ? ' <span class="ws-field__required" aria-hidden="true">*</span>' : '';
+        echo '<label class="ws-field__label">' . label_for($field) . $required_mark . '</label>';
     }
     if (!empty($field['hint'])) {
         echo '<p class="ws-field__hint">' . esc_html((string) $field['hint']) . '</p>';

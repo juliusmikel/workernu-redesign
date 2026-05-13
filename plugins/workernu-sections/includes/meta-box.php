@@ -101,11 +101,22 @@ function render_card(int $index, string $type, array $def, array $data): void {
     ?>
     <li class="ws-card" data-ws-card data-ws-type="<?php echo esc_attr($type); ?>">
         <div class="ws-card__header">
-            <span class="ws-card__handle dashicons dashicons-move" title="<?php esc_attr_e('Drag to reorder', 'workernu-sections'); ?>"></span>
+            <div class="ws-card__move">
+                <button type="button" class="ws-card__move-btn" data-ws-move="up" aria-label="<?php esc_attr_e('Move up', 'workernu-sections'); ?>">
+                    <span class="dashicons dashicons-arrow-up-alt2" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="ws-card__move-btn" data-ws-move="down" aria-label="<?php esc_attr_e('Move down', 'workernu-sections'); ?>">
+                    <span class="dashicons dashicons-arrow-down-alt2" aria-hidden="true"></span>
+                </button>
+            </div>
             <strong class="ws-card__title"><?php echo esc_html($def['label']); ?></strong>
             <span class="ws-card__type"><?php echo esc_html($type); ?></span>
-            <button type="button" class="ws-card__btn ws-card__toggle" data-ws-toggle aria-label="<?php esc_attr_e('Collapse', 'workernu-sections'); ?>">▾</button>
-            <button type="button" class="ws-card__btn ws-card__remove" data-ws-remove aria-label="<?php esc_attr_e('Remove', 'workernu-sections'); ?>">×</button>
+            <button type="button" class="ws-card__btn ws-card__toggle" data-ws-toggle aria-label="<?php esc_attr_e('Collapse', 'workernu-sections'); ?>">
+                <span class="dashicons dashicons-arrow-down-alt2" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="ws-card__btn ws-card__remove" data-ws-remove aria-label="<?php esc_attr_e('Remove', 'workernu-sections'); ?>">
+                <span class="dashicons dashicons-no-alt" aria-hidden="true"></span>
+            </button>
         </div>
         <div class="ws-card__body">
             <input type="hidden" name="<?php echo esc_attr($input_base . '[_type]'); ?>" value="<?php echo esc_attr($type); ?>">
@@ -125,6 +136,10 @@ function render_card(int $index, string $type, array $def, array $data): void {
                         $name  = $mod['name'] ?? null;
                         if (!$name) continue;
                         $value = $data[$name] ?? ($mod['default'] ?? null);
+                        // Modifiers are short option lists by nature — render selects as segmented buttons by default.
+                        if (($mod['type'] ?? '') === 'select' && empty($mod['render_as'])) {
+                            $mod['render_as'] = 'buttons';
+                        }
                         Fields\render_field($mod, $value, $input_base . '[' . $name . ']');
                     endforeach; ?>
                 </div>
@@ -151,15 +166,6 @@ function enqueue_admin(string $hook): void {
 
     wp_enqueue_media();
 
-    // SortableJS via CDN — vanilla, no jQuery dependency.
-    wp_enqueue_script(
-        'workernu-sortablejs',
-        'https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js',
-        [],
-        '1.15.6',
-        true
-    );
-
     wp_enqueue_style(
         'workernu-builder',
         WORKERNU_SECTIONS_URL . 'admin/builder.css',
@@ -170,7 +176,7 @@ function enqueue_admin(string $hook): void {
     wp_enqueue_script(
         'workernu-builder',
         WORKERNU_SECTIONS_URL . 'admin/builder.js',
-        ['workernu-sortablejs'],
+        [],
         filemtime(WORKERNU_SECTIONS_PATH . 'admin/builder.js'),
         true
     );

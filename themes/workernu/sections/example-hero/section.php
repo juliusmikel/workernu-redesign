@@ -26,8 +26,10 @@ return [
     'description' => 'Reference section with badge, heading, subhead, CTAs, social proof, image. Copy this folder when adding new sections.',
 
     'fields' => [
-        ['name' => 'badge_icon',          'type' => 'icon',     'label' => 'Badge icon',  'hint' => 'Font Awesome class or full <i> HTML. Blank hides icon.'],
-        ['name' => 'badge_label',         'type' => 'text',     'label' => 'Badge label', 'translatable' => true, 'hint' => 'Blank hides the whole badge if no icon either.'],
+        ['name' => 'badge_icon',          'type' => 'icon',     'label' => 'Badge icon',  'width' => 'half',
+         'hint' => 'Font Awesome class or full <i> HTML. Blank hides icon.'],
+        ['name' => 'badge_label',         'type' => 'text',     'label' => 'Badge label', 'translatable' => true, 'width' => 'half',
+         'hint' => 'Blank hides the whole badge if no icon either.'],
 
         ['name' => 'heading',             'type' => 'text',      'label' => 'Heading',     'translatable' => true],
         ['name' => 'body',                'type' => 'rich_text', 'label' => 'Body',        'translatable' => true, 'rows' => 3,
@@ -40,15 +42,19 @@ return [
             'hint'      => 'Add any number; rendered horizontally with flex.',
             'add_label' => 'Add CTA',
             'fields'    => [
-                ['name' => 'label',   'type' => 'text',   'label' => 'Label', 'translatable' => true],
+                ['name' => 'label',   'type' => 'text',   'label' => 'Label',  'translatable' => true],
                 ['name' => 'url',     'type' => 'text',   'label' => 'URL'],
-                ['name' => 'variant', 'type' => 'select', 'label' => 'Style',  'options' => ['primary' => 'Primary', 'secondary' => 'Secondary', 'ghost' => 'Ghost']],
-                ['name' => 'target',  'type' => 'select', 'label' => 'Target', 'options' => ['_self' => 'Same tab', '_blank' => 'New tab']],
+                ['name' => 'variant', 'type' => 'select', 'label' => 'Style', 'render_as' => 'buttons',
+                 'options' => ['primary' => 'Primary', 'secondary' => 'Secondary', 'ghost' => 'Ghost']],
+                ['name' => 'target',  'type' => 'select', 'label' => 'Opens', 'render_as' => 'buttons',
+                 'options' => ['_self' => 'Same tab', '_blank' => 'New tab']],
             ],
         ],
 
-        ['name' => 'users_count_number',  'type' => 'text',  'label' => 'Users count: number',  'translatable' => true, 'hint' => 'e.g. "10,000+". Blank hides the block.'],
-        ['name' => 'users_count_label',   'type' => 'text',  'label' => 'Users count: caption', 'translatable' => true, 'hint' => 'e.g. "satisfied customers"'],
+        ['name' => 'users_count_number',  'type' => 'text',  'label' => 'Users count: number',  'translatable' => true, 'width' => 'half',
+         'hint' => 'e.g. "10,000+". Blank hides the block.'],
+        ['name' => 'users_count_label',   'type' => 'text',  'label' => 'Users count: caption', 'translatable' => true, 'width' => 'half',
+         'hint' => 'e.g. "satisfied customers"'],
 
         ['name' => 'image',               'type' => 'image', 'label' => 'Image'],
     ],

@@ -58,7 +58,8 @@ function is_translatable(array $field): bool {
 function open_field(array $field, string $extra_class = ''): void {
     $type     = $field['type'] ?? 'text';
     $required = !empty($field['required']) ? ' ws-field--required' : '';
-    echo '<div class="ws-field ws-field--' . esc_attr($type) . $required . ($extra_class ? ' ' . esc_attr($extra_class) : '') . '">';
+    $width    = !empty($field['width']) ? ' ws-field--width-' . sanitize_html_class((string) $field['width']) : '';
+    echo '<div class="ws-field ws-field--' . esc_attr($type) . $required . $width . ($extra_class ? ' ' . esc_attr($extra_class) : '') . '">';
     if (!empty($field['label'])) {
         $required_mark = !empty($field['required']) ? ' <span class="ws-field__required" aria-hidden="true">*</span>' : '';
         echo '<label class="ws-field__label">' . label_for($field) . $required_mark . '</label>';
@@ -66,6 +67,24 @@ function open_field(array $field, string $extra_class = ''): void {
     if (!empty($field['hint'])) {
         echo '<p class="ws-field__hint">' . esc_html((string) $field['hint']) . '</p>';
     }
+}
+
+/**
+ * Render a segmented-control input. Native radios styled as a button bar.
+ * Used by select fields with render_as=buttons and by rich_text's display picker.
+ */
+function render_segmented(array $options, string $current, string $input_name): void {
+    if (!$options) return;
+    if (!array_key_exists($current, $options)) $current = (string) array_key_first($options);
+    echo '<div class="ws-segmented" role="radiogroup">';
+    foreach ($options as $opt_value => $opt_label) {
+        $checked = $current === (string) $opt_value ? ' checked' : '';
+        echo '<label class="ws-segmented__option">';
+        echo '<input type="radio" name="' . esc_attr($input_name) . '" value="' . esc_attr((string) $opt_value) . '"' . $checked . '>';
+        echo '<span class="ws-segmented__label">' . esc_html((string) $opt_label) . '</span>';
+        echo '</label>';
+    }
+    echo '</div>';
 }
 
 function close_field(): void {
@@ -233,12 +252,7 @@ function render_rich_text(array $field, $value, string $input_name): void {
 
     echo '<div class="ws-rich-text__display">';
     echo '<span class="ws-rich-text__display-label">' . esc_html__('Display as', 'workernu-sections') . '</span>';
-    echo '<select class="ws-input" name="' . esc_attr($input_name . '[display]') . '">';
-    foreach ($variants as $key => $label) {
-        $selected = $display === (string) $key ? ' selected' : '';
-        echo '<option value="' . esc_attr((string) $key) . '"' . $selected . '>' . esc_html((string) $label) . '</option>';
-    }
-    echo '</select>';
+    render_segmented($variants, $display, $input_name . '[display]');
     echo '</div>';
 
     close_field();
@@ -364,14 +378,18 @@ function sanitize_link(array $field, $raw): array {
 
 function render_select(array $field, $value, string $input_name): void {
     $options = $field['options'] ?? [];
-    $val = is_scalar($value) ? (string) $value : '';
+    $val     = is_scalar($value) ? (string) $value : '';
     open_field($field);
-    echo '<select class="ws-input" name="' . esc_attr($input_name) . '">';
-    foreach ($options as $opt_value => $opt_label) {
-        $selected = $val === (string) $opt_value ? ' selected' : '';
-        echo '<option value="' . esc_attr((string) $opt_value) . '"' . $selected . '>' . esc_html((string) $opt_label) . '</option>';
+    if (($field['render_as'] ?? '') === 'buttons') {
+        render_segmented($options, $val, $input_name);
+    } else {
+        echo '<select class="ws-input" name="' . esc_attr($input_name) . '">';
+        foreach ($options as $opt_value => $opt_label) {
+            $selected = $val === (string) $opt_value ? ' selected' : '';
+            echo '<option value="' . esc_attr((string) $opt_value) . '"' . $selected . '>' . esc_html((string) $opt_label) . '</option>';
+        }
+        echo '</select>';
     }
-    echo '</select>';
     close_field();
 }
 
@@ -455,7 +473,19 @@ function render_repeater(array $field, $value, string $input_name): void {
 function render_repeater_item(array $sub_fields, array $item, string $base_name): void {
     ?>
     <li class="ws-repeater__item" data-ws-repeater-item>
-        <span class="ws-repeater__handle dashicons dashicons-move" title="<?php esc_attr_e('Drag to reorder', 'workernu-sections'); ?>"></span>
+        <div class="ws-repeater__bar">
+            <div class="ws-repeater__move">
+                <button type="button" class="ws-repeater__move-btn" data-ws-repeater-move="up" aria-label="<?php esc_attr_e('Move up', 'workernu-sections'); ?>">
+                    <span class="dashicons dashicons-arrow-up-alt2" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="ws-repeater__move-btn" data-ws-repeater-move="down" aria-label="<?php esc_attr_e('Move down', 'workernu-sections'); ?>">
+                    <span class="dashicons dashicons-arrow-down-alt2" aria-hidden="true"></span>
+                </button>
+            </div>
+            <button type="button" class="ws-repeater__remove" data-ws-repeater-remove aria-label="<?php esc_attr_e('Remove', 'workernu-sections'); ?>">
+                <span class="dashicons dashicons-no-alt" aria-hidden="true"></span>
+            </button>
+        </div>
         <div class="ws-repeater__fields">
             <?php foreach ($sub_fields as $sub):
                 $sub_name = $sub['name'] ?? null;
@@ -464,7 +494,6 @@ function render_repeater_item(array $sub_fields, array $item, string $base_name)
                 render_field($sub, $item[$sub_name] ?? null, $base_name . '[' . $sub_name . ']');
             endforeach; ?>
         </div>
-        <button type="button" class="button-link ws-repeater__remove" data-ws-repeater-remove aria-label="<?php esc_attr_e('Remove', 'workernu-sections'); ?>">×</button>
     </li>
     <?php
 }

@@ -26,9 +26,9 @@ return [
     'description' => 'Homepage hero — badge, heading, body, CTAs, social proof, image.',
 
     'fields' => [
-        ['name' => 'badge_icon',         'type' => 'icon',     'label' => 'Badge icon',
+        ['name' => 'badge_icon',         'type' => 'icon',     'label' => 'Badge icon', 'width' => 'half',
          'hint' => 'Font Awesome class (e.g. "fa-solid fa-bolt") or full <i>/<svg> HTML. Blank hides the icon.'],
-        ['name' => 'badge_label',        'type' => 'text',     'label' => 'Badge label', 'translatable' => true,
+        ['name' => 'badge_label',        'type' => 'text',     'label' => 'Badge label', 'translatable' => true, 'width' => 'half',
          'hint' => 'Short tag above the heading. Blank hides the whole badge when no icon either.'],
 
         ['name' => 'heading',            'type' => 'text',      'label' => 'Heading', 'translatable' => true, 'required' => true],
@@ -44,14 +44,16 @@ return [
             'fields'    => [
                 ['name' => 'label',   'type' => 'text',   'label' => 'Label',  'translatable' => true],
                 ['name' => 'url',     'type' => 'text',   'label' => 'URL'],
-                ['name' => 'variant', 'type' => 'select', 'label' => 'Style',  'options' => ['primary' => 'Primary', 'secondary' => 'Secondary', 'ghost' => 'Ghost']],
-                ['name' => 'target',  'type' => 'select', 'label' => 'Opens',  'options' => ['_self' => 'Same tab', '_blank' => 'New tab']],
+                ['name' => 'variant', 'type' => 'select', 'label' => 'Style', 'render_as' => 'buttons',
+                 'options' => ['primary' => 'Primary', 'secondary' => 'Secondary', 'ghost' => 'Ghost']],
+                ['name' => 'target',  'type' => 'select', 'label' => 'Opens', 'render_as' => 'buttons',
+                 'options' => ['_self' => 'Same tab', '_blank' => 'New tab']],
             ],
         ],
 
-        ['name' => 'users_count_number', 'type' => 'text',  'label' => 'Users count: number',  'translatable' => true,
+        ['name' => 'users_count_number', 'type' => 'text',  'label' => 'Users count: number',  'translatable' => true, 'width' => 'half',
          'hint' => 'e.g. "10,000+". Blank hides the whole social-proof line.'],
-        ['name' => 'users_count_label',  'type' => 'text',  'label' => 'Users count: caption', 'translatable' => true,
+        ['name' => 'users_count_label',  'type' => 'text',  'label' => 'Users count: caption', 'translatable' => true, 'width' => 'half',
          'hint' => 'e.g. "businesses already using workernu"'],
 
         ['name' => 'image',              'type' => 'image', 'label' => 'Image', 'required' => true],

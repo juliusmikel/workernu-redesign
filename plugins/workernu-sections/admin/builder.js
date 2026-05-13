@@ -1,17 +1,16 @@
 /* workernu-sections — admin builder
  *
  * Vanilla JS. Depends on:
- *   - SortableJS (loaded via CDN by the plugin)
  *   - wp.media (loaded via wp_enqueue_media() in PHP)
  *
  * Responsibilities:
- *   - Drag-to-reorder section cards
  *   - Add section from the dropdown (clone template)
  *   - Remove section
+ *   - Move section up/down via chevron buttons (no drag-and-drop)
  *   - Collapse/expand card body
  *   - Global language tabs (one toggle switches every translatable input in the form)
  *   - Image picker via the WP media library
- *   - Repeater field type: add/remove/reorder items, renumber inputs in scope
+ *   - Repeater field type: add/remove/move/renumber items in scope
  *   - Renumber section input names on every change so the saved POST array is a clean sequence
  */
 (function () {
@@ -25,8 +24,6 @@
         var builder = $('[data-ws-builder]');
         if (!builder) return;
 
-        initSortable(builder);
-        initRepeaters(builder);
         initLangTabs(builder);
         applyLangTo(builder, builder.dataset.wsLang);
         bindToolbar(builder);
@@ -34,36 +31,7 @@
         bindImagePickers(builder);
         bindRepeaterEvents(builder);
         bindSubmit(builder);
-    }
-
-    /* ─── Sortable: section cards ─── */
-
-    function initSortable(builder) {
-        var list = $('[data-ws-list]', builder);
-        if (!list || typeof Sortable === 'undefined') return;
-        Sortable.create(list, {
-            handle: '.ws-card__handle',
-            animation: 150,
-            ghostClass: 'ws-card--ghost',
-            onEnd: function () { reindex(builder); }
-        });
-    }
-
-    /* ─── Sortable: repeater items inside a scope ─── */
-
-    function initRepeaters(scope) {
-        if (typeof Sortable === 'undefined') return;
-        $$('[data-ws-repeater]', scope).forEach(function (repeater) {
-            var list = repeater.querySelector('[data-ws-repeater-list]');
-            if (!list || list.dataset.wsSortableReady === '1') return;
-            list.dataset.wsSortableReady = '1';
-            Sortable.create(list, {
-                handle: '.ws-repeater__handle',
-                animation: 150,
-                ghostClass: 'ws-repeater__item--ghost',
-                onEnd: function () { renumberRepeater(repeater); }
-            });
-        });
+        updateMoveStates(builder);
     }
 
     /* ─── Toolbar (add + lang tabs) ─── */
@@ -98,8 +66,8 @@
         var list = $('[data-ws-list]', builder);
         list.appendChild(card);
         reindex(builder);
-        initRepeaters(card);
         applyLangTo(builder, builder.dataset.wsLang);
+        updateMoveStates(builder);
     }
 
     function initLangTabs(builder) {
@@ -124,15 +92,23 @@
         });
     }
 
-    /* ─── Card events (toggle, remove) ─── */
+    /* ─── Card events (toggle, remove, move) ─── */
 
     function bindCardEvents(builder) {
         builder.addEventListener('click', function (e) {
             var toggle = e.target.closest('[data-ws-toggle]');
             if (toggle && toggle.closest('[data-ws-builder]')) {
-                var card = toggle.closest('[data-ws-card]');
-                card.classList.toggle('is-collapsed');
-                toggle.textContent = card.classList.contains('is-collapsed') ? '▸' : '▾';
+                toggle.closest('[data-ws-card]').classList.toggle('is-collapsed');
+                return;
+            }
+
+            var move = e.target.closest('[data-ws-move]');
+            if (move) {
+                var card = move.closest('[data-ws-card]');
+                var dir  = move.dataset.wsMove;
+                moveSibling(card, dir);
+                reindex(builder);
+                updateMoveStates(builder);
                 return;
             }
 
@@ -141,9 +117,20 @@
                 if (!window.confirm('Remove this section?')) return;
                 remove.closest('[data-ws-card]').remove();
                 reindex(builder);
+                updateMoveStates(builder);
                 return;
             }
         });
+    }
+
+    function moveSibling(el, dir) {
+        var parent = el.parentElement;
+        if (!parent) return;
+        if (dir === 'up' && el.previousElementSibling) {
+            parent.insertBefore(el, el.previousElementSibling);
+        } else if (dir === 'down' && el.nextElementSibling) {
+            parent.insertBefore(el.nextElementSibling, el);
+        }
     }
 
     /* ─── Image picker (wp.media) ─── */
@@ -191,7 +178,7 @@
         scope.querySelector('[data-ws-image-clear]').hidden = true;
     }
 
-    /* ─── Repeater events (add/remove items) ─── */
+    /* ─── Repeater events (add/remove/move items) ─── */
 
     function bindRepeaterEvents(builder) {
         builder.addEventListener('click', function (e) {
@@ -201,16 +188,29 @@
                 if (!repeater) return;
                 addRepeaterItem(repeater);
                 applyLangTo(builder, builder.dataset.wsLang);
+                updateMoveStates(builder);
+                return;
+            }
+
+            var move = e.target.closest('[data-ws-repeater-move]');
+            if (move) {
+                var item = move.closest('[data-ws-repeater-item]');
+                if (!item) return;
+                var rep = item.closest('[data-ws-repeater]');
+                moveSibling(item, move.dataset.wsRepeaterMove);
+                if (rep) renumberRepeater(rep);
+                updateMoveStates(builder);
                 return;
             }
 
             var remove = e.target.closest('[data-ws-repeater-remove]');
             if (remove) {
-                var item = remove.closest('[data-ws-repeater-item]');
-                if (!item) return;
-                var rep = item.closest('[data-ws-repeater]');
-                item.remove();
-                if (rep) renumberRepeater(rep);
+                var ritem = remove.closest('[data-ws-repeater-item]');
+                if (!ritem) return;
+                var repx = ritem.closest('[data-ws-repeater]');
+                ritem.remove();
+                if (repx) renumberRepeater(repx);
+                updateMoveStates(builder);
                 return;
             }
         });
@@ -234,7 +234,6 @@
     function renumberRepeater(repeater) {
         var fieldName = repeater.dataset.wsRepeater;
         if (!fieldName) return;
-        // Match the bracket immediately after `[fieldName]` and replace its index.
         var pattern = new RegExp('(\\[' + escapeRegex(fieldName) + '\\])\\[[^\\]]+\\]');
         $$('[data-ws-repeater-list] > [data-ws-repeater-item]', repeater).forEach(function (item, idx) {
             $$('[name]', item).forEach(function (input) {
@@ -253,6 +252,31 @@
         $$('[data-ws-list] > [data-ws-card]', builder).forEach(function (card, idx) {
             $$('[name^="workernu_sections["]', card).forEach(function (input) {
                 input.name = input.name.replace(/^workernu_sections\[[^\]]+\]/, 'workernu_sections[' + idx + ']');
+            });
+        });
+    }
+
+    /* ─── Move-button enabled/disabled state ─── */
+
+    function updateMoveStates(builder) {
+        // Section cards
+        $$('[data-ws-list]', builder).forEach(function (list) {
+            var cards = $$(':scope > [data-ws-card]', list);
+            cards.forEach(function (card, i) {
+                var up   = card.querySelector(':scope > .ws-card__header [data-ws-move="up"]');
+                var down = card.querySelector(':scope > .ws-card__header [data-ws-move="down"]');
+                if (up)   up.disabled   = (i === 0);
+                if (down) down.disabled = (i === cards.length - 1);
+            });
+        });
+        // Repeater items
+        $$('[data-ws-repeater-list]', builder).forEach(function (list) {
+            var items = $$(':scope > [data-ws-repeater-item]', list);
+            items.forEach(function (item, i) {
+                var up   = item.querySelector('[data-ws-repeater-move="up"]');
+                var down = item.querySelector('[data-ws-repeater-move="down"]');
+                if (up)   up.disabled   = (i === 0);
+                if (down) down.disabled = (i === items.length - 1);
             });
         });
     }

@@ -7,6 +7,7 @@
  *
  * Helpers used here:
  *   workernu_t()                — resolves a possibly-translatable value to a string in the current language
+ *   workernu_text()             — renders a rich_text field as <p>/<ul>/<ol> with auto-appended variant modifier
  *   workernu_image_url()        — resolves an image field to a URL
  *   workernu_image_alt()        — resolves an image field to alt text
  *   workernu_icon()             — resolves an icon field (class string OR raw HTML) to safe HTML
@@ -16,7 +17,6 @@
 $badge_icon  = (string) ($data['badge_icon'] ?? '');
 $badge_label = workernu_t($data['badge_label'] ?? '');
 $heading     = workernu_t($data['heading']     ?? '');
-$subheading  = workernu_t($data['subheading']  ?? '');
 $ctas        = is_array($data['ctas'] ?? null) ? $data['ctas'] : [];
 $users_num   = workernu_t($data['users_count_number'] ?? '');
 $users_lbl   = workernu_t($data['users_count_label']  ?? '');
@@ -47,8 +47,16 @@ $classes         = workernu_section_classes($data, 'example-hero');
                 <h1 class="section--example-hero__heading" data-animate-item="heading"><?php echo esc_html($heading); ?></h1>
             <?php endif; ?>
 
-            <?php if ($subheading !== ''): ?>
-                <p class="section--example-hero__sub" data-animate-item="sub"><?php echo nl2br(esc_html($subheading)); ?></p>
+            <?php
+            // workernu_text() returns one of:
+            //   <p  class="section--example-hero__body section--example-hero__body--paragraph">...</p>
+            //   <ul class="section--example-hero__body section--example-hero__body--bullets"><li>...</li></ul>
+            //   <ol class="section--example-hero__body section--example-hero__body--numbered"><li>...</li></ol>
+            // — based on the editor's choice in the rich_text field. CSS rules sit on the modifier classes.
+            $body_html = workernu_text($data['body'] ?? null, 'section--example-hero__body');
+            ?>
+            <?php if ($body_html !== ''): ?>
+                <div data-animate-item="body"><?php echo $body_html; ?></div>
             <?php endif; ?>
 
             <?php if ($ctas): ?>

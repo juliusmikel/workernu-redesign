@@ -73,6 +73,46 @@ function workernu_section_classes(array $data, string $slug): string {
 }
 
 /**
+ * Render a rich_text field value to safe HTML.
+ *
+ * Receives the field value (an array shaped { value, display }) and a base class.
+ * Outputs <p>/<ul>/<ol> with the class plus an auto-appended modifier:
+ *   base + " " + base + "--" + display
+ *
+ *   echo workernu_text($data['body'], 'section--hero__body');
+ *
+ * Produces one of:
+ *   <p  class="section--hero__body section--hero__body--paragraph">...</p>
+ *   <ul class="section--hero__body section--hero__body--bullets"><li>...</li>...</ul>
+ *   <ol class="section--hero__body section--hero__body--numbered"><li>...</li>...</ol>
+ *
+ * Lists split the value on newlines; blank lines are dropped.
+ */
+function workernu_text($field_value, string $class = ''): string {
+    if (!is_array($field_value)) return '';
+
+    $value   = $field_value['value']   ?? '';
+    $display = (string) ($field_value['display'] ?? 'paragraph');
+    $text    = function_exists('workernu_t') ? workernu_t($value) : (is_array($value) ? '' : (string) $value);
+
+    if ($text === '') return '';
+
+    $classes = $class !== ''
+        ? $class . ' ' . $class . '--' . sanitize_html_class($display)
+        : '';
+    $attr = $classes !== '' ? ' class="' . esc_attr($classes) . '"' : '';
+
+    if ($display === 'bullets' || $display === 'numbered') {
+        $items = array_values(array_filter(array_map('trim', preg_split('/\r?\n/', $text) ?: [])));
+        if (!$items) return '';
+        $tag = $display === 'numbered' ? 'ol' : 'ul';
+        return '<' . $tag . $attr . '><li>' . implode('</li><li>', array_map('esc_html', $items)) . '</li></' . $tag . '>';
+    }
+
+    return '<p' . $attr . '>' . nl2br(esc_html($text)) . '</p>';
+}
+
+/**
  * Render an icon field value to safe HTML.
  *
  * Accepts either:

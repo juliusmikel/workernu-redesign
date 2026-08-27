@@ -1,0 +1,55 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: workernu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: lt_LT\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Domain: workernu\n"
+
+# Theme template strings whose SOURCE text is English — mostly aria-labels and
+# a11y text. This file supplies the Lithuanian shown (and read by screen
+# readers) on default-language pages. See en_GB.po for the file-naming and
+# locale gotchas that apply to this directory.
+#
+# Regenerate the .mo after editing:  wp i18n make-mo <this directory>
+
+msgid "Skip to content"
+msgstr "Praleisti ir pereiti prie turinio"
+
+msgid "Toggle menu"
+msgstr "Atidaryti / uždaryti meniu"
+
+msgid "Customer testimonials"
+msgstr "Klientų atsiliepimai"
+
+msgid "Scrolling icons"
+msgstr "Slenkančios piktogramos"
+
+msgid "Increase"
+msgstr "Padidinti"
+
+msgid "Decrease"
+msgstr "Sumažinti"
+
+msgid "Rated %d out of 5 stars"
+msgstr "Įvertinta %d iš 5 žvaigždučių"
+
+msgid "Call %s"
+msgstr "Skambinti %s"
+
+msgid "Email %s"
+msgstr "Rašyti %s"
+
+msgid "Visit %s"
+msgstr "Aplankyti %s"
+
+msgid "Read more"
+msgstr "Skaityti daugiau"
+
+msgid "Choose a base plan"
+msgstr "Pasirinkite planą"
+
+msgid "Team members"
+msgstr "Komandos nariai"

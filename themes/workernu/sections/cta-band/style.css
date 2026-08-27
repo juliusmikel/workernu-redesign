@@ -1,0 +1,67 @@
+/* CTA Band — closing call-to-action band.
+ *
+ * Class structure produced by workernu_section_classes():
+ *   .section--cta-band
+ *   .section--cta-band--tone-default | --tone-inverted
+ *   .section--cta-band--align-left | --align-center
+ *
+ * Tone strategy: muted text / hairlines derive from currentColor via color-mix,
+ * so both tones stay token-only — no hardcoded palette.
+ */
+
+.section--cta-band {
+    --cb-muted: color-mix(in srgb, currentColor 65%, transparent);
+    --cb-line:  color-mix(in srgb, currentColor 24%, transparent);
+    color: var(--color-fg);
+}
+.section--cta-band__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-3);
+    max-width: 56ch;
+}
+.section--cta-band__heading {
+    margin: 0;
+    font-size: clamp(1.875rem, 4vw, 3rem);
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-accent);
+}
+.section--cta-band__body {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--cb-muted);
+}
+
+/* ─── CTAs ─── */
+.section--cta-band__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+}
+/* Button styling is global — see .btn / .btn--* in main.css.
+   .section--cta-band__ctas above only handles the flex row layout. */
+
+/* ─── Modifier: tone (inverted = dark band) ─── */
+.section--cta-band--tone-inverted {
+    background: var(--color-fg);
+    color: var(--color-bg);
+}
+
+/* ─── Modifier: alignment ─── */
+.section--cta-band--align-left .section--cta-band__inner {
+    align-items: flex-start;
+    text-align: left;
+    margin-left: 0;
+}
+.section--cta-band--align-left .section--cta-band__ctas { justify-content: flex-start; }
+.section--cta-band--align-center .section--cta-band__inner {
+    align-items: center;
+    text-align: center;
+}

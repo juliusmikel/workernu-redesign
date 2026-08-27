@@ -167,6 +167,27 @@ body.has-workernu-sections #wpfooter {
 .ws-card__remove { color: #b32d2e; }
 .ws-card__remove:hover { background: #fbeaea; color: #d63638; }
 
+.ws-card__duplicate svg { display: block; }
+.ws-card__duplicate rect:nth-of-type(2) {
+    fill: #f9fafb;
+    transition: fill 100ms ease;
+}
+.ws-card__duplicate:hover rect:nth-of-type(2) { fill: #eef0f2; }
+
+.ws-card__copy svg { display: block; }
+.ws-card__copy:hover { color: #2271b1; }
+
+/* Brief success flash applied by JS after copy/paste succeeds. */
+.ws-card__btn.is-success,
+.ws-toolbar__paste.is-success {
+    background: #e6f4ea;
+    color: #1e7b34;
+    transition: background 150ms ease, color 150ms ease;
+}
+
+.ws-toolbar__paste { gap: 4px; display: inline-flex; align-items: center; }
+.ws-toolbar__paste .dashicons { width: 16px; height: 16px; font-size: 16px; line-height: 1; }
+
 .ws-card__toggle .dashicons {
     transition: transform 150ms ease;
 }
@@ -323,6 +344,53 @@ body.has-workernu-sections #wpfooter {
 .ws-image__remove { color: #b32d2e; }
 .ws-image__remove[hidden] { display: none; }
 
+/* ─── Gallery ─── */
+
+.ws-gallery__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+    min-height: 0;
+}
+.ws-gallery__grid:empty { margin-bottom: 0; }
+.ws-gallery__thumb {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #d6d9dd;
+    flex: 0 0 auto;
+}
+.ws-gallery__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.ws-gallery__remove {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 18px;
+    height: 18px;
+    background: rgba(0, 0, 0, .55);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    opacity: 0;
+    transition: opacity 120ms;
+}
+.ws-gallery__thumb:hover .ws-gallery__remove { opacity: 1; }
+
 /* ─── Link ─── */
 
 .ws-link { display: flex; flex-direction: column; gap: 10px; }
@@ -363,6 +431,32 @@ body.has-workernu-sections #wpfooter {
     background: #f9fafb;
     border-bottom: 1px solid #e9ebed;
 }
+.ws-repeater__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+}
+.ws-repeater__duplicate {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: #6b7280;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+    transition: background-color 100ms ease, color 100ms ease;
+}
+.ws-repeater__duplicate:hover { background: #eef0f2; color: #2271b1; }
+.ws-repeater__duplicate svg { display: block; }
+.ws-repeater__duplicate rect:nth-of-type(2) {
+    fill: #f9fafb;
+    transition: fill 100ms ease;
+}
+.ws-repeater__duplicate:hover rect:nth-of-type(2) { fill: #eef0f2; }
 
 .ws-repeater__fields {
     display: flex;
@@ -423,3 +517,27 @@ body.has-workernu-sections #wpfooter {
 @media (max-width: 600px) {
     .ws-modifiers { grid-template-columns: 1fr; }
 }
+
+/* Conditional field hidden state — applied by builder.js when a field's
+   show_if condition isn't currently met. Fields collapse out of the editor
+   entirely (no animation, no dim — just gone). Also applies to the
+   .ws-content-fields wrapper (content_defaults sections — see MetaBox\render_card),
+   which groups a whole set of fields behind one content_source condition. */
+.ws-field.is-disabled-by-condition,
+.ws-content-fields.is-disabled-by-condition {
+    display: none;
+}
+
+/* content_defaults sections — the "editing the site default elsewhere"
+   notice + link shown in place of the content fields. */
+.ws-settings-link {
+    padding: 14px 16px;
+    background: #f0f6fc;
+    border: 1px solid #c5d9ed;
+    border-radius: 6px;
+}
+.ws-settings-link p {
+    margin: 0 0 10px;
+    color: #3c434a;
+}
+.ws-settings-link .button { margin: 0; }

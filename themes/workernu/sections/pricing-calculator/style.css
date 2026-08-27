@@ -1,0 +1,440 @@
+/* Pricing Calculator */
+
+/* Ensure [hidden] attribute always wins over display:flex declarations */
+.section--pricing-calculator [hidden] { display: none !important; }
+
+.section--pricing-calculator__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-width: 760px;
+    margin-inline: auto;
+}
+
+/* ── Section header ── */
+.section--pricing-calculator__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    text-align: center;
+}
+.section--pricing-calculator__heading {
+    margin: 0;
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--color-accent);
+}
+.section--pricing-calculator__sub {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--color-muted);
+    line-height: 1.5;
+}
+
+/* ── Step labels ── */
+.section--pricing-calculator__step-label {
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+}
+
+/* ── Plan cards ── */
+.section--pricing-calculator__cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    width: 100%;
+}
+.section--pricing-calculator__plan-card {
+    position: relative;
+    flex: 1 1 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-3) var(--space-3);
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-line);
+    border-radius: 14px;
+    cursor: pointer;
+    text-align: center;
+    font-family: inherit;
+    transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+.section--pricing-calculator__plan-card:hover {
+    border-color: color-mix(in srgb, var(--color-accent) 50%, var(--color-line));
+    transform: translateY(-2px);
+}
+.section--pricing-calculator__plan-card.is-active {
+    border-color: var(--color-accent);
+    border-width: 2px;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+.section--pricing-calculator__plan-card-icon {
+    font-size: 1.5rem;
+    color: var(--color-muted);
+    line-height: 1;
+    transition: color 180ms ease;
+}
+.section--pricing-calculator__plan-card.is-active .section--pricing-calculator__plan-card-icon {
+    color: var(--color-accent);
+}
+.section--pricing-calculator__plan-card-name {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--color-fg);
+    line-height: 1.3;
+}
+.section--pricing-calculator__plan-card-desc {
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    line-height: 1.4;
+}
+.section--pricing-calculator__plan-card-price {
+    font-size: clamp(1.25rem, 2.5vw, 1.625rem);
+    font-weight: 800;
+    color: var(--color-accent);
+    line-height: 1.1;
+}
+.section--pricing-calculator__plan-card-period {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    line-height: 1.3;
+}
+/* Checkmark badge */
+.section--pricing-calculator__plan-card-check {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    transform: scale(0.6);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: #fff;
+    font-size: 0.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 180ms ease, transform 180ms ease;
+    pointer-events: none;
+}
+.section--pricing-calculator__plan-card.is-active .section--pricing-calculator__plan-card-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ── Selected plan info line ── */
+.section--pricing-calculator__selected-info {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--color-muted);
+}
+.section--pricing-calculator__selected-info [data-pc="selected-name"],
+.section--pricing-calculator__selected-info [data-pc="selected-price"] {
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+/* ── Addons area ── */
+.section--pricing-calculator__addons-area {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+.section--pricing-calculator__addon-rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+/* ── Row (plan addon + regular addon) ── */
+.section--pricing-calculator__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-line);
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    transition: border-color 180ms ease, background 180ms ease;
+    min-height: 52px;
+}
+.section--pricing-calculator__row:hover:not(:disabled):not([aria-pressed="true"]) {
+    border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-line));
+}
+.section--pricing-calculator__row[aria-pressed="true"] {
+    border-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 5%, var(--color-surface));
+}
+.section--pricing-calculator__row:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.section--pricing-calculator__row-icon {
+    font-size: 1rem;
+    color: var(--color-muted);
+    flex: 0 0 auto;
+    line-height: 1;
+}
+.section--pricing-calculator__row[aria-pressed="true"] .section--pricing-calculator__row-icon {
+    color: var(--color-accent);
+}
+.section--pricing-calculator__row-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+}
+.section--pricing-calculator__row-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-fg);
+    line-height: 1.3;
+}
+.section--pricing-calculator__row-desc {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    line-height: 1.4;
+}
+.section--pricing-calculator__row-price {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-muted);
+    white-space: nowrap;
+    flex: 0 0 auto;
+}
+.section--pricing-calculator__row[aria-pressed="true"] .section--pricing-calculator__row-price {
+    color: var(--color-accent);
+}
+
+/* ── Toggle switch (left side of row) ── */
+.section--pricing-calculator__toggle {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+}
+.section--pricing-calculator__toggle-track {
+    display: block;
+    width: 36px;
+    height: 20px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--color-fg) 18%, transparent);
+    position: relative;
+    transition: background 200ms ease;
+}
+.section--pricing-calculator__toggle-thumb {
+    display: block;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .25);
+    transition: left 200ms ease;
+}
+.section--pricing-calculator__row[aria-pressed="true"] .section--pricing-calculator__toggle-track {
+    background: var(--color-accent);
+}
+.section--pricing-calculator__row[aria-pressed="true"] .section--pricing-calculator__toggle-thumb {
+    left: 19px;
+}
+
+/* ── Stepper row ── */
+.section--pricing-calculator__stepper-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3) var(--space-2) var(--space-4);
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-line);
+    border-radius: 12px;
+    min-height: 52px;
+}
+.section--pricing-calculator__stepper-label {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-fg);
+    cursor: default;
+    flex: 1;
+}
+.section--pricing-calculator__stepper {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid var(--color-line);
+    border-radius: 8px;
+    overflow: hidden;
+    flex: 0 0 auto;
+}
+.section--pricing-calculator__stepper-btn {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: var(--color-fg);
+    transition: background 150ms ease, color 150ms ease;
+    flex: 0 0 auto;
+}
+.section--pricing-calculator__stepper-btn:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+    color: var(--color-accent);
+}
+.section--pricing-calculator__stepper-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+.section--pricing-calculator__stepper-input {
+    width: 48px;
+    border: none;
+    border-left: 1.5px solid var(--color-line);
+    border-right: 1.5px solid var(--color-line);
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: inherit;
+    color: var(--color-fg);
+    background: none;
+    padding: 0;
+    height: 38px;
+    -moz-appearance: textfield;
+}
+.section--pricing-calculator__stepper-input::-webkit-outer-spin-button,
+.section--pricing-calculator__stepper-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+/* ── Summary (dark card, always visible) ── */
+.section--pricing-calculator__summary {
+    width: 100%;
+    background: #0e1f3c;
+    border-radius: 16px;
+    padding: var(--space-5);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.section--pricing-calculator__summary-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+.section--pricing-calculator__summary-left {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.section--pricing-calculator__summary-title {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, .45);
+}
+.section--pricing-calculator__summary-plan {
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, .7);
+    min-height: 1.4em;
+}
+.section--pricing-calculator__summary-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    flex-shrink: 0;
+}
+.section--pricing-calculator__summary-total {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+    letter-spacing: -0.03em;
+}
+.section--pricing-calculator__summary-meta {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, .4);
+}
+.section--pricing-calculator__summary-divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, .1);
+    margin: var(--space-3) 0;
+}
+.section--pricing-calculator__summary-per-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+.section--pricing-calculator__summary-per-label {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, .55);
+}
+.section--pricing-calculator__summary-per {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #5b8cff;
+}
+
+/* ── CTA ── */
+.section--pricing-calculator__cta-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+}
+.section--pricing-calculator__cta {
+    width: 100%;
+    justify-content: center;
+}
+.section--pricing-calculator__cta-note {
+    margin: 0;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, .35);
+    text-align: center;
+}
+
+/* ── Alignment modifier ── */
+.section--pricing-calculator--align-left .section--pricing-calculator__inner {
+    margin-inline: 0;
+}
+.section--pricing-calculator--align-left .section--pricing-calculator__header,
+.section--pricing-calculator--align-left .section--pricing-calculator__step-label {
+    text-align: left;
+}
+.section--pricing-calculator--align-left .section--pricing-calculator__cards {
+    justify-content: flex-start;
+}
+
+/* ── Mobile ── */
+@media (max-width: 540px) {
+    .section--pricing-calculator__plan-card {
+        flex-basis: calc(50% - var(--space-2) / 2);
+    }
+    .section--pricing-calculator__summary {
+        padding: var(--space-4);
+    }
+}
+@media (max-width: 360px) {
+    .section--pricing-calculator__plan-card {
+        flex-basis: 100%;
+    }
+}

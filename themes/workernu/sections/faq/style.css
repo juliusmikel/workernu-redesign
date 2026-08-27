@@ -1,0 +1,115 @@
+/* FAQ — accordion of question/answer pairs. */
+
+.section--faq__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    max-width: 900px;
+    margin-inline: auto;
+}
+
+/* ─── Header ─── */
+.section--faq__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    align-self: center;
+    text-align: center;
+}
+.section--faq__heading {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.1;
+    font-weight: 700;
+    color: var(--color-accent);
+}
+.section--faq__sub {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+    max-width: 60ch;
+    margin-inline: auto;
+}
+
+/* ─── List ─── */
+.section--faq__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+.section--faq__item {
+    border-radius: 20px;
+    background: #fff;
+    overflow: hidden;
+}
+
+/* ─── Details / Summary ─── */
+.section--faq__details {
+    width: 100%;
+}
+.section--faq__question {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-6);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--color-fg);
+    user-select: none;
+}
+.section--faq__question::-webkit-details-marker { display: none; }
+.section--faq__question:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+    border-radius: 20px;
+}
+.section--faq__question-text {
+    flex: 1 1 auto;
+    line-height: 1.4;
+}
+
+/* ─── Plus / Minus icon ─── */
+.section--faq__icon {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-accent);
+    font-size: 1.125rem;
+}
+/* Default: show plus, hide minus */
+.section--faq__icon-minus { display: none; }
+/* Open: hide plus, show minus */
+.section--faq__details[open] .section--faq__icon-plus  { display: none; }
+.section--faq__details[open] .section--faq__icon-minus { display: inline; }
+
+.section--faq__answer {
+    overflow: hidden;
+    transition: height 300ms ease;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--color-fg);
+}
+.section--faq__answer-inner {
+    padding: 0 var(--space-6) var(--space-5);
+}
+.section--faq__answer-inner p { margin: 0; }
+
+/* ─── Layout: open ─── */
+.section--faq--layout-open .section--faq__details { pointer-events: none; }
+.section--faq--layout-open .section--faq__icon    { display: none; }
+.section--faq--layout-open .section--faq__question { cursor: default; }
+
+/* ─── Mobile ─── */
+@media (max-width: 640px) {
+    .section--faq__question     { padding: var(--space-4) var(--space-4); }
+    .section--faq__answer-inner { padding: 0 var(--space-4) var(--space-4); }
+}

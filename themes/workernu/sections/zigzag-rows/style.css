@@ -1,0 +1,207 @@
+/* Zigzag Rows — section heading + alternating media/content rows.
+ *
+ * Structure:
+ *   .section--zigzag-rows
+ *   └─ .section--zigzag-rows__inner.container          (flex column)
+ *      ├─ .section--zigzag-rows__header                (heading + subheading)
+ *      └─ .section--zigzag-rows__rows                  (flex column of rows)
+ *         └─ .section--zigzag-rows__row                (each row = mini-hero, flex row)
+ *            ├─ .section--zigzag-rows__content        (eyebrow + title + body + CTA)
+ *            └─ .section--zigzag-rows__media           (image, absolutely positioned)
+ *
+ * Each row's `--image-right` | `--image-left` class is computed in PHP based on
+ * the section's `first_side` modifier — row 0 takes the starting side, every
+ * subsequent row flips. `row-reverse` swaps the visual order; absolute image
+ * anchor flips with it.
+ *
+ * Image alignment mirrors the hero: top-of-image aligns with title (compensated
+ * for the eyebrow row when present via :has), bottom locks to row bottom via
+ * align-items: stretch, image overflows the outer column boundary and bleeds
+ * off the viewport (clipped by section overflow-x: clip).
+ */
+
+.section--zigzag-rows {
+    --zigzag-eyebrow-h: 2.25rem;
+    --zigzag-image-h: 40rem;
+    overflow-x: clip;
+}
+
+.section--zigzag-rows__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-7);
+}
+
+/* ─── Section header ─── */
+.section--zigzag-rows__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-2);
+    max-width: 64ch;
+    align-self: center;
+}
+.section--zigzag-rows__heading {
+    margin: 0;
+    font-size: clamp(1.875rem, 4vw, 3rem);
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-accent);
+}
+.section--zigzag-rows__sub {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+}
+
+/* ─── Rows wrapper ─── */
+.section--zigzag-rows__rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* ─── Single row — flex row, two columns. Content column is vertically
+ *     centered against the image (align-items: center). ─── */
+.section--zigzag-rows__row {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-6) * 2);
+}
+.section--zigzag-rows__row--image-left {
+    flex-direction: row-reverse;
+}
+
+/* ─── Columns ─── */
+.section--zigzag-rows__content {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+}
+
+/* Media cell — exactly like the hero: position: relative with an explicit
+ * height (driven by --zigzag-image-h), absolute image inside fills it. Width
+ * follows natural aspect; anything wider overflows the inner edge and the
+ * section's overflow-x: clip cuts it off at the viewport. */
+.section--zigzag-rows__media {
+    flex: 1 1 0;
+    min-width: 0;
+    position: relative;
+    height: var(--zigzag-image-h);
+}
+.section--zigzag-rows__image {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: auto;
+    max-width: none;
+}
+.section--zigzag-rows__row--image-right .section--zigzag-rows__image { left: 0;  right: auto; }
+.section--zigzag-rows__row--image-left  .section--zigzag-rows__image { left: auto; right: 0; }
+
+/* ─── Eyebrow — height fixed via var so the image alignment math stays in sync ─── */
+.section--zigzag-rows__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: var(--zigzag-eyebrow-h);
+    padding-inline: 1rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    box-sizing: border-box;
+}
+.section--zigzag-rows__eyebrow--pill {
+    border: 1px solid var(--color-line);
+    background: var(--color-surface);
+    color: var(--color-fg);
+    letter-spacing: 0;
+    text-transform: none;
+    font-weight: 500;
+    font-size: 0.9375rem;
+}
+
+/* ─── Title (h3) ─── */
+.section--zigzag-rows__title {
+    margin: 0;
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-accent);
+}
+
+/* ─── Body (rich_text: paragraph | bullets | numbered | checks) ─── */
+.section--zigzag-rows__body-wrap { width: 100%; }
+.section--zigzag-rows__body {
+    margin: 0;
+    max-width: 52ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+}
+.section--zigzag-rows__body--bullets,
+.section--zigzag-rows__body--numbered { padding-left: 1.25rem; }
+.section--zigzag-rows__body--bullets li,
+.section--zigzag-rows__body--numbered li { margin-bottom: var(--space-2); }
+.section--zigzag-rows__body--bullets li:last-child,
+.section--zigzag-rows__body--numbered li:last-child { margin-bottom: 0; }
+.section--zigzag-rows__body--checks {
+    list-style: none;
+    padding-left: 0;
+    max-width: none;
+    color: var(--color-fg);
+    font-weight: 600;
+}
+.section--zigzag-rows__body--checks li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+}
+.section--zigzag-rows__body--checks li:last-child { margin-bottom: 0; }
+.section--zigzag-rows__body--checks li i {
+    color: var(--color-accent);
+    font-size: 1rem;
+    line-height: 1.6;
+    flex: 0 0 auto;
+    margin-top: 0.15em;
+}
+
+/* ─── Modifier: vertical spacing ─── */
+
+/* ─── Responsive: stack on narrow viewports ─── */
+@media (max-width: 900px) {
+    .section--zigzag-rows__row,
+    .section--zigzag-rows__row--image-left {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-5);
+    }
+    .section--zigzag-rows__row:has(.section--zigzag-rows__eyebrow) .section--zigzag-rows__media {
+        margin-top: 0;
+    }
+    .section--zigzag-rows__media {
+        height: clamp(280px, 70vw, 460px);
+    }
+    .section--zigzag-rows__image,
+    .section--zigzag-rows__row--image-right .section--zigzag-rows__image,
+    .section--zigzag-rows__row--image-left  .section--zigzag-rows__image {
+        position: static;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        left: auto;
+        right: auto;
+    }
+}

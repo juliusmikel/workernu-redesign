@@ -1,0 +1,202 @@
+/* Pricing — centered header + tier cards + optional add-on pills.
+ *
+ * Class structure produced by workernu_section_classes():
+ *   .section--pricing
+ *   .section--pricing--columns-2 | --columns-3 | --columns-4
+ *   .section--pricing--align-left | --align-center
+ */
+
+.section--pricing__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+/* ─── Header ─── */
+.section--pricing__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-width: 64ch;
+}
+.section--pricing__heading {
+    margin: 0;
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-accent);
+}
+.section--pricing__sub {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+}
+
+/* ─── Tier row — flex-wrap. Per-tier flex-basis below picks the column count. ─── */
+.section--pricing__tiers {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: stretch;
+}
+
+/* ─── Tier card ─── */
+.section--pricing__tier {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: 16px;
+}
+.section--pricing__tier.is-highlighted {
+    border-color: var(--color-accent);
+    border-width: 2px;
+    padding: calc(var(--space-5) - 1px);
+}
+.section--pricing__badge {
+    position: absolute;
+    top: calc(-1 * var(--space-3));
+    right: var(--space-4);
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+    color: var(--color-accent-fg);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+.section--pricing__title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-fg);
+}
+.section--pricing__price-row {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-1);
+}
+.section--pricing__price {
+    font-size: clamp(2rem, 3vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--color-fg);
+}
+.section--pricing__price-suffix {
+    font-size: 0.9375rem;
+    color: var(--color-muted);
+}
+.section--pricing__unit {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+}
+
+/* ─── Features (✓ list) ─── */
+.section--pricing__features {
+    list-style: none;
+    margin: var(--space-2) 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    border-top: 1px solid var(--color-line);
+    padding-top: var(--space-3);
+}
+.section--pricing__features li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    font-size: 0.9375rem;
+    color: var(--color-fg);
+}
+.section--pricing__features li i {
+    color: var(--color-accent);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    flex: 0 0 auto;
+}
+
+/* CTA — the global .btn / .btn--primary handles the button styling.
+   Push it to the bottom of the card so all CTAs align across tiers. */
+.section--pricing__tier .btn {
+    margin-top: auto;
+    width: 100%;
+}
+
+/* ─── Add-on pills ─── */
+.section--pricing__addons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+}
+.section--pricing__addons-heading {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-fg);
+}
+.section--pricing__addons-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+}
+.section--pricing__addon {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.5rem 0.875rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    background: var(--color-surface);
+    font-size: 0.875rem;
+}
+.section--pricing__addon-icon {
+    color: var(--color-accent);
+    display: inline-flex;
+    align-items: center;
+}
+.section--pricing__addon-price {
+    color: var(--color-muted);
+    font-weight: 500;
+}
+
+/* ─── Modifier: columns — flex-basis per tier = (100% minus the row gaps) / N. ─── */
+.section--pricing__tier { flex: 0 0 calc((100% - 2 * var(--space-3)) / 3); }   /* default 3 cols */
+.section--pricing--columns-2 .section--pricing__tier { flex-basis: calc((100% -      var(--space-3)) / 2); }
+.section--pricing--columns-3 .section--pricing__tier { flex-basis: calc((100% - 2 * var(--space-3)) / 3); }
+.section--pricing--columns-4 .section--pricing__tier { flex-basis: calc((100% - 3 * var(--space-3)) / 4); }
+
+/* ─── Modifier: header alignment ─── */
+.section--pricing--align-left   .section--pricing__header { align-self: flex-start; text-align: left; }
+.section--pricing--align-center .section--pricing__header { align-self: center;     text-align: center; }
+
+@media (max-width: 900px) {
+    .section--pricing--columns-3 .section--pricing__tier,
+    .section--pricing--columns-4 .section--pricing__tier {
+        flex-basis: calc((100% - var(--space-3)) / 2);
+    }
+}
+@media (max-width: 600px) {
+    .section--pricing__tier,
+    .section--pricing--columns-2 .section--pricing__tier,
+    .section--pricing--columns-3 .section--pricing__tier,
+    .section--pricing--columns-4 .section--pricing__tier {
+        flex-basis: 100%;
+    }
+}

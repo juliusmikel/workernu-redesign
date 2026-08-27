@@ -1,0 +1,180 @@
+/* People — contact / team cards.
+ *
+ * Class structure produced by workernu_section_classes():
+ *   .section--people
+ *   .section--people--align-left | --align-center
+ *   .section--people--layout-row | --layout-2 | --layout-3 | --layout-4
+ */
+
+.section--people__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+/* ─── Header ─── */
+.section--people__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-width: 64ch;
+}
+.section--people__heading {
+    margin: 0;
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-accent);
+}
+.section--people__body {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+}
+
+/* ─── Grid ─── */
+.section--people__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+/* ─── Card: huge circular avatar centered above the text ─── */
+.section--people__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-4);
+    padding: var(--space-5);
+}
+.section--people__avatar {
+    width: clamp(150px, 18vw, 220px);
+    height: clamp(150px, 18vw, 220px);
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--color-line);
+    flex: 0 0 auto;
+    box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.18);
+}
+.section--people__avatar--placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-muted);
+    font-size: 3.5rem;
+}
+.section--people__info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+}
+.section--people__name {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--color-fg);
+}
+.section--people__role {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--color-muted);
+}
+.section--people__contact {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;            /* rows fill the card width */
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    width: 100%;
+}
+/* Contact rows: number/email each gets a full-width row with an icon circle
+   on the left and the value occupying the rest of the line. Both row types
+   share the .section--people__link rule for a consistent look + tap target. */
+.section--people__link {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--space-2);
+    width: 100%;
+    min-height: 2.75rem;             /* ≥44px touch target (Apple/WCAG guidance) */
+    padding: 0 var(--space-2);
+    font-size: 0.9375rem;
+    color: var(--color-fg);
+    text-decoration: none;
+    transition: color 200ms ease;
+}
+.section--people__link:hover { color: var(--color-accent); }
+.section--people__link:hover .section--people__link-icon {
+    background: color-mix(in srgb, var(--color-accent) 15%, transparent);
+}
+.section--people__link-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color-fg) 8%, transparent);
+    color: var(--color-accent);
+    font-size: 0.875rem;
+    flex: 0 0 auto;
+    transition: background 200ms ease;
+}
+.section--people__link-text {
+    word-break: break-word;          /* long emails wrap instead of overflowing */
+}
+
+/* ─── CTA ─── */
+.section--people__cta-wrap {
+    display: flex;
+    justify-content: center;
+}
+/* Button styling is global — see .btn / .btn--primary in main.css. */
+
+/* ─── Modifier: header alignment ─── */
+.section--people--align-left   .section--people__header,
+.section--people--align-left   .section--people__cta-wrap { align-self: flex-start; text-align: left; justify-content: flex-start; }
+.section--people--align-center .section--people__header { align-self: center; text-align: center; }
+.section--people--align-center .section--people__cta-wrap { justify-content: center; }
+
+/* ─── Modifier: layout — grid columns ─── */
+.section--people__card { flex: 0 0 calc((100% - 2 * var(--space-3)) / 3); }  /* default 3 cols */
+.section--people--layout-2 .section--people__card { flex-basis: calc((100% -      var(--space-3)) / 2); }
+.section--people--layout-3 .section--people__card { flex-basis: calc((100% - 2 * var(--space-3)) / 3); }
+.section--people--layout-4 .section--people__card { flex-basis: calc((100% - 3 * var(--space-3)) / 4); }
+
+/* ─── Modifier: layout — single row (horizontal scroll) ─── */
+.section--people--layout-row .section--people__grid {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: var(--space-2);
+}
+.section--people--layout-row .section--people__card {
+    flex: 0 0 auto;
+    width: clamp(160px, 18vw, 220px);
+}
+
+@media (max-width: 700px) {
+    .section--people--layout-2 .section--people__card,
+    .section--people--layout-3 .section--people__card,
+    .section--people--layout-4 .section--people__card {
+        flex-basis: calc((100% - var(--space-3)) / 2);
+    }
+}
+@media (max-width: 480px) {
+    .section--people--layout-2 .section--people__card,
+    .section--people--layout-3 .section--people__card,
+    .section--people--layout-4 .section--people__card {
+        flex-basis: 100%;
+    }
+}

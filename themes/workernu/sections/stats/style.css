@@ -1,0 +1,146 @@
+/* Stats — optional section title above + a card with heading left / stats right.
+ *
+ * Structure:
+ *   .section--stats
+ *   └─ .section--stats__inner.container          (flex column)
+ *      ├─ .section--stats__title                 (optional; large accent heading above)
+ *      └─ .section--stats__card                  (flex row: heading | stats)
+ *         .section--stats__card--count-{2|3}
+ *         ├─ .section--stats__heading-wrap        (left column)
+ *         │  └─ .section--stats__heading
+ *         └─ .section--stats__stats              (right column: flex row of items)
+ *            └─ .section--stats__stat
+ *               ├─ .section--stats__number
+ *               ├─ .section--stats__label
+ *               └─ .section--stats__caption
+ *
+ * Width splits (grow ratios, gap absorbed automatically):
+ *   2 stats → heading 40 / stats 60
+ *   3 stats → heading 30 / stats 70
+ */
+
+.section--stats__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-6);
+}
+
+/* ─── Section title — large accent heading above the card ─── */
+.section--stats__title {
+    margin: 0;
+    font-size: clamp(1.875rem, 4vw, 3rem);
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-accent);
+    text-align: center;
+    max-width: 22ch;
+}
+
+/* ─── Card — two-column flex row ─── */
+.section--stats__card {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: var(--color-surface);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+/* ─── Left column: card heading ─── */
+.section--stats__heading-wrap {
+    display: flex;
+    align-items: center;
+    padding: clamp(var(--space-5), 4vw, var(--space-7)) clamp(var(--space-5), 3vw, var(--space-6));
+    border-right: 1px solid var(--color-line);
+}
+.section--stats__heading {
+    margin: 0;
+    font-size: clamp(1rem, 1.6vw, 1.375rem);
+    line-height: 1.3;
+    font-weight: 700;
+    color: var(--color-fg);
+}
+
+/* ─── Right column: stats list ─── */
+.section--stats__stats {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+/* ─── Width split per count (both columns must declare grow so the ratio is correct) ─── */
+.section--stats__card--count-2 .section--stats__heading-wrap { flex: 40 0 0; min-width: 0; }
+.section--stats__card--count-2 .section--stats__stats        { flex: 60 0 0; min-width: 0; }
+.section--stats__card--count-3 .section--stats__heading-wrap { flex: 30 0 0; min-width: 0; }
+.section--stats__card--count-3 .section--stats__stats        { flex: 70 0 0; min-width: 0; }
+
+/* ─── Single stat ─── */
+.section--stats__stat {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+    padding: clamp(var(--space-5), 4vw, var(--space-7)) clamp(var(--space-4), 2.5vw, var(--space-6));
+}
+.section--stats__stat + .section--stats__stat {
+    border-left: 1px solid var(--color-line);
+}
+
+.section--stats__number {
+    font-size: clamp(2rem, 3.5vw, 3.25rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--color-fg);
+}
+.section--stats__label {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--color-fg);
+}
+.section--stats__caption {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: var(--color-muted);
+}
+
+/* ─── Responsive: stack on narrow viewports ─── */
+@media (max-width: 800px) {
+    .section--stats__card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .section--stats__heading-wrap {
+        border-right: none;
+        border-bottom: 1px solid var(--color-line);
+    }
+    .section--stats__card--count-2 .section--stats__heading-wrap,
+    .section--stats__card--count-3 .section--stats__heading-wrap {
+        flex: 0 0 auto;
+    }
+    .section--stats__title {
+        max-width: none;
+        text-align: left;
+        align-self: flex-start;
+    }
+}
+@media (max-width: 540px) {
+    .section--stats__stats {
+        flex-direction: column;
+    }
+    .section--stats__stat + .section--stats__stat {
+        border-left: none;
+        border-top: 1px solid var(--color-line);
+    }
+}

@@ -1,0 +1,253 @@
+/* Testimonials — social-proof grid with stars, names, flags, footer badge.
+ *
+ * Class structure produced by workernu_section_classes():
+ *   .section--testimonials
+ *   .section--testimonials--align-left | --align-center
+ *   .section--testimonials--columns-2 | --columns-3 | --columns-4
+ */
+
+/* --tst-gap is the column gap (between cards). It's set per card_gap modifier
+ * below; the marquee row gap is derived from it at 1.5x. */
+.section--testimonials {
+    --tst-gap: var(--space-3);
+}
+.section--testimonials__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+/* ─── Header ─── */
+.section--testimonials__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-width: 64ch;
+}
+.section--testimonials__heading {
+    margin: 0;
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-fg);
+}
+.section--testimonials__sub {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+}
+
+/* ─── Grid ─── */
+.section--testimonials__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--tst-gap);
+}
+
+/* ─── Card ─── */
+.section--testimonials__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+}
+.section--testimonials__card:hover {
+    border-color: var(--color-fg);
+    box-shadow: 0 8px 24px -8px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+}
+.section--testimonials__card.is-highlighted {
+    border-color: var(--color-accent);
+    border-width: 2px;
+    padding: calc(var(--space-5) - 1px);
+}
+
+/* ─── Flag ─── */
+.section--testimonials__flag {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    width: 28px;
+    height: auto;
+    max-height: 20px;
+    border-radius: 3px;
+    object-fit: cover;
+}
+
+/* ─── Head (avatar + stars + name) ─── */
+.section--testimonials__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding-right: 40px;
+}
+.section--testimonials__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--color-line);
+    flex: 0 0 auto;
+}
+.section--testimonials__avatar--placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-muted);
+    font-size: 1.25rem;
+}
+.section--testimonials__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.section--testimonials__stars {
+    display: inline-flex;
+    gap: 2px;
+    color: var(--color-fg);
+    font-size: 0.875rem;
+    line-height: 1;
+}
+.section--testimonials__stars .is-empty { opacity: 0.18; }
+.section--testimonials__name {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-fg);
+}
+.section--testimonials__role {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    line-height: 1.3;
+}
+
+/* ─── Quote ─── */
+.section--testimonials__quote {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+}
+
+/* ─── Footer badge ─── */
+.section--testimonials__footer {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-3);
+}
+.section--testimonials__footer img {
+    max-height: 60px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* ─── Modifier: heading alignment ─── */
+.section--testimonials--align-left   .section--testimonials__header { align-self: flex-start; text-align: left; }
+.section--testimonials--align-center .section--testimonials__header { align-self: center;     text-align: center; }
+
+/* ─── Modifier: columns — flex-basis per card = (100% minus row gaps) / N ─── */
+.section--testimonials--columns-2 .section--testimonials__grid > li,
+.section--testimonials--columns-2 .section--testimonials__grid .section--testimonials__card { flex-basis: calc((100% -      var(--tst-gap)) / 2); }
+.section--testimonials--columns-3 .section--testimonials__grid > li,
+.section--testimonials--columns-3 .section--testimonials__grid .section--testimonials__card { flex-basis: calc((100% - 2 * var(--tst-gap)) / 3); }
+.section--testimonials--columns-4 .section--testimonials__grid > li,
+.section--testimonials--columns-4 .section--testimonials__grid .section--testimonials__card { flex-basis: calc((100% - 3 * var(--tst-gap)) / 4); }
+.section--testimonials__grid > li {
+    display: flex;
+    flex: 0 0 calc((100% - 2 * var(--tst-gap)) / 3);  /* default 3 cols */
+    min-width: 0;
+}
+
+/* ─── Modifier: card_gap — sets the column gap variable.
+ * Columns use --tst-gap directly; the marquee row gap is 1.5x of it. The loosest
+ * step is > 2x the previous loose value. */
+.section--testimonials--card_gap-none   { --tst-gap: 0; }
+.section--testimonials--card_gap-tight  { --tst-gap: var(--space-2); }
+.section--testimonials--card_gap-normal { --tst-gap: var(--space-3); }
+.section--testimonials--card_gap-loose  { --tst-gap: calc(var(--space-5) * 2); } /* 5rem */
+
+/* ─── Layout: marquee
+ * Two rows scrolling opposite directions. Each track's cards are rendered twice
+ * in the DOM; the animation moves the track 0 → -50% (rtl) or -50% → 0 (ltr),
+ * landing on an identical duplicate = seamless loop. */
+.section--testimonials__marquee {
+    display: flex;
+    flex-direction: column;
+    /* Visual row gap = 0.75x the column gap. Each row carries space-4 padding
+       top+bottom for hover-lift headroom, so subtract 2x that here. */
+    gap: max(0px, calc(var(--tst-gap) * 0.75 - 2 * var(--space-4)));
+    /* Full-bleed: escape the container max-width so rows span the viewport. */
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+}
+.section--testimonials__row {
+    overflow: hidden;
+    /* Inner headroom (inside the clip + mask) for the hover-lift + shadow. The
+       marquee gap below subtracts this padding so the visual row gap still
+       equals 0.75x the column gap. */
+    padding-block: var(--space-4);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, black 6%, black 94%, transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, black 6%, black 94%, transparent 100%);
+}
+.section--testimonials__track {
+    display: flex;
+    gap: var(--tst-gap);
+    width: max-content;
+    will-change: transform;
+    animation-duration: 45s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+.section--testimonials__row--ltr .section--testimonials__track { animation-name: wn-testimonials-ltr; }
+.section--testimonials__row--rtl .section--testimonials__track { animation-name: wn-testimonials-rtl; }
+.section--testimonials__row:hover .section--testimonials__track { animation-play-state: paused; }
+
+/* Inside the marquee, cards have a fixed width (grid 1fr doesn't apply). */
+.section--testimonials__marquee .section--testimonials__card {
+    flex: 0 0 480px;     /* wide ~2:1 landscape cards */
+    width: 480px;
+}
+
+@keyframes wn-testimonials-ltr {
+    from { transform: translateX(-50%); }
+    to   { transform: translateX(0); }
+}
+@keyframes wn-testimonials-rtl {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .section--testimonials__track { animation: none; transform: none; }
+}
+
+@media (max-width: 900px) {
+    .section--testimonials--columns-3 .section--testimonials__grid > li,
+    .section--testimonials--columns-4 .section--testimonials__grid > li {
+        flex-basis: calc((100% - var(--tst-gap)) / 2);
+    }
+}
+@media (max-width: 600px) {
+    .section--testimonials__grid > li,
+    .section--testimonials--columns-2 .section--testimonials__grid > li,
+    .section--testimonials--columns-3 .section--testimonials__grid > li,
+    .section--testimonials--columns-4 .section--testimonials__grid > li {
+        flex-basis: 100%;
+    }
+    .section--testimonials__marquee .section--testimonials__card {
+        flex: 0 0 340px;
+        width: 340px;
+    }
+}

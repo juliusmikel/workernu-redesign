@@ -41,6 +41,7 @@ function handle(int $post_id, \WP_Post $post): void {
         foreach ($def['fields'] as $field) {
             $name = $field['name'] ?? null;
             if (!$name) continue;
+            if (($field['type'] ?? '') === 'settings_link') continue; // no stored value — pure UI
             $section[$name] = Fields\sanitize_value($field, $section_raw[$name] ?? null);
         }
 

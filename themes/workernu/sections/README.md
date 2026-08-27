@@ -2,7 +2,7 @@
 
 Each subfolder here is one section type, auto-discovered by the `workernu-sections` plugin.
 
-Drop a folder with this shape:
+Create a folder with this shape:
 
 ```
 <section-name>/

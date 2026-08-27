@@ -21,14 +21,10 @@
  *   .section--feature-accordion--align-left | --align-center (default)
  *   .section--feature-accordion--media_position-right (default) | --media_position-left
  *
- * Images are never scaled up or cropped to fill their column — each one
- * renders at its own natural size (height: 100%, width: auto, same technique
- * the hero section uses). A small image just sits at whatever width that is.
- * A large one — wider than its column at that height — overflows past the
- * column edge automatically; nothing has to opt into that per section, it's
- * inherent to each image's own dimensions, per item. Its INNER edge (the one
- * touching the list column) stays anchored exactly where the column boundary
- * is; only the OUTER edge (toward the viewport) is free to extend.
+ * Image fit is chosen PER ITEM via the `image_fit` field — each image gets
+ * a --overflow or --centered variant class from template.php; the variant
+ * rules live next to the base .media-img rule below. Neither variant crops
+ * or stretches the image.
  */
 
 .section--feature-accordion { overflow-x: clip; } /* clips an oversized image's bleed at the viewport edge */
@@ -171,40 +167,64 @@
     min-width: 0;
     position: relative;
 }
-/* Natural size, not cropped/stretched to fill — height matches the column,
- * width is whatever that implies for the image's own aspect ratio. The
- * anchored edge (inner, touching the list column) never moves; the free edge
- * (outer, toward the viewport) is where a wider-than-column image overflows.
- * No overflow:hidden or border-radius on .media itself — clipping there
- * would cut off exactly the bleed this is meant to allow; the section's
- * overflow-x: clip above is what stops it at the viewport edge instead. */
+/* Two per-item fit variants (the `image_fit` field on each repeater item):
+ *
+ * --overflow (default): natural size, not cropped/stretched — height matches
+ *   the column, width is whatever that implies for the image's own aspect
+ *   ratio. The anchored edge (top + inner, touching the list column) never
+ *   moves; the free edge (toward the viewport) is where a wider-than-column
+ *   image bleeds. No overflow:hidden or border-radius on .media itself —
+ *   clipping there would cut off exactly that bleed; the section's
+ *   overflow-x: clip is what stops it at the viewport edge instead.
+ *
+ * --centered: scaled to fit inside the pane (no crop, no bleed), centered
+ *   on both axes. */
 .section--feature-accordion__media-img {
     position: absolute;
+    opacity: 0;
+    transition: opacity 300ms ease;
+}
+.section--feature-accordion__media-img--overflow {
     top: 0;
     height: 100%;
     width: auto;
     max-width: none;
-    opacity: 0;
-    transition: opacity 300ms ease;
 }
-.section--feature-accordion--media_position-right .section--feature-accordion__media-img { left: 0; right: auto; }
-.section--feature-accordion--media_position-left  .section--feature-accordion__media-img { left: auto; right: 0; }
+.section--feature-accordion--media_position-right .section--feature-accordion__media-img--overflow { left: 0; right: auto; }
+.section--feature-accordion--media_position-left  .section--feature-accordion__media-img--overflow { left: auto; right: 0; }
+.section--feature-accordion__media-img--centered {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+}
 
-/* Row N open → fade in image N. */
-.section--feature-accordion__grid:has(.section--feature-accordion__item:nth-child(1)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(1)  { opacity: 1; }
-.section--feature-accordion__grid:has(.section--feature-accordion__item:nth-child(2)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(2)  { opacity: 1; }
-.section--feature-accordion__grid:has(.section--feature-accordion__item:nth-child(3)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(3)  { opacity: 1; }
-.section--feature-accordion__grid:has(.section--feature-accordion__item:nth-child(4)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(4)  { opacity: 1; }
-.section--feature-accordion__grid:has(.section--feature-accordion__item:nth-child(5)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(5)  { opacity: 1; }
-.section--feature-accordion__grid:has(.section--feature-accordion__item:nth-child(6)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(6)  { opacity: 1; }
-.section--feature-accordion__grid:has(.section--feature-accordion__item:nth-child(7)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(7)  { opacity: 1; }
-.section--feature-accordion__grid:has(.section--feature-accordion__item:nth-child(8)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(8)  { opacity: 1; }
-.section--feature-accordion__grid:has(.section--feature-accordion__item:nth-child(9)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(9)  { opacity: 1; }
-.section--feature-accordion__grid:has(.section--feature-accordion__item:nth-child(10) .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(10) { opacity: 1; }
-.section--feature-accordion__grid:has(.section--feature-accordion__item:nth-child(11) .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(11) { opacity: 1; }
-.section--feature-accordion__grid:has(.section--feature-accordion__item:nth-child(12) .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(12) { opacity: 1; }
+/* Row N open → fade in image N. NO-JS FALLBACK ONLY — the `:not(.is-js)`
+ * guard is critical: animations.js stamps `.is-js` on the grid at init, and
+ * from then on ONLY the `.is-active` rule below controls visibility. Without
+ * the guard, these rules keep the OLD image at opacity 1 for as long as its
+ * row still carries [open] — which, with the JS slide animation, is until
+ * the close transition finishes. That made the swap look laggy (old image
+ * held on, then popped out) instead of both images crossfading the moment a
+ * new row is clicked. */
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(1)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(1)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(2)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(2)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(3)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(3)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(4)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(4)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(5)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(5)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(6)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(6)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(7)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(7)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(8)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(8)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(9)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(9)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(10) .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(10) { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(11) .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(11) { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(12) .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(12) { opacity: 1; }
 
-/* JS-driven — takes over once animations.js runs; see comment above. */
+/* JS-driven crossfade — .is-active moves instantly on click, so the old
+ * image (losing the class) and the new one (gaining it) fade simultaneously. */
 .section--feature-accordion__media-img.is-active { opacity: 1; }
 
 /* ─── Responsive ─── */

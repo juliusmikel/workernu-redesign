@@ -65,6 +65,7 @@ foreach (array_values($items_raw) as $item) {
         'body_html'   => $body_html,
         'image_value' => $image_value,
         'image_alt'   => $image_alt,
+        'image_fit'   => ($item['image_fit'] ?? 'overflow') === 'centered' ? 'centered' : 'overflow',
         'ctas'        => $ctas,
     ];
 }
@@ -121,7 +122,7 @@ foreach (array_values($items_raw) as $item) {
 
                 <div class="section--feature-accordion__media" aria-hidden="true">
                     <?php foreach ($items as $item): ?>
-                        <img class="section--feature-accordion__media-img" <?php echo workernu_image_attrs($item['image_value'], 'large', ['alt' => $item['image_alt']]); ?>>
+                        <img class="section--feature-accordion__media-img section--feature-accordion__media-img--<?php echo esc_attr($item['image_fit']); ?>" <?php echo workernu_image_attrs($item['image_value'], 'large', ['alt' => $item['image_alt']]); ?>>
                     <?php endforeach; ?>
                 </div>
 

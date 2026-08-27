@@ -80,6 +80,11 @@
 
         detailsList.forEach(function (d) { d.removeAttribute('name'); });
 
+        // Hand image visibility over to .is-active exclusively — the CSS
+        // :has() rules are a no-JS fallback gated behind :not(.is-js).
+        var grid = root.querySelector('.section--feature-accordion__grid');
+        if (grid) grid.classList.add('is-js');
+
         var openIndex = 0;
         detailsList.forEach(function (d, i) {
             var body = bodyOf(d);

@@ -11,6 +11,11 @@
  *       └─ text        — rich_text (translatable, required; editor picks paragraph | bullets | numbered)
  *       └─ image       — image     (translatable, required; shown while this row is open)
  *       └─ image_alt   — text      (translatable; falls back to the attachment's alt if blank)
+ *       └─ image_fit   — select    (overflow (default) | centered — per item:
+ *                                   overflow anchors the natural-size image to
+ *                                   the top inner corner and lets a wide one
+ *                                   bleed toward the viewport edge; centered
+ *                                   scales it to fit the pane, centered)
  *       └─ cta1_*      — optional CTA button #1: label (translatable) / url / variant / target
  *       └─ cta2_*      — optional CTA button #2: same shape
  *
@@ -18,11 +23,9 @@
  *   align            — header alignment: left | center (default)
  *   media_position   — image side: right (default) | left
  *
- * No overflow modifier — images are never scaled/cropped to fill their
- * column, each renders at its own natural size (style.css). A large image
- * overflows past the column edge automatically when it's wider than the
- * column; a small one just sits at its own width. That's inherent per image,
- * not a per-section on/off setting.
+ * Image fit is a PER-ITEM setting (the `image_fit` field on each repeater
+ * item), not a section-level modifier — see the field map above. Neither
+ * variant ever crops or stretches the image.
  *
  * No first-open / all-open modifier like the plain `faq` section has — the
  * first row is always open on load; from then on it's 0 or 1 rows open
@@ -57,6 +60,10 @@ return [
                 ['name' => 'image_alt', 'type' => 'text',  'label' => 'Image alt text', 'translatable' => true,
                  'show_if_not_empty' => 'image',
                  'hint' => 'Describes the image for screen readers and search engines. Falls back to the attachment\'s alt if blank.'],
+                ['name' => 'image_fit', 'type' => 'select', 'render_as' => 'buttons', 'label' => 'Image fit',
+                 'options' => ['overflow' => 'Overflow (anchored)', 'centered' => 'Centered'],
+                 'default' => 'overflow',
+                 'hint' => 'Overflow: natural size, anchored to the top inner corner — a wide image bleeds past the column toward the viewport edge. Centered: scaled to fit inside the pane, centered.'],
 
                 ['name' => 'cta1_label',   'type' => 'text',   'label' => 'CTA 1 label',  'translatable' => true],
                 ['name' => 'cta1_url',     'type' => 'text',   'label' => 'CTA 1 URL'],

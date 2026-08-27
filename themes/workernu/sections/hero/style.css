@@ -1,0 +1,226 @@
+/* Hero — homepage hero.
+ *
+ * Structure:
+ *   .section--hero
+ *   └─ .section--hero__inner.container   (flex row — two columns side by side)
+ *      ├─ .section--hero__content        (text column, flex column: badge → heading → body → CTAs → social)
+ *      └─ .section--hero__media          (image column)
+ *
+ * Modifiers (rendered as BEM classes via workernu_section_classes()):
+ *   .section--hero--layout-right (default) — content left, media right
+ *   .section--hero--layout-left            — media left, content right (via flex-direction: row-reverse)
+ */
+
+/* ─── Section + two-column row ─── */
+/* Eyebrow height is hardcoded via this variable so the image-alignment math
+ * below stays in sync. If the eyebrow's styling changes (different padding,
+ * font-size, border), update only this value. */
+.section--hero {
+    --hero-eyebrow-h: 2.25rem;
+    overflow-x: clip;  /* clip the image's horizontal bleed at the viewport edges */
+}
+
+.section--hero__inner {
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-6);
+}
+
+/* When the eyebrow is present, push the image down by the eyebrow's row
+ * height + the column's gap, so the image's top aligns with the heading's top
+ * (the second child of the content column). Without an eyebrow, the heading
+ * is at the column's top and the image needs no offset. */
+.section--hero__inner:has(.section--hero__eyebrow) .section--hero__media {
+    margin-top: calc(var(--hero-eyebrow-h) + var(--space-4));
+}
+.section--hero--layout-left .section--hero__inner {
+    flex-direction: row-reverse;
+}
+
+/* ─── Columns ─── */
+.section--hero__content {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+}
+/* The media cell is just an empty box stretched to row height by the parent
+ * flex (align-items: stretch). Because it has no in-flow content (the image
+ * inside is absolutely positioned), it doesn't contribute its own intrinsic
+ * height to the flex line — so the CONTENT column dictates the row height,
+ * not the image. This is the fix for "image tall = stretches the trustpilot
+ * row to compensate." */
+.section--hero__media {
+    flex: 1 1 0;
+    min-width: 0;
+    position: relative;    /* containing block for the absolute image */
+}
+
+/* The image fills the media cell vertically (height: 100% of the now-definite
+ * media height) and keeps its natural aspect via width: auto. Anything wider
+ * than the cell overflows the inner column boundary and bleeds — the section's
+ * overflow-x: clip cuts it off at the viewport edges. */
+.section--hero__image {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: auto;
+    max-width: none;
+}
+.section--hero--layout-right .section--hero__image { left: 0;  right: auto; }
+.section--hero--layout-left  .section--hero__image { left: auto; right: 0; }
+
+/* ─── Eyebrow — pill with optional icon + short label, sits above the heading.
+ *     Height is fixed via the `--hero-eyebrow-h` variable so the image alignment
+ *     below stays in sync. ─── */
+.section--hero__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: var(--hero-eyebrow-h);
+    padding-inline: 1rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    background: var(--color-surface);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-muted);
+    box-sizing: border-box;
+}
+.section--hero__eyebrow-icon {
+    display: inline-flex;
+    color: var(--color-muted);
+}
+
+/* ─── Heading ─── */
+.section--hero__heading {
+    margin: 0;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1.02;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--color-accent);
+}
+
+/* ─── Body (rich_text: paragraph | bullets | numbered | checks) ─── */
+.section--hero__body-wrap { width: 100%; }
+.section--hero__body {
+    margin: 0;
+    max-width: 44ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+}
+.section--hero__body--bullets,
+.section--hero__body--numbered { padding-left: 1.25rem; }
+.section--hero__body--bullets li,
+.section--hero__body--numbered li { margin-bottom: var(--space-2); }
+.section--hero__body--bullets li:last-child,
+.section--hero__body--numbered li:last-child { margin-bottom: 0; }
+
+/* ─── CTAs ─── */
+.section--hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+}
+
+/* ─── Social proof: Trustpilot + avatar stack ─── */
+.section--hero__social {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4) var(--space-5);
+    margin-top: var(--space-4);
+    width: 100%;
+}
+.section--hero__trustpilot {
+    flex: 0 1 auto;
+    min-width: 180px;
+    max-width: 280px;
+}
+.section--hero__trustpilot--image {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+.section--hero__trustpilot--image img {
+    max-height: 56px;
+    width: auto;
+    object-fit: contain;
+}
+.section--hero__users {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+}
+.section--hero__avatars {
+    display: flex;
+    align-items: center;
+}
+.section--hero__avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--color-bg);
+    background: var(--color-line);
+    margin-left: -14px;
+    flex: 0 0 auto;
+}
+.section--hero__avatar:first-child { margin-left: 0; }
+.section--hero__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.section--hero__avatar--badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-fg);
+    color: var(--color-bg);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+.section--hero__users-caption {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-1);
+}
+.section--hero__users-number {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--color-fg);
+}
+.section--hero__users-label {
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+}
+
+/* ─── Responsive: stack on narrow viewports ─── */
+@media (max-width: 900px) {
+    .section--hero__inner,
+    .section--hero--layout-left .section--hero__inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-5);
+    }
+    .section--hero__content,
+    .section--hero__media {
+        flex: 1 1 auto;
+        width: 100%;
+    }
+    .section--hero__heading {
+        font-size: clamp(2.25rem, 9vw, 3rem);
+    }
+}

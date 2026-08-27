@@ -1,0 +1,173 @@
+/* Cards — grid of clickable image tiles with overlay text.
+ *
+ * Class structure produced by workernu_section_classes():
+ *   .section--cards
+ *   .section--cards--align-left | --align-center
+ *   .section--cards--size-sm | --size-md | --size-lg
+ *   .section--cards--aspect-portrait | --aspect-square | --aspect-landscape | --aspect-wide
+ */
+
+.section--cards__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+/* ─── Header ─── */
+.section--cards__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-width: 64rem;          /* let the heading span wide; ~1024px cap */
+}
+.section--cards__heading {
+    margin: 0;
+    font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-fg);
+}
+.section--cards__sub {
+    margin: 0;
+    max-width: 56ch;           /* keep the supporting line readable */
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+}
+/* When the header is centered, keep the narrower sub centered under the wide heading. */
+.section--cards--align-center .section--cards__sub { margin-inline: auto; }
+
+/* ─── Grid ─── */
+.section--cards__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+.section--cards__item {
+    display: flex;
+    flex: 1 1 300px;
+    min-width: 0;
+}
+
+/* ─── Card ─── */
+.section--cards__card {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: clamp(240px, 28vw, 340px);
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: var(--color-line);
+    color: #ffffff;
+    text-decoration: none;
+    transition: transform 250ms ease, box-shadow 250ms ease;
+}
+a.section--cards__card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.25);
+}
+.section--cards__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+.section--cards__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.65) 100%);
+    pointer-events: none;
+}
+.section--cards__arrow {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    color: #ffffff;
+    font-size: 1.5rem;
+    line-height: 1;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.45);
+}
+.section--cards__arrow .fa-arrow-right {
+    display: inline-block;
+    transform: rotate(-45deg);
+    transition: transform 200ms ease;
+}
+a.section--cards__card:hover .section--cards__arrow .fa-arrow-right {
+    transform: rotate(-45deg) translateX(3px);
+}
+.section--cards__content {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+.section--cards__title {
+    margin: 0;
+    font-size: clamp(1.25rem, 1.5vw, 1.625rem);
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #ffffff;
+}
+.section--cards__desc {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    color: rgba(255,255,255,0.92);
+}
+
+/* ─── Per-card link affordance: inline blue "label →" below the description
+ *     (rendered when link_style modifier is "inline-text") ─── */
+.section--cards__link-text {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    color: var(--color-accent);
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+.section--cards__link-text .fa-arrow-right {
+    transition: transform 200ms ease;
+}
+a.section--cards__card:hover .section--cards__link-text .fa-arrow-right {
+    transform: translateX(3px);
+}
+
+/* ─── CTA ─── */
+.section--cards__cta-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-3);
+}
+/* Button styling is global — see .btn / .btn--primary in main.css. */
+
+/* ─── Modifier: heading alignment ─── */
+.section--cards--align-left   .section--cards__header { align-self: flex-start; text-align: left; }
+.section--cards--align-center .section--cards__header { align-self: center;     text-align: center; }
+
+/* ─── Modifier: card density ─── */
+.section--cards--size-sm .section--cards__item { flex-basis: 220px; }
+.section--cards--size-md .section--cards__item { flex-basis: 300px; }
+.section--cards--size-lg .section--cards__item { flex-basis: 380px; }
+
+/* ─── Modifier: card height ─── */
+.section--cards--aspect-portrait  .section--cards__card { height: clamp(320px, 38vw, 440px); }
+.section--cards--aspect-square    .section--cards__card { height: clamp(280px, 32vw, 380px); }
+.section--cards--aspect-landscape .section--cards__card { height: clamp(240px, 28vw, 340px); }
+.section--cards--aspect-wide      .section--cards__card { height: clamp(200px, 22vw, 280px); }
+
+@media (max-width: 600px) {
+    .section--cards__item { flex: 1 1 100%; }
+    .section--cards__content { padding: var(--space-4); }
+    .section--cards__title { font-size: 1.125rem; }
+}

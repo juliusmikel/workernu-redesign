@@ -121,14 +121,86 @@ function render_page(): void {
                     <td><input type="text" name="<?php echo esc_attr(Options\OPT_ORG_NAME); ?>" value="<?php echo esc_attr($opts['org_name']); ?>" class="regular-text"></td>
                 </tr>
                 <tr>
+                    <th><label><?php esc_html_e('Description (LT)', 'workernu-seo'); ?></label></th>
+                    <td>
+                        <textarea name="<?php echo esc_attr(Options\OPT_ORG_DESCRIPTION); ?>[lt]" rows="3" class="large-text" placeholder="<?php esc_attr_e('Vienas ar du sakiniai apie įmonę.', 'workernu-seo'); ?>"><?php echo esc_textarea($opts['org_description']['lt']); ?></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label><?php esc_html_e('Description (EN)', 'workernu-seo'); ?></label></th>
+                    <td>
+                        <textarea name="<?php echo esc_attr(Options\OPT_ORG_DESCRIPTION); ?>[en]" rows="3" class="large-text" placeholder="<?php esc_attr_e('One or two sentences about the company.', 'workernu-seo'); ?>"><?php echo esc_textarea($opts['org_description']['en']); ?></textarea>
+                    </td>
+                </tr>
+                <tr>
                     <th><label><?php esc_html_e('Logo URL', 'workernu-seo'); ?></label></th>
                     <td><input type="text" name="<?php echo esc_attr(Options\OPT_ORG_LOGO); ?>" value="<?php echo esc_attr($opts['org_logo']); ?>" class="large-text" placeholder="https://..."></td>
+                </tr>
+                <tr>
+                    <th><label><?php esc_html_e('Founding date', 'workernu-seo'); ?></label></th>
+                    <td>
+                        <input type="text" name="<?php echo esc_attr(Options\OPT_ORG_FOUNDING_DATE); ?>" value="<?php echo esc_attr($opts['org_founding_date']); ?>" class="regular-text" placeholder="2018-04-15">
+                        <p class="description"><?php esc_html_e('ISO date (YYYY-MM-DD) or just a year (YYYY). Optional.', 'workernu-seo'); ?></p>
+                    </td>
                 </tr>
                 <tr>
                     <th><label><?php esc_html_e('Social profile URLs', 'workernu-seo'); ?></label></th>
                     <td>
                         <textarea name="<?php echo esc_attr(Options\OPT_ORG_SOCIAL); ?>" rows="4" class="large-text" placeholder="https://linkedin.com/company/..."><?php echo esc_textarea($opts['org_social']); ?></textarea>
-                        <p class="description"><?php esc_html_e('One URL per line.', 'workernu-seo'); ?></p>
+                        <p class="description"><?php esc_html_e('One URL per line. Emitted as Schema.org sameAs.', 'workernu-seo'); ?></p>
+                    </td>
+                </tr>
+            </table>
+
+            <h3 class="title" style="margin-top:1.5em;"><?php esc_html_e('Contact', 'workernu-seo'); ?></h3>
+            <p><?php esc_html_e('Emitted as Organization.email + telephone, and as a ContactPoint that Google uses for the knowledge-panel contact card.', 'workernu-seo'); ?></p>
+
+            <table class="form-table" role="presentation">
+                <tr>
+                    <th><label><?php esc_html_e('Email', 'workernu-seo'); ?></label></th>
+                    <td><input type="email" name="<?php echo esc_attr(Options\OPT_ORG_EMAIL); ?>" value="<?php echo esc_attr($opts['org_email']); ?>" class="regular-text" placeholder="hello@workernu.com"></td>
+                </tr>
+                <tr>
+                    <th><label><?php esc_html_e('Telephone', 'workernu-seo'); ?></label></th>
+                    <td>
+                        <input type="text" name="<?php echo esc_attr(Options\OPT_ORG_PHONE); ?>" value="<?php echo esc_attr($opts['org_phone']); ?>" class="regular-text" placeholder="+370 600 12345">
+                        <p class="description"><?php esc_html_e('Include the country code (e.g. +370 ...).', 'workernu-seo'); ?></p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label><?php esc_html_e('Contact type', 'workernu-seo'); ?></label></th>
+                    <td>
+                        <input type="text" name="<?php echo esc_attr(Options\OPT_ORG_CONTACT_TYPE); ?>" value="<?php echo esc_attr($opts['org_contact_type']); ?>" class="regular-text" placeholder="customer service">
+                        <p class="description"><?php esc_html_e('Examples: "customer service", "sales", "technical support".', 'workernu-seo'); ?></p>
+                    </td>
+                </tr>
+            </table>
+
+            <h3 class="title" style="margin-top:1.5em;"><?php esc_html_e('Address', 'workernu-seo'); ?></h3>
+            <p><?php esc_html_e('Emitted as a PostalAddress on the Organization. Fill any subset — only filled fields are output.', 'workernu-seo'); ?></p>
+
+            <table class="form-table" role="presentation">
+                <tr>
+                    <th><label><?php esc_html_e('Street', 'workernu-seo'); ?></label></th>
+                    <td><input type="text" name="<?php echo esc_attr(Options\OPT_ORG_STREET); ?>" value="<?php echo esc_attr($opts['org_street']); ?>" class="large-text" placeholder="Gedimino pr. 1"></td>
+                </tr>
+                <tr>
+                    <th><label><?php esc_html_e('City / locality', 'workernu-seo'); ?></label></th>
+                    <td><input type="text" name="<?php echo esc_attr(Options\OPT_ORG_LOCALITY); ?>" value="<?php echo esc_attr($opts['org_locality']); ?>" class="regular-text" placeholder="Vilnius"></td>
+                </tr>
+                <tr>
+                    <th><label><?php esc_html_e('Region', 'workernu-seo'); ?></label></th>
+                    <td><input type="text" name="<?php echo esc_attr(Options\OPT_ORG_REGION); ?>" value="<?php echo esc_attr($opts['org_region']); ?>" class="regular-text" placeholder="Vilniaus apskritis"></td>
+                </tr>
+                <tr>
+                    <th><label><?php esc_html_e('Postal code', 'workernu-seo'); ?></label></th>
+                    <td><input type="text" name="<?php echo esc_attr(Options\OPT_ORG_POSTAL); ?>" value="<?php echo esc_attr($opts['org_postal']); ?>" class="regular-text" placeholder="01103"></td>
+                </tr>
+                <tr>
+                    <th><label><?php esc_html_e('Country', 'workernu-seo'); ?></label></th>
+                    <td>
+                        <input type="text" name="<?php echo esc_attr(Options\OPT_ORG_COUNTRY); ?>" value="<?php echo esc_attr($opts['org_country']); ?>" class="regular-text" placeholder="LT">
+                        <p class="description"><?php esc_html_e('ISO 3166-1 alpha-2 code preferred (e.g. LT, DK, GB).', 'workernu-seo'); ?></p>
                     </td>
                 </tr>
             </table>
@@ -142,12 +214,27 @@ function render_page(): void {
 }
 
 function save_options(array $post): void {
-    update_option(Options\OPT_ROBOTS,         wp_unslash((string) ($post[Options\OPT_ROBOTS] ?? '')));
-    update_option(Options\OPT_LLMS,           wp_unslash((string) ($post[Options\OPT_LLMS]   ?? '')));
-    update_option(Options\OPT_TITLE_FORMAT,   sanitize_text_field(wp_unslash((string) ($post[Options\OPT_TITLE_FORMAT] ?? '{title} | {site_name}'))));
-    update_option(Options\OPT_ORG_NAME,       sanitize_text_field(wp_unslash((string) ($post[Options\OPT_ORG_NAME] ?? ''))));
-    update_option(Options\OPT_ORG_LOGO,       esc_url_raw(wp_unslash((string) ($post[Options\OPT_ORG_LOGO] ?? ''))));
-    update_option(Options\OPT_ORG_SOCIAL,     wp_unslash((string) ($post[Options\OPT_ORG_SOCIAL] ?? '')));
+    update_option(Options\OPT_ROBOTS,             wp_unslash((string) ($post[Options\OPT_ROBOTS] ?? '')));
+    update_option(Options\OPT_LLMS,               wp_unslash((string) ($post[Options\OPT_LLMS]   ?? '')));
+    update_option(Options\OPT_TITLE_FORMAT,       sanitize_text_field(wp_unslash((string) ($post[Options\OPT_TITLE_FORMAT] ?? '{title} | {site_name}'))));
+    update_option(Options\OPT_ORG_NAME,           sanitize_text_field(wp_unslash((string) ($post[Options\OPT_ORG_NAME] ?? ''))));
+    update_option(Options\OPT_ORG_LOGO,           esc_url_raw(wp_unslash((string) ($post[Options\OPT_ORG_LOGO] ?? ''))));
+    update_option(Options\OPT_ORG_SOCIAL,         wp_unslash((string) ($post[Options\OPT_ORG_SOCIAL] ?? '')));
+    $org_desc_raw = (array) wp_unslash($post[Options\OPT_ORG_DESCRIPTION] ?? []);
+    $org_desc = [];
+    foreach (['lt', 'en'] as $lang) {
+        $org_desc[$lang] = sanitize_textarea_field((string) ($org_desc_raw[$lang] ?? ''));
+    }
+    update_option(Options\OPT_ORG_DESCRIPTION, $org_desc);
+    update_option(Options\OPT_ORG_EMAIL,          sanitize_email(wp_unslash((string) ($post[Options\OPT_ORG_EMAIL] ?? ''))));
+    update_option(Options\OPT_ORG_PHONE,          sanitize_text_field(wp_unslash((string) ($post[Options\OPT_ORG_PHONE] ?? ''))));
+    update_option(Options\OPT_ORG_CONTACT_TYPE,   sanitize_text_field(wp_unslash((string) ($post[Options\OPT_ORG_CONTACT_TYPE] ?? 'customer service'))));
+    update_option(Options\OPT_ORG_STREET,         sanitize_text_field(wp_unslash((string) ($post[Options\OPT_ORG_STREET]   ?? ''))));
+    update_option(Options\OPT_ORG_LOCALITY,       sanitize_text_field(wp_unslash((string) ($post[Options\OPT_ORG_LOCALITY] ?? ''))));
+    update_option(Options\OPT_ORG_REGION,         sanitize_text_field(wp_unslash((string) ($post[Options\OPT_ORG_REGION]   ?? ''))));
+    update_option(Options\OPT_ORG_POSTAL,         sanitize_text_field(wp_unslash((string) ($post[Options\OPT_ORG_POSTAL]   ?? ''))));
+    update_option(Options\OPT_ORG_COUNTRY,        sanitize_text_field(wp_unslash((string) ($post[Options\OPT_ORG_COUNTRY]  ?? ''))));
+    update_option(Options\OPT_ORG_FOUNDING_DATE,  sanitize_text_field(wp_unslash((string) ($post[Options\OPT_ORG_FOUNDING_DATE] ?? ''))));
 
     $desc_raw = (array) wp_unslash($post[Options\OPT_DEFAULT_DESC] ?? []);
     $desc = [];

@@ -98,16 +98,50 @@ function build_json_ld(int $post_id, string $title, string $description, string 
             'name'  => $opts['org_name'],
             'url'   => home_url('/'),
         ];
+        // Description is stored per-language ({lt, en}) — resolve to the current
+        // language's string via workernu_t().
+        $org_desc = function_exists('workernu_t') ? (string) workernu_t($opts['org_description']) : '';
+        if ($org_desc !== '') $org['description'] = $org_desc;
+        if ($opts['org_founding_date']) $org['foundingDate']  = $opts['org_founding_date'];
+        if ($opts['org_email'])         $org['email']         = $opts['org_email'];
+        if ($opts['org_phone'])         $org['telephone']     = $opts['org_phone'];
+
         if ($opts['org_logo']) {
             $org['logo'] = [
-                '@type'    => 'ImageObject',
-                'url'      => $opts['org_logo'],
+                '@type' => 'ImageObject',
+                'url'   => $opts['org_logo'],
             ];
         }
         if ($opts['org_social']) {
             $profiles = array_filter(array_map('trim', preg_split('/\s+/', $opts['org_social']) ?: []));
             if ($profiles) $org['sameAs'] = array_values($profiles);
         }
+
+        // PostalAddress — emitted only if at least one component is set, so we
+        // never produce an empty {@type: PostalAddress} stub.
+        $address = array_filter([
+            'streetAddress'   => $opts['org_street'],
+            'addressLocality' => $opts['org_locality'],
+            'addressRegion'   => $opts['org_region'],
+            'postalCode'      => $opts['org_postal'],
+            'addressCountry'  => $opts['org_country'],
+        ], static fn ($v) => $v !== '');
+        if ($address) {
+            $org['address'] = ['@type' => 'PostalAddress'] + $address;
+        }
+
+        // ContactPoint — only emitted if at least email or phone is set, since
+        // a ContactPoint without either is meaningless to crawlers.
+        if ($opts['org_email'] || $opts['org_phone']) {
+            $contact = [
+                '@type'       => 'ContactPoint',
+                'contactType' => $opts['org_contact_type'] ?: 'customer service',
+            ];
+            if ($opts['org_email']) $contact['email']     = $opts['org_email'];
+            if ($opts['org_phone']) $contact['telephone'] = $opts['org_phone'];
+            $org['contactPoint'] = $contact;
+        }
+
         $graph[] = $org;
     }
 

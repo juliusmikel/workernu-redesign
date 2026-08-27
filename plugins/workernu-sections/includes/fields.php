@@ -18,11 +18,19 @@ function types(): array {
         'rich_text' => ['render' => __NAMESPACE__ . '\\render_rich_text', 'sanitize' => __NAMESPACE__ . '\\sanitize_rich_text'],
         'icon'      => ['render' => __NAMESPACE__ . '\\render_icon',      'sanitize' => __NAMESPACE__ . '\\sanitize_icon'],
         'image'     => ['render' => __NAMESPACE__ . '\\render_image',     'sanitize' => __NAMESPACE__ . '\\sanitize_image'],
+<<<<<<< HEAD
+=======
+        'gallery'   => ['render' => __NAMESPACE__ . '\\render_gallery',   'sanitize' => __NAMESPACE__ . '\\sanitize_gallery'],
+>>>>>>> origin/dev
         'link'      => ['render' => __NAMESPACE__ . '\\render_link',      'sanitize' => __NAMESPACE__ . '\\sanitize_link'],
         'select'    => ['render' => __NAMESPACE__ . '\\render_select',    'sanitize' => __NAMESPACE__ . '\\sanitize_select'],
         'boolean'   => ['render' => __NAMESPACE__ . '\\render_boolean',   'sanitize' => __NAMESPACE__ . '\\sanitize_boolean'],
         'number'    => ['render' => __NAMESPACE__ . '\\render_number',    'sanitize' => __NAMESPACE__ . '\\sanitize_number'],
         'repeater'  => ['render' => __NAMESPACE__ . '\\render_repeater',  'sanitize' => __NAMESPACE__ . '\\sanitize_repeater'],
+<<<<<<< HEAD
+=======
+        'settings_link' => ['render' => __NAMESPACE__ . '\\render_settings_link', 'sanitize' => __NAMESPACE__ . '\\sanitize_settings_link'],
+>>>>>>> origin/dev
     ];
 }
 
@@ -58,7 +66,34 @@ function is_translatable(array $field): bool {
 function open_field(array $field, string $extra_class = ''): void {
     $type     = $field['type'] ?? 'text';
     $required = !empty($field['required']) ? ' ws-field--required' : '';
+<<<<<<< HEAD
     echo '<div class="ws-field ws-field--' . esc_attr($type) . $required . ($extra_class ? ' ' . esc_attr($extra_class) : '') . '">';
+=======
+    $width    = !empty($field['width']) ? ' ws-field--width-' . sanitize_html_class((string) $field['width']) : '';
+
+    // Conditional visibility: two flavours, AND-combinable.
+    //   `show_if`           — `<sibling-field-name> => <allowed-value-or-array>`,
+    //                          equality check.
+    //   `show_if_not_empty` — `<sibling-field-name>`, dependent shows iff the
+    //                          source field has a non-empty value. Useful for
+    //                          image fields where the value is an attachment ID
+    //                          you can't enumerate in advance.
+    // Both may be set on the same field — the dependent shows only when ALL
+    // conditions pass. The JS in admin/builder.js watches both sources.
+    $show_if_attrs = '';
+    if (!empty($field['show_if']) && is_array($field['show_if'])) {
+        $src   = (string) array_key_first($field['show_if']);
+        $vals  = $field['show_if'][$src];
+        if (!is_array($vals)) $vals = [$vals];
+        $show_if_attrs .= ' data-ws-show-if-field="' . esc_attr($src) . '"';
+        $show_if_attrs .= ' data-ws-show-if-equals=\'' . esc_attr(wp_json_encode(array_map('strval', $vals))) . '\'';
+    }
+    if (!empty($field['show_if_not_empty'])) {
+        $show_if_attrs .= ' data-ws-show-if-not-empty-field="' . esc_attr((string) $field['show_if_not_empty']) . '"';
+    }
+
+    echo '<div class="ws-field ws-field--' . esc_attr($type) . $required . $width . ($extra_class ? ' ' . esc_attr($extra_class) : '') . '"' . $show_if_attrs . '>';
+>>>>>>> origin/dev
     if (!empty($field['label'])) {
         $required_mark = !empty($field['required']) ? ' <span class="ws-field__required" aria-hidden="true">*</span>' : '';
         echo '<label class="ws-field__label">' . label_for($field) . $required_mark . '</label>';
@@ -66,6 +101,24 @@ function open_field(array $field, string $extra_class = ''): void {
     if (!empty($field['hint'])) {
         echo '<p class="ws-field__hint">' . esc_html((string) $field['hint']) . '</p>';
     }
+}
+
+/**
+ * Render a segmented-control input. Native radios styled as a button bar.
+ * Used by select fields with render_as=buttons and by rich_text's display picker.
+ */
+function render_segmented(array $options, string $current, string $input_name): void {
+    if (!$options) return;
+    if (!array_key_exists($current, $options)) $current = (string) array_key_first($options);
+    echo '<div class="ws-segmented" role="radiogroup">';
+    foreach ($options as $opt_value => $opt_label) {
+        $checked = $current === (string) $opt_value ? ' checked' : '';
+        echo '<label class="ws-segmented__option">';
+        echo '<input type="radio" name="' . esc_attr($input_name) . '" value="' . esc_attr((string) $opt_value) . '"' . $checked . '>';
+        echo '<span class="ws-segmented__label">' . esc_html((string) $opt_label) . '</span>';
+        echo '</label>';
+    }
+    echo '</div>';
 }
 
 function close_field(): void {
@@ -203,6 +256,11 @@ function rich_text_default_variants(): array {
         'paragraph' => 'Paragraph',
         'bullets'   => 'Bullet list',
         'numbered'  => 'Numbered list',
+<<<<<<< HEAD
+=======
+        'checks'    => 'Check list',
+        'auto'      => 'Auto (- lines → checks)',
+>>>>>>> origin/dev
     ];
 }
 
@@ -233,12 +291,16 @@ function render_rich_text(array $field, $value, string $input_name): void {
 
     echo '<div class="ws-rich-text__display">';
     echo '<span class="ws-rich-text__display-label">' . esc_html__('Display as', 'workernu-sections') . '</span>';
+<<<<<<< HEAD
     echo '<select class="ws-input" name="' . esc_attr($input_name . '[display]') . '">';
     foreach ($variants as $key => $label) {
         $selected = $display === (string) $key ? ' selected' : '';
         echo '<option value="' . esc_attr((string) $key) . '"' . $selected . '>' . esc_html((string) $label) . '</option>';
     }
     echo '</select>';
+=======
+    render_segmented($variants, $display, $input_name . '[display]');
+>>>>>>> origin/dev
     echo '</div>';
 
     close_field();
@@ -273,9 +335,26 @@ function sanitize_rich_text(array $field, $raw): array {
    ───────────────────────────────────────────────────────────────── */
 
 function render_image(array $field, $value, string $input_name): void {
-    $id  = is_array($value) ? (int) ($value['id'] ?? 0) : (int) $value;
-    $url = $id ? wp_get_attachment_image_url($id, 'medium') : '';
     open_field($field, 'ws-field--image');
+    if (is_translatable($field)) {
+        // Migrate legacy single-int values into the default language so existing
+        // content still appears in the picker after the field is flipped to
+        // translatable. New saves will write the full per-language map.
+        if (is_numeric($value)) {
+            $value = [\WorkerNu\Lang\DEFAULT_LANG => (int) $value];
+        }
+        render_translatable($field, $value, $input_name, function ($name, $val) {
+            render_image_picker($name, (int) $val);
+        });
+    } else {
+        $id = is_array($value) ? (int) ($value['id'] ?? 0) : (int) $value;
+        render_image_picker($input_name, $id);
+    }
+    close_field();
+}
+
+function render_image_picker(string $input_name, int $id): void {
+    $url = $id ? wp_get_attachment_image_url($id, 'medium') : '';
     ?>
     <div class="ws-image" data-ws-image>
         <div class="ws-image__preview"<?php echo $url ? '' : ' hidden'; ?>>
@@ -288,11 +367,52 @@ function render_image(array $field, $value, string $input_name): void {
         </div>
     </div>
     <?php
+}
+
+function sanitize_image(array $field, $raw): int|array {
+    if (is_translatable($field) && is_array($raw)) {
+        $clean = [];
+        foreach (\WorkerNu\Lang\LANGUAGES as $lang) {
+            $clean[$lang] = (int) ($raw[$lang] ?? 0);
+        }
+        return $clean;
+    }
+    return (int) (is_array($raw) ? 0 : $raw);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   GALLERY
+   Stores a flat array of attachment IDs: [12, 45, 67, …]
+   Renders as a compact thumbnail grid; all images selected in one
+   media-library call via wp.media multiple:true.
+   ───────────────────────────────────────────────────────────────── */
+
+function render_gallery(array $field, $value, string $input_name): void {
+    $ids = is_array($value) ? array_filter(array_map('intval', $value)) : [];
+    open_field($field, 'ws-field--gallery');
+    ?>
+    <div class="ws-gallery" data-ws-gallery data-ws-gallery-name="<?php echo esc_attr($input_name); ?>">
+        <div class="ws-gallery__grid" data-ws-gallery-grid>
+            <?php foreach ($ids as $i => $id):
+                $url = $id ? wp_get_attachment_image_url($id, 'thumbnail') : '';
+                if (!$url) continue;
+            ?>
+                <div class="ws-gallery__thumb" data-ws-gallery-item>
+                    <img src="<?php echo esc_url($url); ?>" alt="">
+                    <button type="button" class="ws-gallery__remove" data-ws-gallery-remove aria-label="<?php esc_attr_e('Remove', 'workernu-sections'); ?>">×</button>
+                    <input type="hidden" name="<?php echo esc_attr($input_name . '[' . $i . ']'); ?>" value="<?php echo esc_attr((string) $id); ?>">
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <button type="button" class="button" data-ws-gallery-add><?php echo esc_html($field['add_label'] ?? __('+ Add images', 'workernu-sections')); ?></button>
+    </div>
+    <?php
     close_field();
 }
 
-function sanitize_image(array $field, $raw): int {
-    return (int) $raw;
+function sanitize_gallery(array $field, $raw): array {
+    if (!is_array($raw)) return [];
+    return array_values(array_filter(array_map('intval', $raw)));
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -364,14 +484,18 @@ function sanitize_link(array $field, $raw): array {
 
 function render_select(array $field, $value, string $input_name): void {
     $options = $field['options'] ?? [];
-    $val = is_scalar($value) ? (string) $value : '';
+    $val     = is_scalar($value) ? (string) $value : '';
     open_field($field);
-    echo '<select class="ws-input" name="' . esc_attr($input_name) . '">';
-    foreach ($options as $opt_value => $opt_label) {
-        $selected = $val === (string) $opt_value ? ' selected' : '';
-        echo '<option value="' . esc_attr((string) $opt_value) . '"' . $selected . '>' . esc_html((string) $opt_label) . '</option>';
+    if (($field['render_as'] ?? '') === 'buttons') {
+        render_segmented($options, $val, $input_name);
+    } else {
+        echo '<select class="ws-input" name="' . esc_attr($input_name) . '">';
+        foreach ($options as $opt_value => $opt_label) {
+            $selected = $val === (string) $opt_value ? ' selected' : '';
+            echo '<option value="' . esc_attr((string) $opt_value) . '"' . $selected . '>' . esc_html((string) $opt_label) . '</option>';
+        }
+        echo '</select>';
     }
-    echo '</select>';
     close_field();
 }
 
@@ -455,7 +579,27 @@ function render_repeater(array $field, $value, string $input_name): void {
 function render_repeater_item(array $sub_fields, array $item, string $base_name): void {
     ?>
     <li class="ws-repeater__item" data-ws-repeater-item>
-        <span class="ws-repeater__handle dashicons dashicons-move" title="<?php esc_attr_e('Drag to reorder', 'workernu-sections'); ?>"></span>
+        <div class="ws-repeater__bar">
+            <div class="ws-repeater__move">
+                <button type="button" class="ws-repeater__move-btn" data-ws-repeater-move="up" aria-label="<?php esc_attr_e('Move up', 'workernu-sections'); ?>">
+                    <span class="dashicons dashicons-arrow-up-alt2" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="ws-repeater__move-btn" data-ws-repeater-move="down" aria-label="<?php esc_attr_e('Move down', 'workernu-sections'); ?>">
+                    <span class="dashicons dashicons-arrow-down-alt2" aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="ws-repeater__actions">
+                <button type="button" class="ws-repeater__duplicate" data-ws-repeater-duplicate aria-label="<?php esc_attr_e('Duplicate', 'workernu-sections'); ?>">
+                    <svg width="13" height="13" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                        <rect x="3.5" y="0.75" width="9" height="9" rx="1.5"/>
+                        <rect x="1" y="3.5" width="9" height="9" rx="1.5" fill="#f9fafb"/>
+                    </svg>
+                </button>
+                <button type="button" class="ws-repeater__remove" data-ws-repeater-remove aria-label="<?php esc_attr_e('Remove', 'workernu-sections'); ?>">
+                    <span class="dashicons dashicons-no-alt" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
         <div class="ws-repeater__fields">
             <?php foreach ($sub_fields as $sub):
                 $sub_name = $sub['name'] ?? null;
@@ -464,9 +608,39 @@ function render_repeater_item(array $sub_fields, array $item, string $base_name)
                 render_field($sub, $item[$sub_name] ?? null, $base_name . '[' . $sub_name . ']');
             endforeach; ?>
         </div>
-        <button type="button" class="button-link ws-repeater__remove" data-ws-repeater-remove aria-label="<?php esc_attr_e('Remove', 'workernu-sections'); ?>">×</button>
     </li>
     <?php
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   SETTINGS LINK
+   Not a real content field — no stored value. Renders a notice + link to
+   the section type's "Settings → WorkerNu" defaults page. Used only on the
+   field injected by Registry\discover() for `content_defaults` sections;
+   see MetaBox\render_card for how the OTHER fields hide when this one shows.
+   ───────────────────────────────────────────────────────────────── */
+
+function render_settings_link(array $field, $value, string $input_name): void {
+    open_field($field, 'ws-field--settings-link');
+    $url   = (string) ($field['url'] ?? '');
+    $label = (string) ($field['label_section'] ?? '');
+    echo '<div class="ws-settings-link">';
+    echo '<p>' . esc_html__('This section shows the site-wide default content.', 'workernu-sections') . '</p>';
+    if ($url !== '') {
+        echo '<a class="button button-primary" href="' . esc_url($url) . '" target="_blank" rel="noopener">';
+        echo esc_html(
+            $label !== ''
+                ? sprintf(__('Edit %s defaults →', 'workernu-sections'), $label)
+                : __('Edit defaults →', 'workernu-sections')
+        );
+        echo '</a>';
+    }
+    echo '</div>';
+    close_field();
+}
+
+function sanitize_settings_link(array $field, $raw) {
+    return null;
 }
 
 function sanitize_repeater(array $field, $raw): array {

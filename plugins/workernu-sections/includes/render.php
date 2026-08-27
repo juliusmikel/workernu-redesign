@@ -28,8 +28,50 @@ function render_sections(int $post_id): void {
             continue;
         }
 
-        $data = $section;
+        $data = \WorkerNu\Sections\Defaults\resolve($section);
         include $template;
+    }
+}
+
+/**
+ * If the page has a Hero section, emit a <link rel="preload"> for its image so
+ * the browser starts downloading it during HTML parse — typically shaves
+ * 200-800ms off LCP since the Hero image is the LCP candidate on most pages.
+ * Hooked into wp_head from the plugin entry file.
+ */
+function preload_hero_image(): void {
+    if (!is_singular()) return;
+    $post_id = get_queried_object_id();
+    if (!$post_id) return;
+
+    $sections = get_post_meta($post_id, WORKERNU_SECTIONS_META_KEY, true);
+    if (!is_array($sections)) return;
+
+    foreach ($sections as $section) {
+        if (!is_array($section)) continue;
+        if (($section['_type'] ?? '') !== 'hero') continue;
+
+        // Resolve translatable shape ({ lt: id, en: id }) → current language's ID.
+        $image_id = function_exists('workernu_image_id')
+            ? workernu_image_id($section['image'] ?? 0)
+            : (int) ($section['image'] ?? 0);
+        if (!$image_id) return;
+
+        $src = wp_get_attachment_image_src($image_id, 'full');
+        if (!$src) return;
+        $url    = (string) $src[0];
+        $srcset = wp_get_attachment_image_srcset($image_id, 'full');
+        $sizes  = $srcset ? wp_get_attachment_image_sizes($image_id, 'full') : '';
+
+        echo '<link rel="preload" as="image" ';
+        if ($srcset) {
+            echo 'imagesrcset="' . esc_attr($srcset) . '" ';
+            if ($sizes) echo 'imagesizes="' . esc_attr($sizes) . '" ';
+        } else {
+            echo 'href="' . esc_url($url) . '" ';
+        }
+        echo 'fetchpriority="high">' . "\n";
+        return; // Only one hero per page; first wins.
     }
 }
 

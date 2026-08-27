@@ -1,0 +1,333 @@
+/* Icons — icon + title + description grid.
+ *
+ * Class structure produced by workernu_section_classes():
+ *   .section--icons
+ *   .section--icons--align-left | --align-center
+ *   .section--icons--columns-1 | --columns-2 | --columns-3 | --columns-4
+ *   .section--icons--icon_position-left | --icon_position-top
+ *   .section--icons--icon_size-sm | --icon_size-md | --icon_size-lg
+ */
+
+.section--icons__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+/* ─── Header ─── */
+.section--icons__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-width: 64ch;
+}
+.section--icons__heading {
+    margin: 0;
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-accent);
+}
+.section--icons__sub {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+}
+
+/* ─── Items wrapper — flex row, wraps to the chosen column count via the
+ *     per-item flex-basis below. ─── */
+.section--icons__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5) var(--space-6);
+}
+
+/* ─── Item ─── */
+.section--icons__item {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    position: relative;
+}
+
+/* ─── Tag label (e.g. "01 — FIKSUOJA") ─── */
+.section--icons__tag {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--color-muted);
+    line-height: 1;
+    margin-bottom: var(--space-1);
+}
+
+/* ─── Modifier: card style ─── */
+.section--icons--card_style-card .section--icons__item {
+    background: #fff;
+    border-radius: 20px;
+    padding: var(--space-5);
+}
+.section--icons__visual {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-accent);
+}
+.section--icons__fa,
+.section--icons__fa > i,
+.section--icons__fa > svg {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.section--icons__img {
+    display: block;
+    object-fit: contain;
+}
+.section--icons__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+}
+.section--icons__title {
+    margin: 0;
+    font-size: 1.375rem;
+    line-height: 1.3;
+    font-weight: 600;
+    color: var(--color-fg);
+}
+.section--icons__desc {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+}
+
+/* ─── Modifier: heading alignment ─── */
+.section--icons--align-left   .section--icons__header { align-self: flex-start; text-align: left; }
+.section--icons--align-center .section--icons__header { align-self: center;     text-align: center; }
+
+/* ─── Modifier: columns — flex-basis per item = (100% minus the row gaps) / N.
+ *     `gap` between items is var(--space-6); for N items per row there are
+ *     (N-1) gaps consuming (N-1) * gap horizontally. ─── */
+.section--icons__item { flex: 0 0 calc((100% - var(--space-6)) / 2); }
+.section--icons--columns-1 .section--icons__item { flex-basis: 100%; }
+.section--icons--columns-2 .section--icons__item { flex-basis: calc((100% - var(--space-6)) / 2); }
+.section--icons--columns-3 .section--icons__item { flex-basis: calc((100% - 2 * var(--space-6)) / 3); }
+.section--icons--columns-4 .section--icons__item { flex-basis: calc((100% - 3 * var(--space-6)) / 4); }
+
+/* ─── Modifier: columns = steps
+ * Numbered onboarding flow: white cards in one row, an arrow between each
+ * pair. Cards share the row equally; number badges are auto-generated from
+ * item order by template.php. Icon renders above the title regardless of the
+ * icon_position modifier — the step-card composition needs the vertical
+ * stack. ─── */
+.section--icons__grid--steps {
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: var(--space-3);
+}
+.section--icons--columns-steps .section--icons__item {
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: var(--space-4);
+    background: var(--color-surface);
+    border-radius: 20px;
+    padding: var(--space-6) var(--space-4) var(--space-5);
+}
+.section--icons__step-num {
+    position: absolute;
+    top: var(--space-3);
+    left: var(--space-3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1;
+}
+.section--icons--columns-steps .section--icons__visual { font-size: 2.75rem; }
+.section--icons--columns-steps .section--icons__img { max-height: 64px; width: auto; }
+.section--icons--columns-steps .section--icons__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+.section--icons__step-arrow {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-fg);
+    font-size: 1.5rem;
+}
+
+/* ─── Modifier: columns = rail-ltr / rail-rtl
+ * Continuous marquee. Items render twice in the DOM and the track translates
+ * 0 → -50% (rtl) or -50% → 0 (ltr), landing on the duplicate for a seamless loop. */
+.section--icons__rail {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    overflow: hidden;
+    padding-block: var(--space-3);
+}
+.section--icons__track {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-6);
+    width: max-content;
+    will-change: transform;
+    animation-duration: 45s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+.section--icons__rail--ltr .section--icons__track { animation-name: wn-icons-ltr; }
+.section--icons__rail--rtl .section--icons__track { animation-name: wn-icons-rtl; }
+.section--icons__rail:hover .section--icons__track { animation-play-state: paused; }
+
+@keyframes wn-icons-ltr {
+    from { transform: translateX(-50%); }
+    to   { transform: translateX(0); }
+}
+@keyframes wn-icons-rtl {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .section--icons__track { animation: none; transform: none; }
+}
+
+/* ─── Modifier: icon position ─── */
+.section--icons--icon_position-left .section--icons__item {
+    flex-direction: row;
+    align-items: flex-start;
+}
+.section--icons--icon_position-top .section--icons__item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+}
+
+/* ─── Steps override — placed after the icon_position rules so the step
+ *     cards keep their vertical icon-above-title stack regardless of the
+ *     section-level icon_position setting (same source-order trick as the
+ *     card+top compound below). ─── */
+.section--icons--columns-steps .section--icons__item {
+    flex-direction: column;
+    align-items: center;
+}
+.section--icons--columns-steps .section--icons__content { align-items: center; text-align: center; }
+
+/* ─── Modifier: icon size ─── */
+.section--icons--icon_size-sm .section--icons__visual { width: 44px; height: 44px; font-size: 2rem; }
+.section--icons--icon_size-md .section--icons__visual { width: 64px; height: 64px; font-size: 2.75rem; }
+.section--icons--icon_size-lg .section--icons__visual { width: 88px; height: 88px; font-size: 3.75rem; }
+.section--icons--icon_size-sm .section--icons__img { width: 44px; height: 44px; }
+.section--icons--icon_size-md .section--icons__img { width: 64px; height: 64px; }
+.section--icons--icon_size-lg .section--icons__img { width: 88px; height: 88px; }
+
+/* ─── Compound: card + top — tag above, icon centred, content below.
+ *     Placed after icon_position and icon_size rules so it wins on equal
+ *     specificity. The auto-number tag sits at the very top of the card; the
+ *     visual is centred horizontally; title and description are left-aligned. ─── */
+.section--icons--card_style-card.section--icons--icon_position-top .section--icons__item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+}
+.section--icons--card_style-card.section--icons--icon_position-top .section--icons__tag {
+    margin-bottom: var(--space-5);
+    display: block;
+}
+.section--icons--card_style-card.section--icons--icon_position-top .section--icons__visual {
+    align-self: center;
+    width: 96px;
+    height: 96px;
+    font-size: 4.5rem;
+    margin-bottom: var(--space-6);
+}
+.section--icons--card_style-card.section--icons--icon_position-top .section--icons__img {
+    width: 96px;
+    height: 96px;
+}
+.section--icons--card_style-card.section--icons--icon_position-top .section--icons__content {
+    gap: var(--space-2);
+}
+.section--icons--card_style-card.section--icons--icon_position-top .section--icons__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* ─── Rail item overrides — placed AFTER the icon_position / icon_size
+ *     modifier rules so they win on the equal-specificity tiebreaker. Inside
+ *     the rail, items are flex column (icon huge on top, text underneath)
+ *     regardless of the section-level icon_position / icon_size settings. ─── */
+.section--icons__rail .section--icons__item {
+    flex: 0 0 200px;
+    width: 200px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border-radius: 16px;
+}
+.section--icons__rail .section--icons__visual {
+    width: 96px;
+    height: 96px;
+    font-size: 4.5rem;
+}
+.section--icons__rail .section--icons__img {
+    width: 96px;
+    height: 96px;
+}
+.section--icons__rail .section--icons__content {
+    align-items: center;
+    text-align: center;
+}
+.section--icons__rail .section--icons__title {
+    font-size: 1rem;
+    font-weight: 500;
+}
+.section--icons__rail .section--icons__desc {
+    font-size: 0.9375rem;
+}
+
+@media (max-width: 768px) {
+    .section--icons__grid {
+        gap: var(--space-4);
+    }
+    .section--icons__item,
+    .section--icons--columns-2 .section--icons__item,
+    .section--icons--columns-3 .section--icons__item,
+    .section--icons--columns-4 .section--icons__item {
+        flex-basis: 100%;
+    }
+    /* Steps stack vertically; the arrows point down the flow. */
+    .section--icons__grid--steps { flex-wrap: wrap; }
+    .section--icons--columns-steps .section--icons__item { flex-basis: 100%; }
+    .section--icons__step-arrow {
+        flex-basis: 100%;
+        transform: rotate(90deg);
+    }
+}

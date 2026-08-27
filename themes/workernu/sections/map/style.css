@@ -1,0 +1,77 @@
+/* Map — geographic coverage band.
+ *
+ * Class structure produced by workernu_section_classes():
+ *   .section--map
+ *   .section--map--align-left | --align-center
+ */
+
+.section--map__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+/* ─── Header ─── */
+.section--map__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-width: 64ch;
+}
+.section--map__heading {
+    margin: 0;
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-accent);
+}
+.section--map__body {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+}
+
+/* ─── Figure (map + pins) ─── */
+.section--map__figure {
+    position: relative;
+    width: 100%;
+}
+.section--map__image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+.section--map__pin {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    border: 2px solid var(--color-bg);
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 50%, transparent);
+    animation: section--map-pulse 2.4s ease-out infinite;
+}
+@keyframes section--map-pulse {
+    0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 45%, transparent); }
+    70%  { box-shadow: 0 0 0 12px color-mix(in srgb, var(--color-accent) 0%, transparent); }
+    100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 0%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .section--map__pin { animation: none; }
+}
+
+/* ─── CTA ─── */
+.section--map__cta-wrap {
+    display: flex;
+    justify-content: center;
+}
+/* Button styling is global — see .btn / .btn--primary in main.css. */
+
+/* ─── Modifier: header alignment ─── */
+.section--map--align-left   .section--map__header,
+.section--map--align-left   .section--map__cta-wrap { align-self: flex-start; text-align: left; justify-content: flex-start; }
+.section--map--align-center .section--map__header { align-self: center; text-align: center; }
+.section--map--align-center .section--map__cta-wrap { justify-content: center; }

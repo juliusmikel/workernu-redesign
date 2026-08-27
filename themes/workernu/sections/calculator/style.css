@@ -1,0 +1,146 @@
+/* Calculator — single-column savings calculator.
+ *
+ * Structure:
+ *   .section--calculator
+ *   └─ .section--calculator__inner.container        (flex column)
+ *      ├─ .section--calculator__header              (wrapper 1: heading + sub)
+ *      ├─ .section--calculator__slider-block        (wrapper 2: slider 1)
+ *      ├─ .section--calculator__slider-block        (wrapper 3: slider 2)
+ *      ├─ .section--calculator__result              (wrapper 4: spend)
+ *      ├─ .section--calculator__result              (wrapper 5: savings)
+ *      ├─ .section--calculator__result --total      (wrapper 6: yearly)
+ *      └─ .section--calculator__cta                 (optional, only if cta set)
+ */
+
+.section--calculator__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    /* Narrower than the standard container — ~70% of the design max-width.
+     * `.container` provides margin: 0 auto, which centers this narrower box. */
+    max-width: calc(var(--max-width) * 0.7);
+}
+
+/* ─── Wrapper 1: header ─── */
+.section--calculator__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-width: 64ch;
+}
+.section--calculator__heading {
+    margin: 0;
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-accent);
+}
+.section--calculator__sub {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+}
+
+/* ─── Wrappers 2 + 3: sliders. Each is a flex column with a label/value row
+ *     on top and the range input below it. ─── */
+.section--calculator__slider-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+.section--calculator__slider-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+.section--calculator__label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-fg);
+}
+.section--calculator__value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    font-variant-numeric: tabular-nums;
+}
+.section--calculator__slider {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    /* --fill is set by animations.js as "<pct>%" — the portion of the track
+     * before the thumb is accent-blue, the rest stays the muted line color. */
+    background: linear-gradient(
+        to right,
+        var(--color-accent) 0,
+        var(--color-accent) var(--fill, 0%),
+        var(--color-line)   var(--fill, 0%),
+        var(--color-line)   100%
+    );
+    cursor: pointer;
+}
+.section--calculator__slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    border: 3px solid var(--color-bg);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+.section--calculator__slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    border: 3px solid var(--color-bg);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+.section--calculator__slider:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+}
+
+/* ─── Wrappers 4 + 5 + 6: one row per result number ─── */
+.section--calculator__result {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-line);
+}
+.section--calculator__result-label {
+    font-size: 0.9375rem;
+    color: var(--color-muted);
+}
+.section--calculator__result-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-fg);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.section--calculator__result--total {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+.section--calculator__result--total .section--calculator__result-value {
+    font-size: 1.75rem;
+    color: var(--color-accent);
+}
+
+/* ─── CTA — uses global .btn classes, just self-aligns to flex-start. ─── */
+.section--calculator__cta {
+    align-self: flex-start;
+}
+
+/* ─── Modifier: header alignment ─── */
+.section--calculator--align-left   .section--calculator__header { align-self: flex-start; text-align: left; }
+.section--calculator--align-center .section--calculator__header { align-self: center;     text-align: center; }

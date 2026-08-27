@@ -9,7 +9,7 @@ You write HTML, CSS, and JS. The plugins handle data, admin UI, language, SEO, t
 - **Custom WordPress theme** at `wp-content/themes/workernu/`. No parent theme. No Elementor.
 - **Custom plugins** at `wp-content/plugins/workernu-*`. Don't edit these unless asked — they're the framework.
 - **Bootstrap-free for now.** Use design tokens (`var(--color-*)`, `var(--space-*)`) defined in `assets/css/main.css`.
-- **GSAP** is loaded globally for animations (CDN). ScrollTrigger is registered.
+- **GSAP** is loaded globally for animations (CDN). ScrollTrigger is registered. Will need to discuss further on where and how to use it.
 - **Font Awesome 6.7.2** is loaded globally — use `<i class="fa-solid fa-..."></i>` anywhere.
 - **All sections are server-rendered PHP.** No JavaScript framework.
 
@@ -30,7 +30,7 @@ git push -u origin frontend/<your-name>/<feature>
 ```
 
 Branches:
-- `main` — production-quality, gets deployed to live
+- `main` — production-quality, gets deployed to live at stage.workernu.com (for now!)
 - `dev` — local-only working branch (Julius)
 - `frontend/<your-name>/*` — your branches; PR into `main` when done
 

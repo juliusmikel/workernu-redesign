@@ -1,0 +1,106 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: workernu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en_GB\n"
+"X-Domain: workernu\n"
+
+# Theme template strings whose SOURCE text is Lithuanian — this file supplies
+# the English shown on /en/ pages.
+#
+# Naming/locale notes (learned the hard way, do not "fix"):
+#   - Theme .mo files must be named <locale>.mo (en_GB.mo), NOT
+#     workernu-<locale>.mo — load_theme_textdomain() only looks for the
+#     locale-only name inside the theme's /languages dir.
+#   - The English locale must be en_GB, not en_US: WordPress hard-skips
+#     loading any en_US translation file (it assumes source strings are
+#     already English — ours are Lithuanian).
+# The workernu-lang plugin maps /en/… requests to the en_GB locale.
+#
+# Regenerate the .mo after editing:  wp i18n make-mo <this directory>
+
+msgid "Ačiū! Jūsų žinutė išsiųsta."
+msgstr "Thank you! Your message has been sent."
+
+msgid "El. paštas"
+msgstr "Email"
+
+msgid "Jūsų žinutė mums"
+msgstr "Your message to us"
+
+msgid "Klaida. Bandykite dar kartą."
+msgstr "Error. Please try again."
+
+msgid "Komandos dydis"
+msgstr "Team size"
+
+msgid "Kreipimosi priežastis"
+msgstr "Reason for contacting"
+
+msgid "Nauja žinutė nuo %s"
+msgstr "New message from %s"
+
+msgid "Nepavyko išsiųsti. Bandykite vėliau."
+msgstr "Failed to send. Please try again later."
+
+msgid "Neteisingas el. pašto adresas."
+msgstr "Invalid email address."
+
+msgid "Pasirinkite planą"
+msgstr "Choose a plan"
+
+msgid "Pasirinkti"
+msgstr "Select"
+
+msgid "Prašome užpildyti vardą, el. paštą ir žinutę."
+msgstr "Please fill in your name, email and message."
+
+msgid "Roboto patikra nepavyko. Atnaujinkite puslapį ir bandykite dar kartą."
+msgstr "Robot verification failed. Refresh the page and try again."
+
+msgid "Roboto patikra nepavyko. Bandykite dar kartą."
+msgstr "Robot verification failed. Please try again."
+
+msgid "SIŲSTI"
+msgstr "SEND"
+
+msgid "Sesija pasibaigė. Atnaujinkite puslapį."
+msgstr "Session expired. Refresh the page."
+
+msgid "Sutinku su WorkerNU privatumo politika"
+msgstr "I agree to the WorkerNU privacy policy"
+
+msgid "Telefonas"
+msgstr "Phone"
+
+msgid "UAB Mano Statyba"
+msgstr "My Company Ltd"
+
+msgid "Vardas ir pavardė"
+msgstr "Full name"
+
+msgid "Vardenis Pavardenis"
+msgstr "Name Surname"
+
+msgid "paslaugų teikimo sąlygos"
+msgstr "terms of service"
+
+msgid "privatumo politika"
+msgstr "privacy policy"
+
+msgid "už %d darb. / mėn."
+msgstr "for %d employees / mo."
+
+msgid "vardas@imone.lt"
+msgstr "name@company.com"
+
+msgid "Įmonės pavadinimas"
+msgstr "Company name"
+
+msgid "Šią svetainę saugo reCAPTCHA. Taikoma Google %1$s ir %2$s."
+msgstr "This site is protected by reCAPTCHA. The Google %1$s and %2$s apply."
+
+msgid "Žinutė"
+msgstr "Message"

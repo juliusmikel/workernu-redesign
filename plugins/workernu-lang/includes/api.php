@@ -54,3 +54,14 @@ if (!function_exists('workernu_default_language')) {
         return \WorkerNu\Lang\DEFAULT_LANG;
     }
 }
+
+if (!function_exists('workernu_localize_url')) {
+    /**
+     * Prefix an internal URL with the current language (`/en` when EN, no-op in LT).
+     * External links, anchors, mailto:/tel:, and already-/en URLs pass through unchanged.
+     * Wrap editor-entered URLs in templates: esc_url(workernu_localize_url($url)).
+     */
+    function workernu_localize_url($url, ?string $lang = null): string {
+        return \WorkerNu\Lang\localize_url($url, $lang);
+    }
+}

@@ -1,0 +1,72 @@
+/* Logos — skinny strip of partner/customer logos.
+ *
+ * Class structure produced by workernu_section_classes():
+ *   .section--logos
+ *   .section--logos--align-left | --align-center | --align-right
+ *   .section--logos--treatment-grayscale | --treatment-color
+ */
+
+.section--logos__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+.section--logos__heading {
+    margin: 0;
+    max-width: 56ch;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+}
+
+.section--logos__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4) var(--space-5);
+}
+.section--logos__item {
+    flex: 0 1 auto;
+    display: inline-flex;
+    align-items: center;
+}
+.section--logos__link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+.section--logos__img {
+    max-height: 36px;
+    width: auto;
+    object-fit: contain;
+    transition: opacity 200ms ease, filter 200ms ease;
+}
+
+/* ─── Modifier: heading alignment ─── */
+.section--logos--align-left   .section--logos__heading { text-align: left; align-self: flex-start; }
+.section--logos--align-center .section--logos__heading { text-align: center; align-self: center; }
+.section--logos--align-right  .section--logos__heading { text-align: right; align-self: flex-end; }
+
+/* ─── Modifier: logo treatment ─── */
+.section--logos--treatment-grayscale .section--logos__img {
+    filter: grayscale(100%);
+    opacity: 0.6;
+}
+.section--logos--treatment-grayscale .section--logos__item:hover .section--logos__img {
+    filter: grayscale(0%);
+    opacity: 1;
+}
+.section--logos--treatment-color .section--logos__img {
+    filter: none;
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .section--logos__list { justify-content: center; gap: var(--space-4); }
+    .section--logos__img { max-height: 28px; }
+}

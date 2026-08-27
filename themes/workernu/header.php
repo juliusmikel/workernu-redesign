@@ -10,41 +10,58 @@ $current_lang = function_exists('workernu_lang') ? workernu_lang() : 'lt';
 </head>
 <body <?php body_class(); ?>>
 
-<header class="site-header wf">
-    <div class="wf-row container">
+<a class="skip-link" href="#site-main"><?php esc_html_e('Skip to content', 'workernu'); ?></a>
 
-        <div class="wf-slot wf-slot--logo">
-            <span class="wf-label">LOGO</span>
-            <a href="<?php echo esc_url(home_url('/')); ?>" class="wf-content"><?php bloginfo('name'); ?></a>
+<header class="site-header" data-site-header>
+    <div class="site-header__inner container">
+        <div class="site-header__bar">
+
+        <div class="site-header__brand">
+            <?php
+            if (function_exists('the_custom_logo') && has_custom_logo()) {
+                the_custom_logo();
+            } else {
+                printf(
+                    '<a class="site-header__logo-text" href="%s">%s</a>',
+                    esc_url(home_url('/')),
+                    esc_html(get_bloginfo('name'))
+                );
+            }
+            ?>
         </div>
 
-        <nav class="wf-slot wf-slot--nav" aria-label="<?php esc_attr_e('Primary', 'workernu'); ?>">
-            <span class="wf-label">PRIMARY NAV</span>
+        <button type="button"
+                class="site-header__toggle"
+                data-nav-toggle
+                aria-expanded="false"
+                aria-controls="site-nav"
+                aria-label="<?php esc_attr_e('Toggle menu', 'workernu'); ?>">
+            <span class="site-header__toggle-bars" aria-hidden="true"></span>
+        </button>
+
+        <nav id="site-nav" class="site-nav" aria-label="<?php esc_attr_e('Primary', 'workernu'); ?>">
             <?php
             if (has_nav_menu('primary')) {
                 wp_nav_menu([
                     'theme_location' => 'primary',
                     'container'      => false,
-                    'menu_class'     => 'wf-content',
-                    'depth'          => 1,
+                    'menu_class'     => 'site-nav__menu',
+                    'menu_id'        => '',
+                    'depth'          => 2,
                     'fallback_cb'    => false,
                 ]);
             }
             ?>
+
+            <?php if (function_exists('workernu_language_switcher')): ?>
+                <div class="site-header__lang">
+                    <?php workernu_language_switcher(); ?>
+                </div>
+            <?php endif; ?>
         </nav>
 
-        <div class="wf-slot wf-slot--cta">
-            <span class="wf-label">PRIMARY CTA</span>
         </div>
-
-        <div class="wf-slot wf-slot--lang">
-            <span class="wf-label">LANGUAGE</span>
-            <div class="wf-content">
-                <?php if (function_exists('workernu_language_switcher')) workernu_language_switcher(); ?>
-            </div>
-        </div>
-
     </div>
 </header>
 
-<main class="site-main">
+<main id="site-main" class="site-main">

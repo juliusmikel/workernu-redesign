@@ -77,11 +77,10 @@ function is_noindex(int $post_id = 0): bool {
 }
 
 function canonical_url(): string {
-    if (is_singular()) {
-        $url = get_permalink(get_queried_object_id());
-        return $url ?: home_url('/');
-    }
-    if (is_home() || is_front_page()) return home_url('/');
+    // Use the actual request URI so /en/ and /en/<slug>/ stay distinct from / and /<slug>/.
+    // get_permalink() doesn't know about the workernu-lang URL prefix, so it would collapse
+    // both LT and EN canonicals to the same value.
     $request = isset($_SERVER['REQUEST_URI']) ? (string) $_SERVER['REQUEST_URI'] : '/';
-    return home_url($request);
+    $path    = strtok($request, '?') ?: '/';
+    return home_url($path);
 }

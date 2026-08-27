@@ -1,0 +1,247 @@
+/* Feature Accordion — expandable rows; companion image swaps per row.
+ *
+ * Structure:
+ *   .section--feature-accordion
+ *   └─ .section--feature-accordion__inner.container
+ *      ├─ .section--feature-accordion__header           (optional heading/sub)
+ *      └─ .section--feature-accordion__grid              (flex row — two columns)
+ *         ├─ .section--feature-accordion__list           (accordion rows)
+ *         └─ .section--feature-accordion__media           (stacked images, one per row)
+ *
+ * Image swap is pure CSS, no JS: every row's image sits in the shared media
+ * pane, all absolutely stacked on top of each other. A :has() rule keyed to
+ * each row's position (nth-child) fades in the image whose position matches
+ * the currently-open <details> — the list and the media stack are rendered
+ * from the same reindexed PHP array, so position N always means "row N" on
+ * both sides. Rules below cover up to 12 rows; a 13th+ row just won't get its
+ * own image swap (still readable — its text opens fine, media pane keeps
+ * showing whatever last matched).
+ *
+ * Modifiers (rendered as BEM classes via workernu_section_classes()):
+ *   .section--feature-accordion--align-left | --align-center (default)
+ *   .section--feature-accordion--media_position-right (default) | --media_position-left
+ *
+ * Image fit is chosen PER ITEM via the `image_fit` field — each image gets
+ * a --overflow or --centered variant class from template.php; the variant
+ * rules live next to the base .media-img rule below. Neither variant crops
+ * or stretches the image.
+ */
+
+.section--feature-accordion { overflow-x: clip; } /* clips an oversized image's bleed at the viewport edge */
+
+.section--feature-accordion__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+/* ─── Header ─── */
+.section--feature-accordion__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-width: 64ch;
+}
+.section--feature-accordion__heading {
+    margin: 0;
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-accent);
+}
+.section--feature-accordion__sub {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+}
+.section--feature-accordion--align-left   .section--feature-accordion__header { align-self: flex-start; text-align: left; }
+.section--feature-accordion--align-center .section--feature-accordion__header { align-self: center; text-align: center; margin-inline: auto; }
+
+/* ─── Grid: list + media, side by side ─── */
+.section--feature-accordion__grid {
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-6);
+}
+.section--feature-accordion--media_position-left .section--feature-accordion__grid { flex-direction: row-reverse; }
+
+/* ─── List column ─── */
+.section--feature-accordion__list {
+    flex: 1 1 0;
+    min-width: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+.section--feature-accordion__item {
+    border-radius: 20px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    overflow: hidden;
+}
+
+/* ─── Details / Summary — same pattern as the plain faq section ─── */
+.section--feature-accordion__details { width: 100%; }
+.section--feature-accordion__title {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--color-fg);
+    user-select: none;
+}
+.section--feature-accordion__title::-webkit-details-marker { display: none; }
+.section--feature-accordion__title:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+    border-radius: 20px;
+}
+.section--feature-accordion__title-text { flex: 1 1 auto; line-height: 1.4; }
+
+.section--feature-accordion__icon {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-accent);
+    font-size: 1.125rem;
+}
+.section--feature-accordion__icon-minus { display: none; }
+.section--feature-accordion__details[open] .section--feature-accordion__icon-plus  { display: none; }
+.section--feature-accordion__details[open] .section--feature-accordion__icon-minus { display: inline; }
+
+/* Outer wrap is what animations.js height-animates — no padding of its own
+ * (padding on a height:0 element wouldn't collapse away), overflow:hidden so
+ * the inner content is clipped mid-slide. Same split the plain faq section
+ * uses (.answer / .answer-inner). */
+.section--feature-accordion__body-wrap {
+    overflow: hidden;
+    transition: height 300ms ease;
+}
+.section--feature-accordion__body-inner {
+    padding: 0 var(--space-5) var(--space-5);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+}
+.section--feature-accordion__body {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+}
+.section--feature-accordion__body--bullets,
+.section--feature-accordion__body--numbered { padding-left: 1.25rem; }
+.section--feature-accordion__body--bullets li,
+.section--feature-accordion__body--numbered li { margin-bottom: var(--space-2); }
+.section--feature-accordion__body--bullets li:last-child,
+.section--feature-accordion__body--numbered li:last-child { margin-bottom: 0; }
+
+.section--feature-accordion__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+/* ─── Media column — every row's image stacked in one box. animations.js
+       adds .is-active to whichever image was OPENED MOST RECENTLY, and that
+       class sticks even after the row is later closed (0 rows open is a
+       valid state — the image just keeps showing the last one). The :has()
+       rules below are a no-JS fallback only: they track the CURRENTLY open
+       row and go blank once nothing's open, a reasonable simpler fallback
+       without JS. ─── */
+.section--feature-accordion__media {
+    flex: 1 1 0;
+    min-width: 0;
+    position: relative;
+}
+/* Two per-item fit variants (the `image_fit` field on each repeater item):
+ *
+ * --overflow (default): natural size, not cropped/stretched — height matches
+ *   the column, width is whatever that implies for the image's own aspect
+ *   ratio. The anchored edge (top + inner, touching the list column) never
+ *   moves; the free edge (toward the viewport) is where a wider-than-column
+ *   image bleeds. No overflow:hidden or border-radius on .media itself —
+ *   clipping there would cut off exactly that bleed; the section's
+ *   overflow-x: clip is what stops it at the viewport edge instead.
+ *
+ * --centered: scaled to fit inside the pane (no crop, no bleed), centered
+ *   on both axes. */
+.section--feature-accordion__media-img {
+    position: absolute;
+    opacity: 0;
+    transition: opacity 300ms ease;
+}
+.section--feature-accordion__media-img--overflow {
+    top: 0;
+    height: 100%;
+    width: auto;
+    max-width: none;
+}
+.section--feature-accordion--media_position-right .section--feature-accordion__media-img--overflow { left: 0; right: auto; }
+.section--feature-accordion--media_position-left  .section--feature-accordion__media-img--overflow { left: auto; right: 0; }
+.section--feature-accordion__media-img--centered {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+}
+
+/* Row N open → fade in image N. NO-JS FALLBACK ONLY — the `:not(.is-js)`
+ * guard is critical: animations.js stamps `.is-js` on the grid at init, and
+ * from then on ONLY the `.is-active` rule below controls visibility. Without
+ * the guard, these rules keep the OLD image at opacity 1 for as long as its
+ * row still carries [open] — which, with the JS slide animation, is until
+ * the close transition finishes. That made the swap look laggy (old image
+ * held on, then popped out) instead of both images crossfading the moment a
+ * new row is clicked. */
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(1)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(1)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(2)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(2)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(3)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(3)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(4)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(4)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(5)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(5)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(6)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(6)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(7)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(7)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(8)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(8)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(9)  .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(9)  { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(10) .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(10) { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(11) .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(11) { opacity: 1; }
+.section--feature-accordion__grid:not(.is-js):has(.section--feature-accordion__item:nth-child(12) .section--feature-accordion__details[open]) .section--feature-accordion__media-img:nth-child(12) { opacity: 1; }
+
+/* JS-driven crossfade — .is-active moves instantly on click, so the old
+ * image (losing the class) and the new one (gaining it) fade simultaneously. */
+.section--feature-accordion__media-img.is-active { opacity: 1; }
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+    .section--feature-accordion__grid,
+    .section--feature-accordion--media_position-left .section--feature-accordion__grid {
+        flex-direction: column;
+    }
+    /* Stacked layout: .media no longer gets its height from flex-stretching
+     * against the list, so give it one via aspect-ratio — the image inside
+     * still renders at natural width for that height (same overflow rule
+     * applies, just against the full-width mobile column). */
+    .section--feature-accordion__media {
+        aspect-ratio: 16 / 10;
+        flex: none;
+        width: 100%;
+    }
+    .section--feature-accordion__title { padding: var(--space-4); }
+    .section--feature-accordion__body-inner { padding: 0 var(--space-4) var(--space-4); }
+}

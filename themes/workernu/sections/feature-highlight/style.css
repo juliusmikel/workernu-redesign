@@ -1,0 +1,139 @@
+/* Feature Highlight — value-prop band with optional inverted (dark) tone.
+ *
+ * Class structure produced by workernu_section_classes():
+ *   .section--feature-highlight
+ *   .section--feature-highlight--layout-split | --layout-stacked
+ *
+ * Tone strategy: muted text and hairlines are derived from `currentColor`
+ * via color-mix, so both tones stay token-only — no hardcoded palette.
+ */
+
+.section--feature-highlight {
+    --fh-muted: color-mix(in srgb, currentColor 62%, transparent);
+    --fh-line:  color-mix(in srgb, currentColor 16%, transparent);
+    color: var(--color-fg);
+}
+.section--feature-highlight__inner {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-6);
+}
+.section--feature-highlight__intro,
+.section--feature-highlight__items {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+/* ─── Intro column ─── */
+.section--feature-highlight__intro {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+}
+.section--feature-highlight__eyebrow {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fh-muted);
+}
+.section--feature-highlight__heading {
+    margin: 0;
+    font-size: clamp(1.875rem, 4vw, 3rem);
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+.section--feature-highlight__body {
+    margin: 0;
+    max-width: 48ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--fh-muted);
+}
+
+/* ─── CTAs ─── */
+.section--feature-highlight__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+}
+/* Button styling is global — see .btn / .btn--* in main.css.
+   .section--feature-highlight__ctas above only handles the flex row layout. */
+
+/* ─── Items list ─── */
+.section--feature-highlight__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+/* One column per feature: top row = icon + title, bottom = description. */
+.section--feature-highlight__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+.section--feature-highlight__item-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+.section--feature-highlight__icon {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    font-size: 1.75rem;
+    line-height: 1;
+    color: var(--color-accent);   /* blue */
+}
+.section--feature-highlight__img {
+    width: 1.75rem;
+    height: 1.75rem;
+    object-fit: contain;
+    display: block;
+}
+.section--feature-highlight__item-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+.section--feature-highlight__item-desc {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--fh-muted);
+}
+
+/* Tone is a GLOBAL modifier now — the .section--tone-inverted base rule lives
+   in main.css alongside the margin→padding swap. No section-specific override
+   needed; this section just inherits the global treatment. */
+
+/* ─── Modifier: layout ─── */
+.section--feature-highlight--layout-stacked .section--feature-highlight__inner {
+    flex-direction: column;
+    gap: var(--space-5);
+}
+.section--feature-highlight--layout-stacked .section--feature-highlight__items {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.section--feature-highlight--layout-stacked .section--feature-highlight__item {
+    flex: 1 1 calc(33.333% - var(--space-4));
+    min-width: 240px;
+}
+
+@media (max-width: 900px) {
+    .section--feature-highlight__inner {
+        flex-direction: column;
+        gap: var(--space-5);
+    }
+    .section--feature-highlight--layout-stacked .section--feature-highlight__items {
+        flex-direction: column;
+    }
+}

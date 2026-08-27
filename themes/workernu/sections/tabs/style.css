@@ -1,0 +1,180 @@
+/* Tabs — tabbed feature showcase.
+ *
+ * Class structure produced by workernu_section_classes():
+ *   .section--tabs
+ *   .section--tabs--align-left | --align-center
+ *   .section--tabs--media_position-right | --media_position-left
+ */
+
+/* No flex gap here — the tablist must sit flush on the panel card below it
+   (folder-tab look). Spacing after the header is explicit instead. */
+.section--tabs__inner {
+    display: flex;
+    flex-direction: column;
+}
+/* ─── Header ─── */
+.section--tabs__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-width: 64ch;
+    margin-bottom: var(--space-5);
+}
+.section--tabs__heading {
+    margin: 0;
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-accent);
+}
+.section--tabs__sub {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+}
+
+/* ─── Tablist — folder-style tabs sitting on top of the white panel card.
+       Tabs share the row equally; the active one is a filled blue tab with
+       rounded top corners, inactive ones are white with dashed separators
+       between them, merging seamlessly into the panel below. ─── */
+.section--tabs__tablist {
+    display: flex;
+    gap: 0;
+}
+.section--tabs__tab {
+    appearance: none;
+    flex: 1 1 0;
+    min-width: 0;
+    background: var(--color-surface);
+    border: 0;
+    padding: 1.1rem 1rem;
+    font: inherit;
+    font-weight: 700;
+    font-size: 1.0625rem;
+    color: var(--color-fg);
+    cursor: pointer;
+    position: relative;
+    transition: color 200ms ease, background 200ms ease;
+}
+.section--tabs__tab:first-child { border-top-left-radius: 16px; }
+.section--tabs__tab:last-child  { border-top-right-radius: 16px; }
+/* Dashed separator between adjacent tabs — drawn as a left edge on every tab
+   after the first; the active tab (and its next sibling) suppress theirs so
+   the blue tab has clean edges. */
+.section--tabs__tab + .section--tabs__tab::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 14%;
+    bottom: 14%;
+    border-left: 1px dashed var(--color-line);
+}
+.section--tabs__tab.is-active::before,
+.section--tabs__tab.is-active + .section--tabs__tab::before { display: none; }
+.section--tabs__tab:hover { color: var(--color-accent); }
+/* No radius of its own — only the row's outermost corners are rounded (the
+   first/last-child rules above), so a mid-row active tab stays square. */
+.section--tabs__tab.is-active {
+    background: linear-gradient(180deg, var(--color-accent-grad-from), var(--color-accent-grad-to));
+    color: var(--color-accent-fg);
+}
+.section--tabs__tab:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -4px;
+    border-radius: 8px;
+}
+
+/* ─── Panels — white card attached under the tab row ─── */
+.section--tabs__panels {
+    background: var(--color-surface);
+    border-radius: 0 0 20px 20px;
+    padding: var(--space-6);
+}
+.section--tabs__panel {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+}
+.section--tabs__panel > * {
+    flex: 1 1 0;
+    min-width: 0;
+}
+.section--tabs__panel[hidden] { display: none; }
+
+.section--tabs__panel-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+}
+.section--tabs__panel-heading {
+    margin: 0;
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-fg);
+}
+.section--tabs__body {
+    margin: 0;
+    max-width: 52ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+}
+.section--tabs__body--bullets,
+.section--tabs__body--numbered { padding-left: 1.25rem; }
+.section--tabs__body--bullets li,
+.section--tabs__body--numbered li { margin-bottom: var(--space-2); }
+.section--tabs__body--bullets li:last-child,
+.section--tabs__body--numbered li:last-child { margin-bottom: 0; }
+
+/* Button styling is global — see .btn / .btn--primary / .btn--outline in
+   main.css. (The wrapper keeps its top spacing via the panel-text gap.) */
+.section--tabs__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+.section--tabs__panel-media img {
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    object-fit: cover;
+    background: var(--color-line);
+    box-shadow: 0 20px 50px -24px rgba(0,0,0,0.25);
+}
+
+/* ─── Modifier: media position ─── */
+.section--tabs--media_position-left .section--tabs__panel-media { order: -1; }
+
+/* ─── Modifier: header alignment ───
+   Only the header text moves — the tablist is always full-width now (tabs
+   share the row equally in the folder-tab layout). */
+.section--tabs--align-left   .section--tabs__header { align-self: flex-start; text-align: left; }
+.section--tabs--align-center .section--tabs__header { align-self: center; text-align: center; }
+
+@media (max-width: 900px) {
+    /* Equal-split tabs would crush long labels on small screens — switch the
+       tab row to a horizontal scroller with natural-width tabs instead. */
+    .section--tabs__tablist {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .section--tabs__tablist::-webkit-scrollbar { display: none; }
+    .section--tabs__tab {
+        flex: 0 0 auto;
+        font-size: 0.9375rem;
+        padding: 0.9rem 1.1rem;
+    }
+    .section--tabs__panels { padding: var(--space-4); }
+    .section--tabs__panel {
+        flex-direction: column;
+        gap: var(--space-4);
+    }
+    .section--tabs--media_position-left .section--tabs__panel-media { order: 0; }
+}

@@ -27,6 +27,10 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+/* Prevent the body background from showing below the dark footer when the
+   page doesn't fill the full viewport height on short content. */
+html { background: #0f0f11; margin: 0; }
+
 /* ────────────────────────────────────────────────────────────────
    Page-theme color tokens. The active theme registered via the
    `workernu_themes` filter applies a `theme--<slug>` body class;
@@ -36,16 +40,23 @@
 
 body.theme--default,
 body:not([class*="theme--"]) {
-    --color-bg:        #ffffff;
+    --color-bg:        #f0f0f0;   /* page background */
+    --color-surface:   #ffffff;   /* raised surfaces — cards, dropdowns, badge */
+    --color-surface-2: #e9e9e9;   /* header bar */
     --color-fg:        #18181b;
-    --color-muted:     #71717a;
-    --color-line:      #e4e4e7;
-    --color-accent:    #18181b;
+    --color-muted:     #787878;   /* secondary text + nav links */
+    --color-line:      #e4e4e7;   /* borders */
+    --color-accent:    #2563eb;   /* brand blue — buttons, icons, accent text */
     --color-accent-fg: #ffffff;
+    /* Gradient stops for the heading text-mask. Top → bottom of glyph. */
+    --color-accent-grad-from: #1d4ed8;   /* deeper blue, top of letters */
+    --color-accent-grad-to:   #3b82f6;   /* brighter blue, bottom of letters */
 }
 
 body.theme--midnight {
     --color-bg:        #0a0a0b;
+    --color-surface:   #18181b;
+    --color-surface-2: #141416;
     --color-fg:        #fafafa;
     --color-muted:     #a1a1aa;
     --color-line:      #27272a;
@@ -72,30 +83,91 @@ a { color: inherit; }
     padding: 0 var(--space-3);
 }
 
-.site-main { min-height: 60vh; }
-
-/* ─── Language switcher (functional, gets dressed up by theme) ─── */
-
-.lang-switcher {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: inline-flex;
-    gap: var(--space-1);
-    align-items: center;
-    font-size: 0.8125rem;
-}
-.lang-switcher li { display: flex; }
-.lang-switcher a {
+/* Skip-to-content — hidden visually until keyboard focus brings it on-screen.
+   Keyboard users hit Tab once on page load and can jump past the header nav. */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 9999;
+    padding: 0.75rem 1.25rem;
+    background: var(--color-fg);
+    color: var(--color-bg);
+    font-weight: 600;
     text-decoration: none;
-    padding: 0.125rem 0.5rem;
-    border-radius: 3px;
-    color: inherit;
+    border-radius: 0 0 6px 0;
 }
-.lang-switcher .is-active a {
-    font-weight: 700;
-    text-decoration: underline;
+.skip-link:focus { left: 0; outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+.site-main {
+    min-height: 60vh;
+    /* Flex column so adjacent sections' vertical margins don't collapse —
+     * flex/grid items don't have margin-collapsing semantics at all. (Plain
+     * `display: flow-root` only prevents parent/child collapse; sibling
+     * margins still collapse within the same BFC.) */
+    display: flex;
+    flex-direction: column;
 }
+
+/* ─── Language switcher — globe + current flag, hover/focus dropdown ─── */
+
+.lang-switcher { position: relative; }
+
+.lang-switcher__current {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.5rem 0.625rem;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--color-fg);
+    cursor: pointer;
+    transition: color 160ms ease;
+}
+.lang-switcher__current:hover { color: var(--color-accent); }
+.lang-switcher__flag { font-size: 1.1em; line-height: 1; }
+
+.lang-switcher__menu {
+    list-style: none;
+    margin: 0;
+    padding: var(--space-2);
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 10rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: var(--color-bg);
+    box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.28);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition: opacity 160ms ease, transform 160ms ease, visibility 160ms;
+    z-index: 200;
+}
+.lang-switcher:hover .lang-switcher__menu,
+.lang-switcher:focus-within .lang-switcher__menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.lang-switcher__item a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.5rem 0.625rem;
+    border-radius: 6px;
+    font-size: 0.9375rem;
+    color: var(--color-fg);
+    text-decoration: none;
+    white-space: nowrap;
+}
+.lang-switcher__item a:hover { background: color-mix(in srgb, var(--color-fg) 6%, transparent); }
+.lang-switcher__item.is-active a { font-weight: 700; color: var(--color-accent); }
 
 /* ─── 404 ─── */
 
@@ -167,4 +239,585 @@ a { color: inherit; }
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3);
+}
+
+/* ────────────────────────────────────────────────────────────────
+   SITE HEADER — sticky, with dropdown nav, logo (Customizer), CTA.
+   The logo is the WP custom-logo (Appearance → Customize → Site Identity);
+   falls back to the site name text when none is set.
+   ──────────────────────────────────────────────────────────────── */
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    /* Transparent full-width sticky wrapper; the visible bar is the inner,
+       constrained to the container width below. */
+}
+/* .site-header__inner just centers + gutters via .container (transparent).
+   The visible bar sits inside it, so its width matches the page content. */
+.site-header__bar {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-4);
+    min-height: 72px;
+    padding-left: var(--space-3);
+    background: var(--color-surface-2);
+    box-shadow: 0 6px 20px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* ─── Brand / logo ─── */
+.site-header__brand {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;     /* vertically center logo within the full-height bar */
+}
+.site-header__brand .custom-logo-link {
+    display: inline-flex;
+    align-items: center;
+}
+.site-header__brand .custom-logo {
+    display: block;
+    height: auto;
+    max-height: 40px;
+    width: auto;
+}
+.site-header__logo-text {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--color-fg);
+    text-decoration: none;
+}
+
+/* ─── Nav (fills the row, pushes itself to the right of the logo) ─── */
+.site-nav {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-end;
+    gap: var(--space-4);
+}
+.site-nav__menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-1);
+}
+.site-nav__menu .menu-item { position: relative; }
+/* Top-level items fill the bar height so their submenu drops from the bar's
+   bottom edge (not from beside the word); the link stays its natural size. */
+.site-nav__menu > .menu-item { display: flex; align-items: center; }
+.site-nav__menu a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--color-muted);     /* inactive menu items */
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 160ms ease, background-color 160ms ease;
+}
+/* Hovered / active items turn blue. */
+.site-nav__menu a:hover,
+.site-nav__menu .current-menu-item > a,
+.site-nav__menu .current-menu-ancestor > a { color: var(--color-accent); }
+
+/* ─── Dropdown chevron (FA) on top-level parents ─── */
+.site-nav__menu > .menu-item-has-children > a::after {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    content: "\f078";              /* fa-chevron-down */
+    font-size: 0.7em;
+    margin-left: 0.15em;
+    transition: transform 200ms ease;
+}
+.site-nav__menu > .menu-item-has-children:hover > a::after,
+.site-nav__menu > .menu-item-has-children:focus-within > a::after {
+    transform: rotate(180deg);
+}
+
+/* ─── Submenu (desktop: floating card revealed on hover/focus) ─── */
+.site-nav__menu .sub-menu {
+    list-style: none;
+    margin: 0;
+    padding: var(--space-2);
+    position: absolute;
+    top: 100%;                     /* flush to the bar's bottom edge */
+    left: 0;
+    width: max-content;            /* hug the longest item instead of a fixed width */
+    min-width: 11rem;
+    max-width: 18rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: var(--color-surface-2);   /* match the header bar */
+    border: 0;
+    border-radius: 0;              /* square dropdown */
+    box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.28);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition: opacity 160ms ease, transform 160ms ease, visibility 160ms;
+    z-index: 200;                  /* above the header's own drop shadow */
+}
+.site-nav__menu > .menu-item-has-children:hover > .sub-menu,
+.site-nav__menu > .menu-item-has-children:focus-within > .sub-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+/* Lift the open item above the header bar so its dropdown clears the bar shadow. */
+.site-nav__menu > .menu-item-has-children:hover,
+.site-nav__menu > .menu-item-has-children:focus-within { z-index: 200; }
+.site-nav__menu .sub-menu a {
+    padding: 0.625rem 0.75rem;
+    width: 100%;
+    font-weight: 500;
+}
+.site-nav__menu .sub-menu a:hover {
+    background: color-mix(in srgb, var(--color-fg) 6%, transparent);
+}
+
+/* ─── Login + CTA (menu items tagged with CSS classes in the menu editor) ─── */
+/* "Prisijungti" stays black (not gray, not blue-on-hover). */
+.site-nav__menu .is-login > a,
+.site-nav__menu .is-login > a:hover { color: var(--color-fg); }
+/* "Try now" — full-height blue rectangle, black text (not a pill). */
+.site-nav__menu .is-cta { margin-left: var(--space-2); align-items: stretch; }
+.site-nav__menu .is-cta > a,
+.site-nav__menu .is-cta > a:hover {
+    background: var(--color-accent);
+    color: var(--color-fg);
+    height: 100%;
+    padding: 0 1.5rem;
+    border-radius: 0;
+    font-weight: 600;
+}
+.site-nav__menu .is-cta > a:hover { opacity: 0.9; }
+
+/* ─── Language switcher in the header ─── */
+/* Hidden for now — to be relocated later. */
+.site-header__lang { display: none; }
+
+/* ─── Mobile toggle (hamburger) — hidden on desktop ─── */
+.site-header__toggle {
+    display: none;
+    flex: 0 0 auto;
+    align-self: center;
+    margin-left: auto;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--color-line);
+    border-radius: 10px;
+    background: var(--color-bg);
+    cursor: pointer;
+    position: relative;
+}
+.site-header__toggle-bars,
+.site-header__toggle-bars::before,
+.site-header__toggle-bars::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    width: 18px;
+    height: 2px;
+    background: var(--color-fg);
+    transform: translateX(-50%);
+    transition: transform 200ms ease, opacity 200ms ease;
+}
+.site-header__toggle-bars { top: 50%; margin-top: -1px; }
+.site-header__toggle-bars::before { top: -6px; }
+.site-header__toggle-bars::after  { top: 6px; }
+.site-header.is-open .site-header__toggle-bars { background: transparent; }
+.site-header.is-open .site-header__toggle-bars::before { transform: translateX(-50%) translateY(6px) rotate(45deg); }
+.site-header.is-open .site-header__toggle-bars::after  { transform: translateX(-50%) translateY(-6px) rotate(-45deg); }
+
+/* ─── Responsive: collapse nav into a panel ─── */
+@media (max-width: 900px) {
+    .site-header__toggle { display: inline-flex; align-items: center; justify-content: center; }
+    .site-nav {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: var(--space-3);
+        padding: var(--space-3);
+        background: var(--color-bg);
+        border-top: 1px solid var(--color-line);
+        box-shadow: 0 16px 32px -16px rgba(0, 0, 0, 0.3);
+        max-height: calc(100vh - 72px);
+        overflow-y: auto;
+        display: none;
+    }
+    .site-header.is-open .site-nav { display: flex; }
+    .site-nav__menu {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 2px;
+        width: 100%;
+    }
+    .site-nav__menu a { padding: 0.75rem; }
+    /* Submenus render inline (expanded), not as floating cards. */
+    .site-nav__menu .sub-menu {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        border: 0;
+        box-shadow: none;
+        padding: 0 0 0 var(--space-3);
+        min-width: 0;
+    }
+    .site-nav__menu > .menu-item-has-children > a::after { margin-left: auto; }
+    .site-nav__menu .is-cta { margin-left: 0; }
+    .site-nav__menu .is-cta > a { justify-content: center; }
+}
+
+/* ────────────────────────────────────────────────────────────────
+   BUTTONS — global, reusable. Use `.btn` + one variant modifier.
+   All colors come from tokens, so they follow the active page theme.
+
+     .btn--primary   filled blue, white text
+     .btn--outline   transparent, blue text + blue border
+     .btn--subtle    white surface, gray border, blue text
+     .btn--ghost     transparent, white border + white text (for dark surfaces)
+   ──────────────────────────────────────────────────────────────── */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: 0.875rem 1.5rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font: inherit;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease, opacity 160ms ease;
+}
+
+/* Filled blue / white text */
+.btn--primary {
+    background: var(--color-accent);
+    color: var(--color-accent-fg);
+    border-color: var(--color-accent);
+}
+.btn--primary:hover { opacity: 0.9; }
+
+/* Transparent / blue text / blue border */
+.btn--outline {
+    background: transparent;
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+}
+.btn--outline:hover {
+    background: var(--color-accent);
+    color: var(--color-accent-fg);
+}
+
+/* White surface / gray border / blue text */
+.btn--subtle {
+    background: var(--color-bg);
+    color: var(--color-accent);
+    border: 1px solid var(--color-line);
+}
+.btn--subtle:hover { border-color: var(--color-accent); }
+
+/* Transparent / white border / white text — for dark or image backgrounds */
+.btn--ghost {
+    background: transparent;
+    color: var(--color-accent-fg);
+    border: 1px solid var(--color-accent-fg);
+}
+.btn--ghost:hover {
+    background: var(--color-accent-fg);
+    color: var(--color-fg);
+}
+
+/* ─── Global section margins ───────────────────────────────────────────
+ * Applied by the workernu-sections plugin via two global modifiers
+ * (`margin_top`, `margin_bottom`). Each emits `section--<modifier>-<value>`
+ * — no slug prefix — so one rule covers every section type.
+ * Values are in rem; option "0" zeroes the margin entirely.
+ */
+/* These ARE margins. `.site-main` is `display: flow-root` (see above), which
+ * disables CSS's classic vertical-margin collapsing between adjacent block
+ * children — so a 4rem bottom + a 4rem top really do add up to 8rem of gap. */
+.section--margin_top-0    { margin-top: 0; }
+.section--margin_top-2    { margin-top: 2rem; }
+.section--margin_top-4    { margin-top: 4rem; }
+.section--margin_top-6    { margin-top: 6rem; }
+.section--margin_bottom-0 { margin-bottom: 0; }
+.section--margin_bottom-2 { margin-bottom: 2rem; }
+.section--margin_bottom-4 { margin-bottom: 4rem; }
+.section--margin_bottom-6 { margin-bottom: 6rem; }
+
+/* ─── Global tone modifier ───────────────────────────────────────────
+ * `tone-inverted` swaps the page palette so a section becomes a dark band.
+ * The swap happens at the TOKEN level, not just `color`: section styles
+ * hardcode `var(--color-fg)` / `var(--color-muted)` / etc. on their own
+ * descendants, so redefining the custom properties in this scope is the only
+ * way every section's text actually turns light without touching each
+ * section's CSS. Accent shifts to a lighter blue for contrast on dark.
+ * When inverted, margins convert to padding — otherwise a gap of page color
+ * would show through between this section and its neighbours, defeating the
+ * band effect.
+ */
+.section--tone-inverted {
+    --color-bg:        #131316;
+    --color-surface:   #1f1f23;
+    --color-surface-2: #1a1a1d;
+    --color-fg:        #fafafa;
+    --color-muted:     #a1a1aa;
+    --color-line:      #33333a;
+    --color-accent:    #60a5fa;
+    --color-accent-fg: #ffffff;
+    --color-accent-grad-from: #93c5fd;
+    --color-accent-grad-to:   #60a5fa;
+    background: var(--color-bg);
+    color: var(--color-fg);
+}
+.section--tone-inverted.section--margin_top-0    { margin-top: 0; padding-top: 0; }
+.section--tone-inverted.section--margin_top-2    { margin-top: 0; padding-top: 2rem; }
+.section--tone-inverted.section--margin_top-4    { margin-top: 0; padding-top: 4rem; }
+.section--tone-inverted.section--margin_top-6    { margin-top: 0; padding-top: 6rem; }
+.section--tone-inverted.section--margin_bottom-0 { margin-bottom: 0; padding-bottom: 0; }
+.section--tone-inverted.section--margin_bottom-2 { margin-bottom: 0; padding-bottom: 2rem; }
+.section--tone-inverted.section--margin_bottom-4 { margin-bottom: 0; padding-bottom: 4rem; }
+.section--tone-inverted.section--margin_bottom-6 { margin-bottom: 0; padding-bottom: 6rem; }
+
+/* ────────────────────────────────────────────────────────────────
+   SITE FOOTER
+   Dark background with brand column (logo + description + social)
+   and three nav columns. Bottom bar holds legal links + copyright.
+   ──────────────────────────────────────────────────────────────── */
+
+.site-footer {
+    background: #0f0f11;
+    color: rgba(255,255,255,0.65);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+}
+
+.site-footer__inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-7) var(--space-7);
+    padding-top: clamp(3rem, 6vw, 5rem);
+    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+/* Brand column */
+.site-footer__brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: 22rem;
+}
+
+.site-footer__logo-link {
+    display: inline-block;
+    line-height: 0;
+}
+
+.site-footer__logo {
+    max-height: 36px;
+    width: auto;
+    /* Invert a dark logo to white when on the dark footer background. */
+    filter: brightness(0) invert(1);
+}
+
+.site-footer__logo-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.02em;
+}
+
+.site-footer__description {
+    margin: 0;
+    color: rgba(255,255,255,0.55);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+}
+
+.site-footer__social {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.site-footer__social-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.75);
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+}
+.site-footer__social-btn:hover {
+    border-color: #fff;
+    color: #fff;
+    background: rgba(255,255,255,0.08);
+}
+
+/* Nav columns */
+.site-footer__cols {
+    display: flex;
+    gap: clamp(var(--space-6), 5vw, var(--space-7));
+    align-items: flex-start;
+}
+
+.site-footer__col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 130px;
+}
+
+.site-footer__col-heading {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+.site-footer__nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.site-footer__nav-list a {
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    transition: color 160ms ease;
+}
+.site-footer__nav-list a:hover { color: #fff; }
+
+.site-footer__contact-list a,
+.site-footer__contact-address {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+}
+.site-footer__contact-list i { margin-top: 0.2em; flex-shrink: 0; opacity: 0.6; }
+.site-footer__contact-address { color: rgba(255,255,255,0.6); font-size: 0.9375rem; }
+
+/* Bottom bar */
+.site-footer__bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.site-footer__bottom-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding-top: var(--space-4);
+    padding-bottom: var(--space-4);
+}
+
+.site-footer__legal-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+}
+
+.site-footer__legal-list a {
+    color: rgba(255,255,255,0.45);
+    text-decoration: none;
+    font-size: 0.8125rem;
+    transition: color 160ms ease;
+}
+.site-footer__legal-list a:hover { color: rgba(255,255,255,0.8); }
+
+.site-footer__copyright {
+    margin: 0 0 0 auto;
+    font-size: 0.8125rem;
+    color: rgba(255,255,255,0.35);
+    white-space: nowrap;
+}
+
+
+/* Responsive */
+@media (max-width: 900px) {
+    .site-footer__inner {
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+    }
+    .site-footer__brand { max-width: none; }
+    .site-footer__cols  { gap: var(--space-5); }
+}
+
+@media (max-width: 600px) {
+    .site-footer__cols {
+        flex-direction: column;
+        gap: var(--space-5);
+    }
+    .site-footer__col { min-width: 0; }
+    .site-footer__bottom-inner {
+        flex-wrap: wrap;
+        gap: var(--space-2) var(--space-4);
+    }
+    .site-footer__copyright {
+        margin-left: 0;
+        width: 100%;
+        white-space: normal;
+    }
+}
+
+/* ─── Gradient text utility ────────────────────────────────────────────
+ * Vertical gradient masked through the text (top → bottom of each glyph).
+ * Applied automatically to all section headings that previously used the
+ * solid `--color-accent` color, plus available as a reusable class
+ * `.has-gradient-text` on any element you want to opt in.
+ *
+ * Note: with `color: transparent` the text needs another visual cue for
+ * users with image-loading disabled or very old browsers — but every
+ * modern browser supports `background-clip: text`. WebKit prefix needed
+ * for older WebKit. */
+.has-gradient-text,
+.section--hero__heading,
+.section--zigzag-rows__heading,
+.section--icons__heading,
+.section--pricing__heading,
+.section--calculator__heading,
+.section--map__heading,
+.section--people__heading,
+.section--tabs__heading {
+    background: linear-gradient(180deg,
+        var(--color-accent-grad-from) 0%,
+        var(--color-accent-grad-to)   100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
 }

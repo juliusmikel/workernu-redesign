@@ -28,7 +28,11 @@ $classes       = workernu_section_classes($data, 'icons');
 // In card+top mode the tag floats above the icon with an auto-number prefix.
 $tag_on_top = $icon_position === 'top' && $card_style === 'card';
 
-$render_item = function (array $item, bool $aria_hidden, int $index = 0) use ($tag_on_top, $is_steps) {
+// $index doubles as this item's real index in $data['items'] — true for
+// every call site except the rail's aria-hidden duplicate pass (which
+// always passes 0 for every clone), so editing is only offered on the
+// non-duplicate render; the duplicates stay plain, unwrapped output.
+$render_item = function (array $item, bool $aria_hidden, int $index = 0) use ($data, $tag_on_top, $is_steps) {
     $icon             = (string) ($item['icon'] ?? '');
     $icon_image_value = $item['icon_image'] ?? 0;
     $icon_image       = workernu_image_url($icon_image_value, 'medium');
@@ -38,6 +42,10 @@ $render_item = function (array $item, bool $aria_hidden, int $index = 0) use ($t
     $title            = workernu_t($item['title']       ?? '');
     $description      = workernu_t($item['description'] ?? '');
     $has_visual       = $icon_image !== '' || $icon !== '';
+    // Rail clones are laid out past the right screen edge, so a lazy loader
+    // never intersects them and they scroll in blank on the second lap.
+    // $aria_hidden is exactly the "this is a duplicate" flag.
+    $img_loading      = $aria_hidden ? 'eager' : 'lazy';
     ?>
     <li class="section--icons__item"<?php echo $aria_hidden ? ' aria-hidden="true"' : ''; ?> data-animate-item="item">
 
@@ -46,14 +54,16 @@ $render_item = function (array $item, bool $aria_hidden, int $index = 0) use ($t
         <?php endif; ?>
 
         <?php if ($tag_on_top && $tag !== ''):
-            $num = sprintf('%02d', $index + 1); ?>
-            <span class="section--icons__tag" aria-hidden="true"><?php echo esc_html($num . ' — ') . wp_kses_post($tag); ?></span>
+            $num = sprintf('%02d', $index + 1);
+            $tag_html = $aria_hidden ? wp_kses_post($tag) : workernu_inline_editable($data, "items.$index.tag", 'text', wp_kses_post($tag), $tag);
+            ?>
+            <span class="section--icons__tag" aria-hidden="true"><?php echo esc_html($num . ' — ') . $tag_html; ?></span>
         <?php endif; ?>
 
         <?php if ($has_visual): ?>
             <div class="section--icons__visual" aria-hidden="<?php echo $icon_alt === '' ? 'true' : 'false'; ?>">
                 <?php if ($icon_image !== ''): ?>
-                    <img class="section--icons__img" <?php echo workernu_image_attrs($icon_image_value, 'medium', ['alt' => $icon_alt]); ?>>
+                    <img class="section--icons__img" <?php echo workernu_image_attrs($icon_image_value, 'medium', ['alt' => $icon_alt, 'loading' => $img_loading]); ?>>
                 <?php else: ?>
                     <span class="section--icons__fa"><?php echo workernu_icon($icon); ?></span>
                 <?php endif; ?>
@@ -62,13 +72,13 @@ $render_item = function (array $item, bool $aria_hidden, int $index = 0) use ($t
 
         <div class="section--icons__content">
             <?php if (!$tag_on_top && $tag !== ''): ?>
-                <span class="section--icons__tag" aria-hidden="true"><?php echo wp_kses_post($tag); ?></span>
+                <span class="section--icons__tag" aria-hidden="true"><?php echo $aria_hidden ? wp_kses_post($tag) : workernu_inline_editable($data, "items.$index.tag", 'text', wp_kses_post($tag), $tag); ?></span>
             <?php endif; ?>
             <?php if ($title !== ''): ?>
-                <h3 class="section--icons__title"><?php echo wp_kses_post($title); ?></h3>
+                <h3 class="section--icons__title"><?php echo $aria_hidden ? wp_kses_post($title) : workernu_inline_editable($data, "items.$index.title", 'text', wp_kses_post($title), $title); ?></h3>
             <?php endif; ?>
             <?php if ($description !== ''): ?>
-                <p class="section--icons__desc"><?php echo nl2br(wp_kses_post($description)); ?></p>
+                <p class="section--icons__desc"><?php echo $aria_hidden ? nl2br(wp_kses_post($description)) : workernu_inline_editable($data, "items.$index.description", 'textarea', nl2br(wp_kses_post($description)), $description); ?></p>
             <?php endif; ?>
         </div>
 
@@ -82,10 +92,10 @@ $render_item = function (array $item, bool $aria_hidden, int $index = 0) use ($t
         <?php if ($heading !== '' || $subheading !== ''): ?>
             <header class="section--icons__header" data-animate-item="header">
                 <?php if ($heading !== ''): ?>
-                    <h2 class="section--icons__heading"><?php echo wp_kses_post($heading); ?></h2>
+                    <h2 class="section--icons__heading"><?php echo workernu_inline_editable($data, 'heading', 'text', wp_kses_post($heading), $heading); ?></h2>
                 <?php endif; ?>
                 <?php if ($subheading !== ''): ?>
-                    <p class="section--icons__sub"><?php echo nl2br(wp_kses_post($subheading)); ?></p>
+                    <p class="section--icons__sub"><?php echo workernu_inline_editable($data, 'subheading', 'textarea', nl2br(wp_kses_post($subheading)), $subheading); ?></p>
                 <?php endif; ?>
             </header>
         <?php endif; ?>

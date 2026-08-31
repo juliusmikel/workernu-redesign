@@ -23,6 +23,14 @@
  * closed back down to zero-open). The media pane is aria-hidden: its images
  * are a visual echo of whatever row's text is already open and announced,
  * not new information.
+ *
+ * That pane only works as a second column. Below 900px style.css hides it and
+ * shows __row-img instead — the same image, rendered a second time inside each
+ * row's own panel, so it sits next to the text it illustrates rather than below
+ * every row. Same src, so it is one network fetch, not two; and since
+ * `display: none` drops an element from the accessibility tree, only one of the
+ * two copies is ever exposed. That is why __row-img gets a real alt while the
+ * pane stays aria-hidden.
  */
 
 $heading    = workernu_t($data['heading']    ?? '');
@@ -36,7 +44,7 @@ $uid = sanitize_html_class((string) ($data['_id'] ?? uniqid('feature-accordion-'
 // share the exact same (reindexed) order — style.css matches an image to its
 // row by position, so the two must stay in lockstep.
 $items = [];
-foreach (array_values($items_raw) as $item) {
+foreach (array_values($items_raw) as $orig_i => $item) {
     $title     = workernu_t($item['title'] ?? '');
     $body_html = workernu_text($item['text'] ?? null, 'section--feature-accordion__body');
 
@@ -47,12 +55,17 @@ foreach (array_values($items_raw) as $item) {
     $image_alt = workernu_t($item['image_alt'] ?? '');
     if ($image_alt === '') $image_alt = workernu_image_alt($image_value);
 
+    // field_path indices below use $orig_i (this item's index in the raw,
+    // unfiltered $data['items'] — what Draft\save_field() actually reads),
+    // not the position in this filtered/reindexed $items array, which
+    // diverges from it as soon as an earlier item gets skipped above.
     $ctas = [];
     foreach ([1, 2] as $n) {
         $cta_label = workernu_t($item["cta{$n}_label"] ?? '');
         $cta_url   = (string) ($item["cta{$n}_url"] ?? '');
         if ($cta_label === '' || $cta_url === '') continue;
         $ctas[] = [
+            'field'   => "cta{$n}_label",
             'label'   => $cta_label,
             'url'     => $cta_url,
             'variant' => (string) ($item["cta{$n}_variant"] ?? 'primary'),
@@ -61,8 +74,10 @@ foreach (array_values($items_raw) as $item) {
     }
 
     $items[] = [
+        'orig_i'      => $orig_i,
         'title'       => $title,
         'body_html'   => $body_html,
+        'body_raw'    => workernu_t($item['text']['value'] ?? ''),
         'image_value' => $image_value,
         'image_alt'   => $image_alt,
         'image_fit'   => ($item['image_fit'] ?? 'overflow') === 'centered' ? 'centered' : 'overflow',
@@ -76,10 +91,10 @@ foreach (array_values($items_raw) as $item) {
         <?php if ($heading !== '' || $subheading !== ''): ?>
             <header class="section--feature-accordion__header" data-animate-item="header">
                 <?php if ($heading !== ''): ?>
-                    <h2 class="section--feature-accordion__heading"><?php echo wp_kses_post($heading); ?></h2>
+                    <h2 class="section--feature-accordion__heading"><?php echo workernu_inline_editable($data, 'heading', 'text', wp_kses_post($heading), $heading); ?></h2>
                 <?php endif; ?>
                 <?php if ($subheading !== ''): ?>
-                    <p class="section--feature-accordion__sub"><?php echo nl2br(wp_kses_post($subheading)); ?></p>
+                    <p class="section--feature-accordion__sub"><?php echo workernu_inline_editable($data, 'subheading', 'textarea', nl2br(wp_kses_post($subheading)), $subheading); ?></p>
                 <?php endif; ?>
             </header>
         <?php endif; ?>
@@ -92,7 +107,7 @@ foreach (array_values($items_raw) as $item) {
                         <li class="section--feature-accordion__item">
                             <details class="section--feature-accordion__details" name="fa-<?php echo esc_attr($uid); ?>"<?php echo $i === 0 ? ' open' : ''; ?>>
                                 <summary class="section--feature-accordion__title">
-                                    <span class="section--feature-accordion__title-text"><?php echo wp_kses_post($item['title']); ?></span>
+                                    <span class="section--feature-accordion__title-text"><?php echo workernu_inline_editable($data, "items.{$item['orig_i']}.title", 'text', wp_kses_post($item['title']), $item['title']); ?></span>
                                     <span class="section--feature-accordion__icon" aria-hidden="true">
                                         <i class="fa-solid fa-plus section--feature-accordion__icon-plus"></i>
                                         <i class="fa-solid fa-minus section--feature-accordion__icon-minus"></i>
@@ -100,7 +115,14 @@ foreach (array_values($items_raw) as $item) {
                                 </summary>
                                 <div class="section--feature-accordion__body-wrap">
                                     <div class="section--feature-accordion__body-inner">
-                                        <?php echo $item['body_html']; ?>
+                                        <?php echo workernu_inline_editable($data, "items.{$item['orig_i']}.text", 'rich_text', $item['body_html'], $item['body_raw'], 'div'); ?>
+                                        <?php /* Mobile copy of this row's image. Below 900px the shared
+                                                 pane below is hidden and this one shows instead — see the
+                                                 header comment. It carries a real alt: unlike the pane, it
+                                                 is not inside an aria-hidden container, and `display: none`
+                                                 keeps it out of the a11y tree on desktop, so only ever one
+                                                 of the two copies is exposed. */ ?>
+                                        <img class="section--feature-accordion__row-img" <?php echo workernu_image_attrs($item['image_value'], 'large', ['alt' => $item['image_alt']]); ?>>
                                         <?php if ($item['ctas']): ?>
                                             <div class="section--feature-accordion__ctas">
                                                 <?php foreach ($item['ctas'] as $cta): ?>
@@ -108,7 +130,7 @@ foreach (array_values($items_raw) as $item) {
                                                        href="<?php echo esc_url(workernu_localize_url($cta['url'])); ?>"
                                                        target="<?php echo esc_attr($cta['target']); ?>"
                                                        <?php echo $cta['target'] === '_blank' ? 'rel="noopener"' : ''; ?>>
-                                                        <?php echo wp_kses_post($cta['label']); ?>
+                                                        <?php echo workernu_inline_editable($data, "items.{$item['orig_i']}.{$cta['field']}", 'text', wp_kses_post($cta['label']), $cta['label']); ?>
                                                     </a>
                                                 <?php endforeach; ?>
                                             </div>

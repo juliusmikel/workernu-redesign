@@ -19,6 +19,8 @@ require_once WORKERNU_INLINE_EDITOR_PATH . 'includes/render.php';
 require_once WORKERNU_INLINE_EDITOR_PATH . 'includes/ajax.php';
 require_once WORKERNU_INLINE_EDITOR_PATH . 'includes/markup.php';
 require_once WORKERNU_INLINE_EDITOR_PATH . 'includes/api.php';
+require_once WORKERNU_INLINE_EDITOR_PATH . 'includes/admin-bar.php';
+require_once WORKERNU_INLINE_EDITOR_PATH . 'includes/assets.php';
 
 add_action('template_redirect', '\\WorkerNu\\InlineEditor\\Mode\\handle_toggle');
 add_filter('get_post_metadata', '\\WorkerNu\\InlineEditor\\Render\\swap_live_for_draft', 10, 4);
@@ -26,6 +28,9 @@ add_filter('body_class',        '\\WorkerNu\\InlineEditor\\Render\\flag_body_cla
 
 add_action('wp_ajax_workernu_inline_save_draft', '\\WorkerNu\\InlineEditor\\Ajax\\handle_save_draft');
 add_action('wp_ajax_workernu_inline_publish',     '\\WorkerNu\\InlineEditor\\Ajax\\handle_publish');
+
+add_action('admin_bar_menu',      '\\WorkerNu\\InlineEditor\\AdminBar\\register', 100);
+add_action('wp_enqueue_scripts',  '\\WorkerNu\\InlineEditor\\Assets\\enqueue', 20);
 
 // Soft dependency check, mirrors workernu-sections.php's own pattern.
 add_action('admin_notices', function () {

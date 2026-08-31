@@ -1,0 +1,89 @@
+/* workernu Inline Editor — hover outline, pencil, inline edit UI. Only
+   loaded when body.wn-edit-mode is present (see Assets\enqueue gating). */
+
+.wn-editable {
+    position: relative;
+    display: inline;
+    outline: 1px dashed transparent;
+    outline-offset: 3px;
+    border-radius: 3px;
+    transition: outline-color 0.12s ease;
+}
+.wn-editable:hover {
+    outline-color: #2563eb;
+}
+.wn-editable__pencil {
+    display: none;
+    position: absolute;
+    top: -0.75rem;
+    right: -0.75rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    align-items: center;
+    justify-content: center;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    font-size: 0.6875rem;
+    cursor: pointer;
+    z-index: 2;
+}
+.wn-editable:hover .wn-editable__pencil {
+    display: inline-flex;
+}
+.wn-editable.is-editing {
+    outline-color: #2563eb;
+}
+
+.wn-editable__input {
+    display: block;
+    width: 100%;
+    min-width: 12ch;
+    font: inherit;
+    color: inherit;
+    background: #fff;
+    border: 1px solid #2563eb;
+    border-radius: 3px;
+    padding: 0.15em 0.3em;
+    box-sizing: border-box;
+}
+textarea.wn-editable__input {
+    min-height: 4.5em;
+    resize: vertical;
+}
+
+.wn-editable__toolbar {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.35rem;
+}
+.wn-editable__toolbar button {
+    font-size: 0.75rem;
+    line-height: 1;
+    padding: 0.4em 0.75em;
+    border-radius: 4px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    cursor: pointer;
+}
+.wn-editable__toolbar button[data-wn-action="publish"] {
+    background: #16a34a;
+    border-color: #16a34a;
+    color: #fff;
+}
+.wn-editable__toolbar button[data-wn-action="save"] {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #fff;
+}
+.wn-editable__status {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-left: 0.25rem;
+}
+
+#wpadminbar .wn-admin-bar-publish.is-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}

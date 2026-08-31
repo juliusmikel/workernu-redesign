@@ -78,23 +78,24 @@ $classes     = workernu_section_classes($data, 'hero');
                         <span class="section--hero__eyebrow-icon"><?php echo workernu_icon($eyebrow_icon); ?></span>
                     <?php endif; ?>
                     <?php if ($eyebrow_label !== ''): ?>
-                        <span class="section--hero__eyebrow-label"><?php echo wp_kses_post($eyebrow_label); ?></span>
+                        <span class="section--hero__eyebrow-label"><?php echo workernu_inline_editable($data, 'eyebrow_label', 'text', wp_kses_post($eyebrow_label), $eyebrow_label); ?></span>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
 
             <?php if ($heading !== ''): ?>
-                <h1 class="section--hero__heading" data-animate-item="heading"><?php echo wp_kses_post($heading); ?></h1>
+                <h1 class="section--hero__heading" data-animate-item="heading"><?php echo workernu_inline_editable($data, 'heading', 'text', wp_kses_post($heading), $heading); ?></h1>
             <?php endif; ?>
 
             <?php $body_html = workernu_text($data['body'] ?? null, 'section--hero__body'); ?>
+            <?php $body_raw  = workernu_t($data['body']['value'] ?? ''); ?>
             <?php if ($body_html !== ''): ?>
-                <div class="section--hero__body-wrap" data-animate-item="body"><?php echo $body_html; ?></div>
+                <div class="section--hero__body-wrap" data-animate-item="body"><?php echo workernu_inline_editable($data, 'body', 'rich_text', $body_html, $body_raw, 'div'); ?></div>
             <?php endif; ?>
 
             <?php if ($ctas): ?>
                 <div class="section--hero__ctas" data-animate-item="ctas">
-                    <?php foreach ($ctas as $cta):
+                    <?php foreach ($ctas as $cta_i => $cta):
                         $cta_label   = workernu_t($cta['label'] ?? '');
                         $cta_url     = (string) ($cta['url']     ?? '');
                         $cta_variant = (string) ($cta['variant'] ?? 'primary');
@@ -105,7 +106,7 @@ $classes     = workernu_section_classes($data, 'hero');
                            href="<?php echo esc_url(workernu_localize_url($cta_url)); ?>"
                            target="<?php echo esc_attr($cta_target); ?>"
                            <?php echo $cta_target === '_blank' ? 'rel="noopener"' : ''; ?>>
-                            <?php echo wp_kses_post($cta_label); ?>
+                            <?php echo workernu_inline_editable($data, "ctas.$cta_i.label", 'text', wp_kses_post($cta_label), $cta_label); ?>
                         </a>
                     <?php endforeach; ?>
                 </div>
@@ -142,7 +143,7 @@ $classes     = workernu_section_classes($data, 'hero');
                                         </span>
                                     <?php endforeach; ?>
                                     <?php if ($badge_5th !== ''): ?>
-                                        <span class="section--hero__avatar section--hero__avatar--badge"><?php echo wp_kses_post($badge_5th); ?></span>
+                                        <span class="section--hero__avatar section--hero__avatar--badge"><?php echo workernu_inline_editable($data, 'users_badge_label', 'text', wp_kses_post($badge_5th), $badge_5th); ?></span>
                                     <?php endif; ?>
                                 </div>
                             <?php endif; ?>
@@ -150,10 +151,10 @@ $classes     = workernu_section_classes($data, 'hero');
                             <?php if ($has_caption): ?>
                                 <div class="section--hero__users-caption">
                                     <?php if ($users_num !== ''): ?>
-                                        <span class="section--hero__users-number"><?php echo wp_kses_post($users_num); ?></span>
+                                        <span class="section--hero__users-number"><?php echo workernu_inline_editable($data, 'users_count_number', 'text', wp_kses_post($users_num), $users_num); ?></span>
                                     <?php endif; ?>
                                     <?php if ($users_lbl !== ''): ?>
-                                        <span class="section--hero__users-label"><?php echo wp_kses_post($users_lbl); ?></span>
+                                        <span class="section--hero__users-label"><?php echo workernu_inline_editable($data, 'users_count_label', 'text', wp_kses_post($users_lbl), $users_lbl); ?></span>
                                     <?php endif; ?>
                                 </div>
                             <?php endif; ?>

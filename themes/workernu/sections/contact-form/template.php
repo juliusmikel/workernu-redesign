@@ -38,51 +38,63 @@ if ($recaptcha_site_key !== '') {
 <section class="<?php echo esc_attr($classes); ?>">
     <div class="section--contact-form__inner container">
 
-        <!-- ── Left: contact info ── -->
-        <div class="section--contact-form__left">
+        <?php
+        // Rendering an empty __left when nothing's filled isn't just wasted
+        // markup: an empty grid item still has a `1fr` track, but its
+        // min-content is 0 — so as the row narrows, that track loses out to
+        // __right's real min-content almost entirely, which is what "the
+        // form spans the entire width" actually was. Omitting the column
+        // outright (rather than emptying it) lets :only-child below give
+        // __right an intentional width instead of an accidental one.
+        $has_left = $heading !== '' || $subheading !== '' || $contacts || $response_time !== '';
+        ?>
+        <?php if ($has_left): ?>
+            <!-- ── Left: contact info ── -->
+            <div class="section--contact-form__left">
 
-            <?php if ($heading !== ''): ?>
-                <h2 class="section--contact-form__heading"><?php echo nl2br(wp_kses_post($heading)); ?></h2>
-            <?php endif; ?>
+                <?php if ($heading !== ''): ?>
+                    <h2 class="section--contact-form__heading"><?php echo workernu_inline_editable($data, 'heading', 'textarea', nl2br(wp_kses_post($heading)), $heading); ?></h2>
+                <?php endif; ?>
 
-            <?php if ($subheading !== ''): ?>
-                <p class="section--contact-form__sub"><?php echo wp_kses_post($subheading); ?></p>
-            <?php endif; ?>
+                <?php if ($subheading !== ''): ?>
+                    <p class="section--contact-form__sub"><?php echo workernu_inline_editable($data, 'subheading', 'text', wp_kses_post($subheading), $subheading); ?></p>
+                <?php endif; ?>
 
-            <?php if ($contacts): ?>
-                <ul class="section--contact-form__contacts">
-                    <?php foreach ($contacts as $contact):
-                        $clabel = workernu_t($contact['label']     ?? '');
-                        $cvalue = workernu_t($contact['value']     ?? '');
-                        $curl   = (string) ($contact['value_url'] ?? '');
-                        $cnote  = workernu_t($contact['note']      ?? '');
-                        if ($cvalue === '') continue;
-                    ?>
-                        <li class="section--contact-form__contact">
-                            <?php if ($clabel !== ''): ?>
-                                <span class="section--contact-form__contact-label"><?php echo wp_kses_post($clabel); ?></span>
-                            <?php endif; ?>
-                            <?php if ($curl !== ''): ?>
-                                <a class="section--contact-form__contact-value" href="<?php echo esc_url($curl); ?>"><?php echo wp_kses_post($cvalue); ?></a>
-                            <?php else: ?>
-                                <strong class="section--contact-form__contact-value"><?php echo wp_kses_post($cvalue); ?></strong>
-                            <?php endif; ?>
-                            <?php if ($cnote !== ''): ?>
-                                <span class="section--contact-form__contact-note"><?php echo wp_kses_post($cnote); ?></span>
-                            <?php endif; ?>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            <?php endif; ?>
+                <?php if ($contacts): ?>
+                    <ul class="section--contact-form__contacts">
+                        <?php foreach ($contacts as $contact_i => $contact):
+                            $clabel = workernu_t($contact['label']     ?? '');
+                            $cvalue = workernu_t($contact['value']     ?? '');
+                            $curl   = (string) ($contact['value_url'] ?? '');
+                            $cnote  = workernu_t($contact['note']      ?? '');
+                            if ($cvalue === '') continue;
+                        ?>
+                            <li class="section--contact-form__contact">
+                                <?php if ($clabel !== ''): ?>
+                                    <span class="section--contact-form__contact-label"><?php echo workernu_inline_editable($data, "contacts.$contact_i.label", 'text', wp_kses_post($clabel), $clabel); ?></span>
+                                <?php endif; ?>
+                                <?php if ($curl !== ''): ?>
+                                    <a class="section--contact-form__contact-value" href="<?php echo esc_url($curl); ?>"><?php echo workernu_inline_editable($data, "contacts.$contact_i.value", 'text', wp_kses_post($cvalue), $cvalue); ?></a>
+                                <?php else: ?>
+                                    <strong class="section--contact-form__contact-value"><?php echo workernu_inline_editable($data, "contacts.$contact_i.value", 'text', wp_kses_post($cvalue), $cvalue); ?></strong>
+                                <?php endif; ?>
+                                <?php if ($cnote !== ''): ?>
+                                    <span class="section--contact-form__contact-note"><?php echo workernu_inline_editable($data, "contacts.$contact_i.note", 'text', wp_kses_post($cnote), $cnote); ?></span>
+                                <?php endif; ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
 
-            <?php if ($response_time !== ''): ?>
-                <p class="section--contact-form__response">
-                    <span class="section--contact-form__dot" aria-hidden="true"></span>
-                    <?php echo wp_kses_post($response_time); ?>
-                </p>
-            <?php endif; ?>
+                <?php if ($response_time !== ''): ?>
+                    <p class="section--contact-form__response">
+                        <span class="section--contact-form__dot" aria-hidden="true"></span>
+                        <?php echo workernu_inline_editable($data, 'response_time', 'text', wp_kses_post($response_time), $response_time); ?>
+                    </p>
+                <?php endif; ?>
 
-        </div>
+            </div>
+        <?php endif; ?>
 
         <!-- ── Right: form ── -->
         <div class="section--contact-form__right">
@@ -217,7 +229,7 @@ if ($recaptcha_site_key !== '') {
                 <!-- Consent -->
                 <label class="section--contact-form__consent">
                     <input class="section--contact-form__checkbox" type="checkbox" name="wn_consent" required>
-                    <span class="section--contact-form__consent-text"><?php echo wp_kses_post($privacy_label); ?></span>
+                    <span class="section--contact-form__consent-text"><?php echo workernu_inline_editable($data, 'privacy_label', 'text', wp_kses_post($privacy_label), $privacy_label); ?></span>
                 </label>
 
                 <?php if ($recaptcha_site_key !== ''): ?>
@@ -240,7 +252,7 @@ if ($recaptcha_site_key !== '') {
 
                 <!-- Submit -->
                 <button class="section--contact-form__submit" type="submit">
-                    <?php echo wp_kses_post($submit_label); ?>
+                    <?php echo workernu_inline_editable($data, 'submit_label', 'text', wp_kses_post($submit_label), $submit_label); ?>
                 </button>
 
             </form>

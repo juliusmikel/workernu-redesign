@@ -20,17 +20,17 @@ $classes    = workernu_section_classes($data, 'cards');
         <?php if ($heading !== '' || $subheading !== ''): ?>
             <header class="section--cards__header" data-animate-item="header">
                 <?php if ($heading !== ''): ?>
-                    <h2 class="section--cards__heading"><?php echo wp_kses_post($heading); ?></h2>
+                    <h2 class="section--cards__heading"><?php echo workernu_inline_editable($data, 'heading', 'text', wp_kses_post($heading), $heading); ?></h2>
                 <?php endif; ?>
                 <?php if ($subheading !== ''): ?>
-                    <p class="section--cards__sub"><?php echo nl2br(wp_kses_post($subheading)); ?></p>
+                    <p class="section--cards__sub"><?php echo workernu_inline_editable($data, 'subheading', 'textarea', nl2br(wp_kses_post($subheading)), $subheading); ?></p>
                 <?php endif; ?>
             </header>
         <?php endif; ?>
 
         <?php if ($cards): ?>
             <ul class="section--cards__grid" data-animate-item="grid">
-                <?php foreach ($cards as $card):
+                <?php foreach ($cards as $card_i => $card):
                     // image may be an int (legacy) or a { lt: id, en: id } map.
                     $image_value = $card['image'] ?? 0;
                     $image_url   = workernu_image_url($image_value, 'large');
@@ -57,14 +57,14 @@ $classes    = workernu_section_classes($data, 'cards');
 
                             <div class="section--cards__content">
                                 <?php if ($title !== ''): ?>
-                                    <h3 class="section--cards__title"><?php echo wp_kses_post($title); ?></h3>
+                                    <h3 class="section--cards__title"><?php echo workernu_inline_editable($data, "cards.$card_i.title", 'text', wp_kses_post($title), $title); ?></h3>
                                 <?php endif; ?>
                                 <?php if ($description !== ''): ?>
-                                    <p class="section--cards__desc"><?php echo nl2br(wp_kses_post($description)); ?></p>
+                                    <p class="section--cards__desc"><?php echo workernu_inline_editable($data, "cards.$card_i.description", 'textarea', nl2br(wp_kses_post($description)), $description); ?></p>
                                 <?php endif; ?>
                                 <?php if ($url !== '' && $link_style === 'inline-text'): ?>
                                     <span class="section--cards__link-text" aria-hidden="true">
-                                        <?php echo wp_kses_post($link_label); ?>
+                                        <?php echo workernu_inline_editable($data, 'link_label', 'text', wp_kses_post($link_label), $link_label); ?>
                                         <i class="fa-solid fa-arrow-right"></i>
                                     </span>
                                 <?php endif; ?>
@@ -78,7 +78,7 @@ $classes    = workernu_section_classes($data, 'cards');
         <?php if ($cta_label !== '' && $cta_url !== ''): ?>
             <div class="section--cards__cta-wrap" data-animate-item="cta">
                 <a class="btn btn--primary" href="<?php echo esc_url(workernu_localize_url($cta_url)); ?>">
-                    <?php echo wp_kses_post($cta_label); ?>
+                    <?php echo workernu_inline_editable($data, 'cta_label', 'text', wp_kses_post($cta_label), $cta_label); ?>
                 </a>
             </div>
         <?php endif; ?>

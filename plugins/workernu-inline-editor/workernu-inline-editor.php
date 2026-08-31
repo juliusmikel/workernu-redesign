@@ -17,6 +17,8 @@ require_once WORKERNU_INLINE_EDITOR_PATH . 'includes/mode.php';
 require_once WORKERNU_INLINE_EDITOR_PATH . 'includes/draft.php';
 require_once WORKERNU_INLINE_EDITOR_PATH . 'includes/render.php';
 require_once WORKERNU_INLINE_EDITOR_PATH . 'includes/ajax.php';
+require_once WORKERNU_INLINE_EDITOR_PATH . 'includes/markup.php';
+require_once WORKERNU_INLINE_EDITOR_PATH . 'includes/api.php';
 
 add_action('template_redirect', '\\WorkerNu\\InlineEditor\\Mode\\handle_toggle');
 add_filter('get_post_metadata', '\\WorkerNu\\InlineEditor\\Render\\swap_live_for_draft', 10, 4);

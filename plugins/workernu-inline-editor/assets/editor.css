@@ -15,11 +15,16 @@
 .wn-editable:hover {
     outline-color: #2563eb;
 }
-/* Removes .wn-editable__content's own box from the render tree so its
-   block-or-inline child (a <p>/<ul> for rich_text, or plain text otherwise)
-   lays out as if it were a direct child of .wn-editable — avoids the
-   invalid-nesting artifacts of wrapping block content in a <span>. */
-.wn-editable__content {
+/* rich_text is the only type that can render block-level HTML (<p>/<ul>/<ol>
+   via workernu_text()) — display:contents there removes .wn-editable__content's
+   own box so that block content lays out as a direct child of .wn-editable
+   (a <div> at those call sites), avoiding invalid-nesting artifacts.
+   Scoped to [data-wn-type="rich_text"] only: applying display:contents to a
+   plain text/textarea field's bare text node made the text disappear
+   entirely once it wrapped across multiple lines (a browser rendering bug
+   with display:contents + a bare, line-wrapping text-node child) — plain
+   text fields never render block content, so they don't need it anyway. */
+[data-wn-type="rich_text"] > .wn-editable__content {
     display: contents;
 }
 .wn-editable__pencil {

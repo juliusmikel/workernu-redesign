@@ -15,8 +15,11 @@ define('WORKERNU_INLINE_EDITOR_URL',     plugin_dir_url(__FILE__));
 
 require_once WORKERNU_INLINE_EDITOR_PATH . 'includes/mode.php';
 require_once WORKERNU_INLINE_EDITOR_PATH . 'includes/draft.php';
+require_once WORKERNU_INLINE_EDITOR_PATH . 'includes/render.php';
 
 add_action('template_redirect', '\\WorkerNu\\InlineEditor\\Mode\\handle_toggle');
+add_filter('get_post_metadata', '\\WorkerNu\\InlineEditor\\Render\\swap_live_for_draft', 10, 4);
+add_filter('body_class',        '\\WorkerNu\\InlineEditor\\Render\\flag_body_class');
 
 // Soft dependency check, mirrors workernu-sections.php's own pattern.
 add_action('admin_notices', function () {

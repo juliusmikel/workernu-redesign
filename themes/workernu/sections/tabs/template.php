@@ -16,10 +16,20 @@ $classes    = workernu_section_classes($data, 'tabs');
 // Stable instance id for aria wiring (sections store a stable _id).
 $uid = sanitize_html_class((string) ($data['_id'] ?? uniqid('tabs-')));
 
-// Drop tabs with no usable content.
-$tabs = array_values(array_filter($tabs, function ($t) {
-    return workernu_t($t['tab_label'] ?? '') !== '';
-}));
+// Drop tabs with no usable content. orig_i (this tab's index in the raw
+// $data['tabs'] — what Draft\save_field() reads) is preserved through the
+// filter/reindex, since it diverges from the filtered array's own position
+// as soon as an earlier tab is dropped for having no tab_label.
+$tabs = array_values(array_filter(
+    array_map(function ($t, $orig_i) {
+        if (!is_array($t)) return null;
+        $t['orig_i'] = $orig_i;
+        return $t;
+    }, $tabs, array_keys($tabs)),
+    function ($t) {
+        return $t !== null && workernu_t($t['tab_label'] ?? '') !== '';
+    }
+));
 ?>
 <section class="<?php echo esc_attr($classes); ?>" data-animate="tabs">
     <div class="section--tabs__inner container">
@@ -27,10 +37,10 @@ $tabs = array_values(array_filter($tabs, function ($t) {
         <?php if ($heading !== '' || $subheading !== ''): ?>
             <header class="section--tabs__header" data-animate-item="header">
                 <?php if ($heading !== ''): ?>
-                    <h2 class="section--tabs__heading"><?php echo wp_kses_post($heading); ?></h2>
+                    <h2 class="section--tabs__heading"><?php echo workernu_inline_editable($data, 'heading', 'text', wp_kses_post($heading), $heading); ?></h2>
                 <?php endif; ?>
                 <?php if ($subheading !== ''): ?>
-                    <p class="section--tabs__sub"><?php echo nl2br(wp_kses_post($subheading)); ?></p>
+                    <p class="section--tabs__sub"><?php echo workernu_inline_editable($data, 'subheading', 'textarea', nl2br(wp_kses_post($subheading)), $subheading); ?></p>
                 <?php endif; ?>
             </header>
         <?php endif; ?>
@@ -46,7 +56,7 @@ $tabs = array_values(array_filter($tabs, function ($t) {
                             id="tab-<?php echo esc_attr($uid . '-' . $i); ?>"
                             aria-controls="panel-<?php echo esc_attr($uid . '-' . $i); ?>"
                             aria-selected="<?php echo $i === 0 ? 'true' : 'false'; ?>">
-                        <?php echo wp_kses_post($label); ?>
+                        <?php echo workernu_inline_editable($data, "tabs.{$t['orig_i']}.tab_label", 'text', wp_kses_post($label), $label); ?>
                     </button>
                 <?php endforeach; ?>
             </div>
@@ -55,6 +65,7 @@ $tabs = array_values(array_filter($tabs, function ($t) {
                 <?php foreach ($tabs as $i => $t):
                     $panel_heading = workernu_t($t['panel_heading'] ?? '');
                     $body_html     = workernu_text($t['panel_body'] ?? null, 'section--tabs__body');
+                    $body_raw      = workernu_t($t['panel_body']['value'] ?? '');
                     $cta_label     = workernu_t($t['cta_label'] ?? '');
                     $cta_url       = (string) ($t['cta_url'] ?? '');
                     $cta2_label    = workernu_t($t['cta2_label'] ?? '');
@@ -73,21 +84,21 @@ $tabs = array_values(array_filter($tabs, function ($t) {
 
                         <div class="section--tabs__panel-text">
                             <?php if ($panel_heading !== ''): ?>
-                                <h3 class="section--tabs__panel-heading"><?php echo wp_kses_post($panel_heading); ?></h3>
+                                <h3 class="section--tabs__panel-heading"><?php echo workernu_inline_editable($data, "tabs.{$t['orig_i']}.panel_heading", 'text', wp_kses_post($panel_heading), $panel_heading); ?></h3>
                             <?php endif; ?>
                             <?php if ($body_html !== ''): ?>
-                                <div class="section--tabs__panel-body"><?php echo $body_html; ?></div>
+                                <div class="section--tabs__panel-body"><?php echo workernu_inline_editable($data, "tabs.{$t['orig_i']}.panel_body", 'rich_text', $body_html, $body_raw, 'div'); ?></div>
                             <?php endif; ?>
                             <?php if (($cta_label !== '' && $cta_url !== '') || ($cta2_label !== '' && $cta2_url !== '')): ?>
                                 <div class="section--tabs__ctas">
                                     <?php if ($cta_label !== '' && $cta_url !== ''): ?>
                                         <a class="btn btn--primary" href="<?php echo esc_url(workernu_localize_url($cta_url)); ?>">
-                                            <?php echo wp_kses_post($cta_label); ?>
+                                            <?php echo workernu_inline_editable($data, "tabs.{$t['orig_i']}.cta_label", 'text', wp_kses_post($cta_label), $cta_label); ?>
                                         </a>
                                     <?php endif; ?>
                                     <?php if ($cta2_label !== '' && $cta2_url !== ''): ?>
                                         <a class="btn btn--outline" href="<?php echo esc_url(workernu_localize_url($cta2_url)); ?>">
-                                            <?php echo wp_kses_post($cta2_label); ?>
+                                            <?php echo workernu_inline_editable($data, "tabs.{$t['orig_i']}.cta2_label", 'text', wp_kses_post($cta2_label), $cta2_label); ?>
                                         </a>
                                     <?php endif; ?>
                                 </div>

@@ -11,12 +11,23 @@ $title   = workernu_t($data['title']   ?? '');
 $heading = workernu_t($data['heading'] ?? '');
 $stats   = is_array($data['stats'] ?? null) ? $data['stats'] : [];
 
-$stats = array_values(array_filter($stats, function ($s) {
-    if (!is_array($s)) return false;
-    $num = workernu_t($s['number'] ?? '');
-    $lbl = workernu_t($s['label']  ?? '');
-    return $num !== '' || $lbl !== '';
-}));
+// orig_i (this stat's index in the raw $data['stats'] — what
+// Draft\save_field() reads) is preserved through the filter/reindex below,
+// since it diverges from the filtered array's own position as soon as an
+// earlier stat is dropped for having no number/label.
+$stats = array_values(array_filter(
+    array_map(function ($s, $orig_i) {
+        if (!is_array($s)) return null;
+        $s['orig_i'] = $orig_i;
+        return $s;
+    }, $stats, array_keys($stats)),
+    function ($s) {
+        if ($s === null) return false;
+        $num = workernu_t($s['number'] ?? '');
+        $lbl = workernu_t($s['label']  ?? '');
+        return $num !== '' || $lbl !== '';
+    }
+));
 $stats = array_slice($stats, 0, 3);
 $count = count($stats);
 
@@ -27,7 +38,7 @@ $classes = workernu_section_classes($data, 'stats');
 
         <?php if ($title !== ''): ?>
             <h2 class="section--stats__title" data-animate-item="title">
-                <?php echo wp_kses_post($title); ?>
+                <?php echo workernu_inline_editable($data, 'title', 'text', wp_kses_post($title), $title); ?>
             </h2>
         <?php endif; ?>
 
@@ -35,7 +46,7 @@ $classes = workernu_section_classes($data, 'stats');
 
             <?php if ($heading !== ''): ?>
                 <div class="section--stats__heading-wrap">
-                    <p class="section--stats__heading"><?php echo wp_kses_post($heading); ?></p>
+                    <p class="section--stats__heading"><?php echo workernu_inline_editable($data, 'heading', 'text', wp_kses_post($heading), $heading); ?></p>
                 </div>
             <?php endif; ?>
 
@@ -45,16 +56,17 @@ $classes = workernu_section_classes($data, 'stats');
                         $num = workernu_t($stat['number']  ?? '');
                         $lbl = workernu_t($stat['label']   ?? '');
                         $cap = workernu_t($stat['caption'] ?? '');
+                        $si  = $stat['orig_i'];
                         ?>
                         <li class="section--stats__stat">
                             <?php if ($num !== ''): ?>
-                                <span class="section--stats__number"><?php echo wp_kses_post($num); ?></span>
+                                <span class="section--stats__number"><?php echo workernu_inline_editable($data, "stats.$si.number", 'text', wp_kses_post($num), $num); ?></span>
                             <?php endif; ?>
                             <?php if ($lbl !== ''): ?>
-                                <p class="section--stats__label"><?php echo wp_kses_post($lbl); ?></p>
+                                <p class="section--stats__label"><?php echo workernu_inline_editable($data, "stats.$si.label", 'text', wp_kses_post($lbl), $lbl); ?></p>
                             <?php endif; ?>
                             <?php if ($cap !== ''): ?>
-                                <p class="section--stats__caption"><?php echo wp_kses_post($cap); ?></p>
+                                <p class="section--stats__caption"><?php echo workernu_inline_editable($data, "stats.$si.caption", 'text', wp_kses_post($cap), $cap); ?></p>
                             <?php endif; ?>
                         </li>
                     <?php endforeach; ?>

@@ -21,10 +21,10 @@ $classes    = workernu_section_classes($data, 'zigzag-rows');
         <?php if ($heading !== '' || $subheading !== ''): ?>
             <div class="section--zigzag-rows__header" data-animate-item="header">
                 <?php if ($heading !== ''): ?>
-                    <h2 class="section--zigzag-rows__heading"><?php echo wp_kses_post($heading); ?></h2>
+                    <h2 class="section--zigzag-rows__heading"><?php echo workernu_inline_editable($data, 'heading', 'text', wp_kses_post($heading), $heading); ?></h2>
                 <?php endif; ?>
                 <?php if ($subheading !== ''): ?>
-                    <p class="section--zigzag-rows__sub"><?php echo nl2br(wp_kses_post($subheading)); ?></p>
+                    <p class="section--zigzag-rows__sub"><?php echo workernu_inline_editable($data, 'subheading', 'textarea', nl2br(wp_kses_post($subheading)), $subheading); ?></p>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
@@ -43,6 +43,7 @@ $classes    = workernu_section_classes($data, 'zigzag-rows');
                     $eyebrow_style = (string) ($row['eyebrow_style'] ?? 'plain');
                     $title         = workernu_t($row['title']   ?? '');
                     $body_html     = workernu_text($row['body'] ?? null, 'section--zigzag-rows__body');
+                    $body_raw      = workernu_t($row['body']['value'] ?? '');
                     $cta_label     = workernu_t($row['cta_label'] ?? '');
                     $cta_url       = (string) ($row['cta_url'] ?? '');
                     if ($title === '' && $body_html === '' && $image_url === '') continue;
@@ -57,17 +58,17 @@ $classes    = workernu_section_classes($data, 'zigzag-rows');
 
                         <div class="section--zigzag-rows__content">
                             <?php if ($eyebrow !== ''): ?>
-                                <span class="section--zigzag-rows__eyebrow section--zigzag-rows__eyebrow--<?php echo esc_attr($eyebrow_style); ?>"><?php echo wp_kses_post($eyebrow); ?></span>
+                                <span class="section--zigzag-rows__eyebrow section--zigzag-rows__eyebrow--<?php echo esc_attr($eyebrow_style); ?>"><?php echo workernu_inline_editable($data, "rows.$i.eyebrow", 'text', wp_kses_post($eyebrow), $eyebrow); ?></span>
                             <?php endif; ?>
                             <?php if ($title !== ''): ?>
-                                <h3 class="section--zigzag-rows__title"><?php echo wp_kses_post($title); ?></h3>
+                                <h3 class="section--zigzag-rows__title"><?php echo workernu_inline_editable($data, "rows.$i.title", 'text', wp_kses_post($title), $title); ?></h3>
                             <?php endif; ?>
                             <?php if ($body_html !== ''): ?>
-                                <div class="section--zigzag-rows__body-wrap"><?php echo $body_html; ?></div>
+                                <div class="section--zigzag-rows__body-wrap"><?php echo workernu_inline_editable($data, "rows.$i.body", 'rich_text', $body_html, $body_raw, 'div'); ?></div>
                             <?php endif; ?>
                             <?php if ($cta_label !== '' && $cta_url !== ''): ?>
                                 <a class="btn btn--primary" href="<?php echo esc_url(workernu_localize_url($cta_url)); ?>">
-                                    <?php echo wp_kses_post($cta_label); ?>
+                                    <?php echo workernu_inline_editable($data, "rows.$i.cta_label", 'text', wp_kses_post($cta_label), $cta_label); ?>
                                 </a>
                             <?php endif; ?>
                         </div>

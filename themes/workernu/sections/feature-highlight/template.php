@@ -19,18 +19,18 @@ $has_intro = $eyebrow !== '' || $heading !== '' || $body !== '' || $ctas;
         <?php if ($has_intro): ?>
             <div class="section--feature-highlight__intro" data-animate-item="intro">
                 <?php if ($eyebrow !== ''): ?>
-                    <span class="section--feature-highlight__eyebrow"><?php echo wp_kses_post($eyebrow); ?></span>
+                    <span class="section--feature-highlight__eyebrow"><?php echo workernu_inline_editable($data, 'eyebrow', 'text', wp_kses_post($eyebrow), $eyebrow); ?></span>
                 <?php endif; ?>
                 <?php if ($heading !== ''): ?>
-                    <h2 class="section--feature-highlight__heading"><?php echo wp_kses_post($heading); ?></h2>
+                    <h2 class="section--feature-highlight__heading"><?php echo workernu_inline_editable($data, 'heading', 'text', wp_kses_post($heading), $heading); ?></h2>
                 <?php endif; ?>
                 <?php if ($body !== ''): ?>
-                    <p class="section--feature-highlight__body"><?php echo nl2br(wp_kses_post($body)); ?></p>
+                    <p class="section--feature-highlight__body"><?php echo workernu_inline_editable($data, 'body', 'textarea', nl2br(wp_kses_post($body)), $body); ?></p>
                 <?php endif; ?>
 
                 <?php if ($ctas): ?>
                     <div class="section--feature-highlight__ctas">
-                        <?php foreach ($ctas as $cta):
+                        <?php foreach ($ctas as $cta_i => $cta):
                             $cta_label   = workernu_t($cta['label'] ?? '');
                             $cta_url     = (string) ($cta['url']     ?? '');
                             $cta_variant = (string) ($cta['variant'] ?? 'primary');
@@ -41,7 +41,7 @@ $has_intro = $eyebrow !== '' || $heading !== '' || $body !== '' || $ctas;
                                href="<?php echo esc_url(workernu_localize_url($cta_url)); ?>"
                                target="<?php echo esc_attr($cta_target); ?>"
                                <?php echo $cta_target === '_blank' ? 'rel="noopener"' : ''; ?>>
-                                <?php echo wp_kses_post($cta_label); ?>
+                                <?php echo workernu_inline_editable($data, "ctas.$cta_i.label", 'text', wp_kses_post($cta_label), $cta_label); ?>
                             </a>
                         <?php endforeach; ?>
                     </div>
@@ -51,7 +51,7 @@ $has_intro = $eyebrow !== '' || $heading !== '' || $body !== '' || $ctas;
 
         <?php if ($items): ?>
             <ul class="section--feature-highlight__items" data-animate-item="items">
-                <?php foreach ($items as $item):
+                <?php foreach ($items as $item_i => $item):
                     $icon             = (string) ($item['icon'] ?? '');
                     // icon_image may be an int (legacy) or a { lt: id, en: id } map.
                     $icon_image_value = $item['icon_image'] ?? 0;
@@ -76,12 +76,12 @@ $has_intro = $eyebrow !== '' || $heading !== '' || $body !== '' || $ctas;
                                 </span>
                             <?php endif; ?>
                             <?php if ($title !== ''): ?>
-                                <h3 class="section--feature-highlight__item-title"><?php echo wp_kses_post($title); ?></h3>
+                                <h3 class="section--feature-highlight__item-title"><?php echo workernu_inline_editable($data, "items.$item_i.title", 'text', wp_kses_post($title), $title); ?></h3>
                             <?php endif; ?>
                         </div>
                         <?php if ($description !== ''): ?>
                             <div class="section--feature-highlight__item-text">
-                                <p class="section--feature-highlight__item-desc"><?php echo nl2br(wp_kses_post($description)); ?></p>
+                                <p class="section--feature-highlight__item-desc"><?php echo workernu_inline_editable($data, "items.$item_i.description", 'textarea', nl2br(wp_kses_post($description)), $description); ?></p>
                             </div>
                         <?php endif; ?>
                     </li>

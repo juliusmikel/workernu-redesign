@@ -5,37 +5,36 @@
 
     var cfg = wnInlineEditor;
 
+    // A .wn-editable can sit inside a container with its OWN click handler
+    // (a CTA's <a>, a FAQ <summary> that toggles its <details>, a submit
+    // <button>, a consent <label> that toggles its checkbox, ...), attached
+    // directly to that ancestor. Starting the edit uses capture phase +
+    // stopPropagation() so the click never reaches that ancestor's handler
+    // at all — safe here because nothing else needs this particular click
+    // to keep propagating.
     document.addEventListener('click', function (e) {
-        // A .wn-editable can sit inside an <a> (CTA labels) — while it's
-        // actively editing, nothing inside it (input, toolbar buttons)
-        // should ever trigger that link's navigation.
-        if (e.target.closest('.wn-editable.is-editing')) {
-            e.preventDefault();
-        }
-
         var pencil = e.target.closest('.wn-editable__pencil');
-        if (pencil) {
-            e.preventDefault();
-            startEdit(pencil.closest('.wn-editable'));
-            return;
-        }
+        if (!pencil) return;
+        e.preventDefault();
+        e.stopPropagation();
+        startEdit(pencil.closest('.wn-editable'));
+    }, true);
 
-        var publishNode = e.target.closest('.wn-admin-bar-publish');
-        if (publishNode && !publishNode.classList.contains('is-disabled')) {
-            e.preventDefault();
-            publishAll();
-        }
-    });
-
-    // The pencil is a <span role="button"> (not a real <button> — several
-    // call sites render inside an <a>, where a nested <button> is invalid
-    // HTML), so it needs its own keyboard activation for accessibility.
     document.addEventListener('keydown', function (e) {
         if (e.key !== 'Enter' && e.key !== ' ') return;
         var pencil = e.target.closest('.wn-editable__pencil');
         if (!pencil) return;
         e.preventDefault();
+        e.stopPropagation();
         startEdit(pencil.closest('.wn-editable'));
+    }, true);
+
+    document.addEventListener('click', function (e) {
+        var publishNode = e.target.closest('.wn-admin-bar-publish');
+        if (publishNode && !publishNode.classList.contains('is-disabled')) {
+            e.preventDefault();
+            publishAll();
+        }
     });
 
     function startEdit(wrapper) {
@@ -58,6 +57,15 @@
             '<button type="button" data-wn-action="publish">' + cfg.i18n.publish + '</button>' +
             '<button type="button" data-wn-action="cancel">' + cfg.i18n.cancel + '</button>' +
             '<span class="wn-editable__status"></span>';
+
+        // Stops a click on the input or a toolbar button from continuing on
+        // to whatever ancestor .wn-editable happens to sit inside (a CTA's
+        // <a>, a FAQ <summary>, a submit <button>, ...) — added here as a
+        // plain bubble-phase listener, so it runs AFTER toolbar's own click
+        // handler below (a descendant) has already done its job, and only
+        // stops the event from going any further up than this point.
+        wrapper._wnStopBubble = function (e) { e.stopPropagation(); };
+        wrapper.addEventListener('click', wrapper._wnStopBubble);
 
         wrapper.classList.add('is-editing');
         content.style.display = 'none';
@@ -87,6 +95,8 @@
     }
 
     function endEdit(wrapper, input, toolbar, content) {
+        wrapper.removeEventListener('click', wrapper._wnStopBubble);
+        delete wrapper._wnStopBubble;
         wrapper.classList.remove('is-editing');
         input.remove();
         toolbar.remove();

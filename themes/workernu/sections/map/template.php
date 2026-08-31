@@ -23,10 +23,10 @@ $classes   = workernu_section_classes($data, 'map');
         <?php if ($heading !== '' || $body !== ''): ?>
             <header class="section--map__header" data-animate-item="header">
                 <?php if ($heading !== ''): ?>
-                    <h2 class="section--map__heading"><?php echo wp_kses_post($heading); ?></h2>
+                    <h2 class="section--map__heading"><?php echo workernu_inline_editable($data, 'heading', 'text', wp_kses_post($heading), $heading); ?></h2>
                 <?php endif; ?>
                 <?php if ($body !== ''): ?>
-                    <p class="section--map__body"><?php echo nl2br(wp_kses_post($body)); ?></p>
+                    <p class="section--map__body"><?php echo workernu_inline_editable($data, 'body', 'textarea', nl2br(wp_kses_post($body)), $body); ?></p>
                 <?php endif; ?>
             </header>
         <?php endif; ?>
@@ -51,7 +51,7 @@ $classes   = workernu_section_classes($data, 'map');
         <?php if ($cta_label !== '' && $cta_url !== ''): ?>
             <div class="section--map__cta-wrap" data-animate-item="cta">
                 <a class="btn btn--primary" href="<?php echo esc_url(workernu_localize_url($cta_url)); ?>">
-                    <?php echo wp_kses_post($cta_label); ?>
+                    <?php echo workernu_inline_editable($data, 'cta_label', 'text', wp_kses_post($cta_label), $cta_label); ?>
                 </a>
             </div>
         <?php endif; ?>

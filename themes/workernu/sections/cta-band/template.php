@@ -13,16 +13,16 @@ $classes = workernu_section_classes($data, 'cta-band');
     <div class="section--cta-band__inner container">
 
         <?php if ($heading !== ''): ?>
-            <h2 class="section--cta-band__heading" data-animate-item="heading"><?php echo wp_kses_post($heading); ?></h2>
+            <h2 class="section--cta-band__heading" data-animate-item="heading"><?php echo workernu_inline_editable($data, 'heading', 'text', wp_kses_post($heading), $heading); ?></h2>
         <?php endif; ?>
 
         <?php if ($body !== ''): ?>
-            <p class="section--cta-band__body" data-animate-item="body"><?php echo nl2br(wp_kses_post($body)); ?></p>
+            <p class="section--cta-band__body" data-animate-item="body"><?php echo workernu_inline_editable($data, 'body', 'textarea', nl2br(wp_kses_post($body)), $body); ?></p>
         <?php endif; ?>
 
         <?php if ($ctas): ?>
             <div class="section--cta-band__ctas" data-animate-item="ctas">
-                <?php foreach ($ctas as $cta):
+                <?php foreach ($ctas as $cta_i => $cta):
                     $cta_label   = workernu_t($cta['label'] ?? '');
                     $cta_url     = (string) ($cta['url']     ?? '');
                     $cta_variant = (string) ($cta['variant'] ?? 'primary');
@@ -33,7 +33,7 @@ $classes = workernu_section_classes($data, 'cta-band');
                        href="<?php echo esc_url(workernu_localize_url($cta_url)); ?>"
                        target="<?php echo esc_attr($cta_target); ?>"
                        <?php echo $cta_target === '_blank' ? 'rel="noopener"' : ''; ?>>
-                        <?php echo wp_kses_post($cta_label); ?>
+                        <?php echo workernu_inline_editable($data, "ctas.$cta_i.label", 'text', wp_kses_post($cta_label), $cta_label); ?>
                     </a>
                 <?php endforeach; ?>
             </div>

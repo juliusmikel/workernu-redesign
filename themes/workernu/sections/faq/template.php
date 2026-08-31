@@ -24,10 +24,10 @@ $classes = workernu_section_classes($data, 'faq');
         <?php if ($heading !== '' || $subheading !== ''): ?>
             <header class="section--faq__header" data-animate-item="header">
                 <?php if ($heading !== ''): ?>
-                    <h2 class="section--faq__heading"><?php echo wp_kses_post($heading); ?></h2>
+                    <h2 class="section--faq__heading"><?php echo workernu_inline_editable($data, 'heading', 'text', wp_kses_post($heading), $heading); ?></h2>
                 <?php endif; ?>
                 <?php if ($subheading !== ''): ?>
-                    <p class="section--faq__sub"><?php echo nl2br(wp_kses_post($subheading)); ?></p>
+                    <p class="section--faq__sub"><?php echo workernu_inline_editable($data, 'subheading', 'textarea', nl2br(wp_kses_post($subheading)), $subheading); ?></p>
                 <?php endif; ?>
             </header>
         <?php endif; ?>
@@ -43,7 +43,7 @@ $classes = workernu_section_classes($data, 'faq');
                     <li class="section--faq__item" data-animate-item="item">
                         <details class="section--faq__details"<?php echo $is_open ? ' open' : ''; ?>>
                             <summary class="section--faq__question">
-                                <span class="section--faq__question-text"><?php echo wp_kses_post($q); ?></span>
+                                <span class="section--faq__question-text"><?php echo workernu_inline_editable($data, "items.$i.question", 'text', wp_kses_post($q), $q); ?></span>
                                 <span class="section--faq__icon" aria-hidden="true">
                                     <i class="fa-solid fa-plus section--faq__icon-plus"></i>
                                     <i class="fa-solid fa-minus section--faq__icon-minus"></i>
@@ -51,7 +51,7 @@ $classes = workernu_section_classes($data, 'faq');
                             </summary>
                             <div class="section--faq__answer">
                                 <div class="section--faq__answer-inner">
-                                    <p><?php echo nl2br(wp_kses_post($a)); ?></p>
+                                    <p><?php echo workernu_inline_editable($data, "items.$i.answer", 'textarea', nl2br(wp_kses_post($a)), $a); ?></p>
                                 </div>
                             </div>
                         </details>

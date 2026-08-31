@@ -23,10 +23,14 @@ function field(string $section_id, string $field_path, string $type, string $ren
 
     $wrapper = in_array($wrapper, ['span', 'div'], true) ? $wrapper : 'span';
 
+    // The pencil is a <span role="button">, not a <button> — several call
+    // sites (e.g. CTA labels) render inside an <a>, and a real <button>
+    // nested inside an <a> is invalid HTML (interactive content inside
+    // interactive content), which visibly distorted the parent .btn's box.
     return sprintf(
         '<%1$s class="wn-editable" data-wn-field="%2$s" data-wn-type="%3$s" data-wn-raw="%4$s">'
         . '<span class="wn-editable__content">%5$s</span>'
-        . '<button type="button" class="wn-editable__pencil" aria-label="%6$s"><i class="fa-solid fa-pencil" aria-hidden="true"></i></button>'
+        . '<span role="button" tabindex="0" class="wn-editable__pencil" aria-label="%6$s"><i class="fa-solid fa-pencil" aria-hidden="true"></i></span>'
         . '</%1$s>',
         $wrapper,
         esc_attr($section_id . '::' . $field_path),

@@ -6,6 +6,13 @@
     var cfg = wnInlineEditor;
 
     document.addEventListener('click', function (e) {
+        // A .wn-editable can sit inside an <a> (CTA labels) — while it's
+        // actively editing, nothing inside it (input, toolbar buttons)
+        // should ever trigger that link's navigation.
+        if (e.target.closest('.wn-editable.is-editing')) {
+            e.preventDefault();
+        }
+
         var pencil = e.target.closest('.wn-editable__pencil');
         if (pencil) {
             e.preventDefault();
@@ -18,6 +25,17 @@
             e.preventDefault();
             publishAll();
         }
+    });
+
+    // The pencil is a <span role="button"> (not a real <button> — several
+    // call sites render inside an <a>, where a nested <button> is invalid
+    // HTML), so it needs its own keyboard activation for accessibility.
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        var pencil = e.target.closest('.wn-editable__pencil');
+        if (!pencil) return;
+        e.preventDefault();
+        startEdit(pencil.closest('.wn-editable'));
     });
 
     function startEdit(wrapper) {

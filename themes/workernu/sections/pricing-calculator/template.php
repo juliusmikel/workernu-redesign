@@ -50,10 +50,10 @@ foreach ($plans as $i => $plan) {
         <?php if ($heading !== '' || $subheading !== ''): ?>
             <header class="section--pricing-calculator__header">
                 <?php if ($heading !== ''): ?>
-                    <h2 class="section--pricing-calculator__heading"><?php echo wp_kses_post($heading); ?></h2>
+                    <h2 class="section--pricing-calculator__heading"><?php echo workernu_inline_editable($data, 'heading', 'text', wp_kses_post($heading), $heading); ?></h2>
                 <?php endif; ?>
                 <?php if ($subheading !== ''): ?>
-                    <p class="section--pricing-calculator__sub"><?php echo nl2br(wp_kses_post($subheading)); ?></p>
+                    <p class="section--pricing-calculator__sub"><?php echo workernu_inline_editable($data, 'subheading', 'textarea', nl2br(wp_kses_post($subheading)), $subheading); ?></p>
                 <?php endif; ?>
             </header>
         <?php endif; ?>
@@ -62,7 +62,7 @@ foreach ($plans as $i => $plan) {
 
             <!-- ── Step 1: Plan cards (always visible) ── -->
             <?php if ($plans_label !== ''): ?>
-                <p class="section--pricing-calculator__step-label"><?php echo wp_kses_post($plans_label); ?></p>
+                <p class="section--pricing-calculator__step-label"><?php echo workernu_inline_editable($data, 'plans_label', 'text', wp_kses_post($plans_label), $plans_label); ?></p>
             <?php endif; ?>
 
             <div class="section--pricing-calculator__cards" role="radiogroup"
@@ -83,15 +83,15 @@ foreach ($plans as $i => $plan) {
                                 <?php echo workernu_icon($p['icon']); ?>
                             </span>
                         <?php endif; ?>
-                        <span class="section--pricing-calculator__plan-card-name"><?php echo wp_kses_post($p['name']); ?></span>
+                        <span class="section--pricing-calculator__plan-card-name"><?php echo workernu_inline_editable($data, "plans.$i.name", 'text', wp_kses_post($p['name']), $p['name']); ?></span>
                         <?php if ($p['desc'] !== ''): ?>
-                            <span class="section--pricing-calculator__plan-card-desc"><?php echo wp_kses_post($p['desc']); ?></span>
+                            <span class="section--pricing-calculator__plan-card-desc"><?php echo workernu_inline_editable($data, "plans.$i.description", 'text', wp_kses_post($p['desc']), $p['desc']); ?></span>
                         <?php endif; ?>
                         <span class="section--pricing-calculator__plan-card-price">
                             <?php echo esc_html(number_format($p['price'], $p['price'] == floor($p['price']) ? 0 : 2, '.', '') . ' ' . $currency); ?>
                         </span>
                         <?php if ($period_label !== ''): ?>
-                            <span class="section--pricing-calculator__plan-card-period"><?php echo esc_html($period_label); ?></span>
+                            <span class="section--pricing-calculator__plan-card-period"><?php echo workernu_inline_editable($data, 'period_label', 'text', esc_html($period_label), $period_label); ?></span>
                         <?php endif; ?>
                         <span class="section--pricing-calculator__plan-card-check" aria-hidden="true">
                             <i class="fa-solid fa-check"></i>
@@ -103,7 +103,7 @@ foreach ($plans as $i => $plan) {
             <!-- ── Selected plan info line (hidden until plan chosen) ── -->
             <?php if ($selected_plan_prefix !== ''): ?>
             <p class="section--pricing-calculator__selected-info" data-pc="selected-info" hidden>
-                <span data-pc="selected-prefix"><?php echo esc_html($selected_plan_prefix); ?></span>
+                <span data-pc="selected-prefix"><?php echo workernu_inline_editable($data, 'selected_plan_prefix', 'text', esc_html($selected_plan_prefix), $selected_plan_prefix); ?></span>
                 <strong data-pc="selected-name"></strong>
                 <span> — </span>
                 <span data-pc="selected-price"></span>
@@ -114,7 +114,7 @@ foreach ($plans as $i => $plan) {
             <div class="section--pricing-calculator__addons-area" data-pc="addons-area" hidden>
 
                 <?php if ($addons_label !== ''): ?>
-                    <p class="section--pricing-calculator__step-label"><?php echo wp_kses_post($addons_label); ?></p>
+                    <p class="section--pricing-calculator__step-label"><?php echo workernu_inline_editable($data, 'addons_label', 'text', wp_kses_post($addons_label), $addons_label); ?></p>
                 <?php endif; ?>
 
                 <!-- Plan addon rows (other plans; selected plan hidden by JS) -->
@@ -137,9 +137,9 @@ foreach ($plans as $i => $plan) {
                                 </span>
                             <?php endif; ?>
                             <span class="section--pricing-calculator__row-text">
-                                <span class="section--pricing-calculator__row-name"><?php echo wp_kses_post($p['name']); ?></span>
+                                <span class="section--pricing-calculator__row-name"><?php echo workernu_inline_editable($data, "plans.$i.name", 'text', wp_kses_post($p['name']), $p['name']); ?></span>
                                 <?php if ($p['desc'] !== ''): ?>
-                                    <span class="section--pricing-calculator__row-desc"><?php echo wp_kses_post($p['desc']); ?></span>
+                                    <span class="section--pricing-calculator__row-desc"><?php echo workernu_inline_editable($data, "plans.$i.description", 'text', wp_kses_post($p['desc']), $p['desc']); ?></span>
                                 <?php endif; ?>
                             </span>
                             <span class="section--pricing-calculator__row-price"><?php echo esc_html($p['addon_price_str']); ?></span>
@@ -179,9 +179,9 @@ foreach ($plans as $i => $plan) {
                                 </span>
                             <?php endif; ?>
                             <span class="section--pricing-calculator__row-text">
-                                <span class="section--pricing-calculator__row-name"><?php echo wp_kses_post($aname); ?></span>
+                                <span class="section--pricing-calculator__row-name"><?php echo workernu_inline_editable($data, "addons.$j.name", 'text', wp_kses_post($aname), $aname); ?></span>
                                 <?php if ($adesc !== ''): ?>
-                                    <span class="section--pricing-calculator__row-desc"><?php echo wp_kses_post($adesc); ?></span>
+                                    <span class="section--pricing-calculator__row-desc"><?php echo workernu_inline_editable($data, "addons.$j.description", 'text', wp_kses_post($adesc), $adesc); ?></span>
                                 <?php endif; ?>
                             </span>
                             <span class="section--pricing-calculator__row-price"><?php echo esc_html($price_str); ?></span>
@@ -196,7 +196,7 @@ foreach ($plans as $i => $plan) {
             <div class="section--pricing-calculator__stepper-row">
                 <?php if ($workers_label !== ''): ?>
                     <label class="section--pricing-calculator__stepper-label" for="<?php echo esc_attr($pc_uid); ?>">
-                        <?php echo wp_kses_post($workers_label); ?>
+                        <?php echo workernu_inline_editable($data, 'workers_label', 'text', wp_kses_post($workers_label), $workers_label); ?>
                     </label>
                 <?php endif; ?>
                 <div class="section--pricing-calculator__stepper">
@@ -224,11 +224,11 @@ foreach ($plans as $i => $plan) {
                     <div class="section--pricing-calculator__summary-left">
                         <?php if ($summary_title !== ''): ?>
                             <span class="section--pricing-calculator__summary-title">
-                                <?php echo wp_kses_post($summary_title); ?>
+                                <?php echo workernu_inline_editable($data, 'summary_title', 'text', wp_kses_post($summary_title), $summary_title); ?>
                             </span>
                         <?php endif; ?>
                         <span class="section--pricing-calculator__summary-plan" data-pc="summary-plan">
-                            <?php echo esc_html($placeholder); ?>
+                            <?php echo workernu_inline_editable($data, 'placeholder_label', 'text', esc_html($placeholder), $placeholder); ?>
                         </span>
                     </div>
                     <div class="section--pricing-calculator__summary-right">
@@ -244,7 +244,7 @@ foreach ($plans as $i => $plan) {
                 <div class="section--pricing-calculator__summary-per-row">
                     <?php if ($summary_per_label !== ''): ?>
                         <span class="section--pricing-calculator__summary-per-label">
-                            <?php echo wp_kses_post($summary_per_label); ?>
+                            <?php echo workernu_inline_editable($data, 'summary_per_label', 'text', wp_kses_post($summary_per_label), $summary_per_label); ?>
                         </span>
                     <?php endif; ?>
                     <span class="section--pricing-calculator__summary-per" data-pc="summary-per">
@@ -255,10 +255,10 @@ foreach ($plans as $i => $plan) {
                     <div class="section--pricing-calculator__cta-wrap">
                         <a class="btn btn--primary section--pricing-calculator__cta"
                            href="<?php echo $cta_url !== '' ? esc_url(workernu_localize_url($cta_url)) : '#'; ?>">
-                            <?php echo wp_kses_post($cta_label); ?>
+                            <?php echo workernu_inline_editable($data, 'cta_label', 'text', wp_kses_post($cta_label), $cta_label); ?>
                         </a>
                         <?php if ($cta_note !== ''): ?>
-                            <p class="section--pricing-calculator__cta-note"><?php echo wp_kses_post($cta_note); ?></p>
+                            <p class="section--pricing-calculator__cta-note"><?php echo workernu_inline_editable($data, 'cta_note', 'text', wp_kses_post($cta_note), $cta_note); ?></p>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>

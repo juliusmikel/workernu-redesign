@@ -61,10 +61,19 @@
             }
         });
 
-        // Reset when resizing up to desktop.
-        var mq = window.matchMedia('(min-width: 901px)');
-        (mq.addEventListener ? mq.addEventListener.bind(mq, 'change') : mq.addListener.bind(mq))(function () {
-            if (mq.matches) setOpen(false);
+        // Close on any width change while open — not just crossing up to
+        // desktop. A resized/rotated viewport mid-open otherwise leaves the
+        // fixed-position panel and its .mobile-nav__view offsets stale
+        // against the new dimensions. Compared against innerWIDTH
+        // specifically (not a generic resize listener) so mobile Safari's
+        // address-bar show/hide — which fires resize on scroll and changes
+        // innerHeight only — doesn't close the menu out from under a user
+        // who's just scrolling the panel's own list.
+        var lastWidth = window.innerWidth;
+        window.addEventListener('resize', function () {
+            if (window.innerWidth === lastWidth) return;
+            lastWidth = window.innerWidth;
+            if (header.classList.contains('is-open')) setOpen(false);
         });
     }
 

@@ -14,6 +14,7 @@ if (!defined('ABSPATH')) exit;
 function types(): array {
     return [
         'text'      => ['render' => __NAMESPACE__ . '\\render_text',      'sanitize' => __NAMESPACE__ . '\\sanitize_text'],
+        'url'       => ['render' => __NAMESPACE__ . '\\render_url',       'sanitize' => __NAMESPACE__ . '\\sanitize_url'],
         'textarea'  => ['render' => __NAMESPACE__ . '\\render_textarea',  'sanitize' => __NAMESPACE__ . '\\sanitize_textarea'],
         'rich_text' => ['render' => __NAMESPACE__ . '\\render_rich_text', 'sanitize' => __NAMESPACE__ . '\\sanitize_rich_text'],
         'icon'      => ['render' => __NAMESPACE__ . '\\render_icon',      'sanitize' => __NAMESPACE__ . '\\sanitize_icon'],
@@ -202,6 +203,34 @@ function sanitize_text(array $field, $raw): mixed {
         return $clean;
     }
     return sanitize_text_field((string) $raw);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   URL
+   ───────────────────────────────────────────────────────────────── */
+
+function render_url(array $field, $value, string $input_name): void {
+    open_field($field);
+    if (is_translatable($field)) {
+        render_translatable($field, $value, $input_name, function ($name, $val) {
+            echo '<input type="url" class="ws-input" name="' . esc_attr($name) . '" value="' . esc_attr((string) $val) . '" placeholder="https://...">';
+        });
+    } else {
+        $val = is_array($value) ? '' : (string) $value;
+        echo '<input type="url" class="ws-input" name="' . esc_attr($input_name) . '" value="' . esc_attr($val) . '" placeholder="https://...">';
+    }
+    close_field();
+}
+
+function sanitize_url(array $field, $raw): mixed {
+    if (is_translatable($field) && is_array($raw)) {
+        $clean = [];
+        foreach (\WorkerNu\Lang\LANGUAGES as $lang) {
+            $clean[$lang] = esc_url_raw((string) ($raw[$lang] ?? ''));
+        }
+        return $clean;
+    }
+    return esc_url_raw((string) $raw);
 }
 
 /* ─────────────────────────────────────────────────────────────────

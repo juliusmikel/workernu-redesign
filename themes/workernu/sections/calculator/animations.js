@@ -21,8 +21,15 @@
         var sliders = Array.prototype.slice.call(root.querySelectorAll('[data-calc-input]'));
         if (!sliders.length) return;
 
-        function format(n) {
-            return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + currency;
+        // "spend" is exact (2 decimals, no leading ~) — it's just today's
+        // known cost. Savings figures are estimates, so they're rounded to
+        // whole numbers with a leading ~. Neither has a space before the
+        // currency symbol.
+        function formatExact(n) {
+            return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + currency;
+        }
+        function formatApprox(n) {
+            return '~' + Math.round(n).toLocaleString('en-US') + currency;
         }
 
         function readValue(key) {
@@ -32,7 +39,8 @@
 
         function setResult(key, value) {
             var el = root.querySelector('[data-calc-result="' + key + '"]');
-            if (el) el.textContent = format(value);
+            if (!el) return;
+            el.textContent = key === 'spend' ? formatExact(value) : formatApprox(value);
         }
 
         function recompute() {

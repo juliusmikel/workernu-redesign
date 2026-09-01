@@ -54,8 +54,15 @@ $proj_def = max($proj_min, min($proj_max, $proj_def));
 $spend   = $emp_def * $spend_rate_emp;
 $savings = $emp_def * $savings_emp_month + $proj_def * $savings_proj_month;
 $yearly  = $emp_def * $savings_emp_year  + $proj_def * $savings_proj_year;
+// spend is exact (2 decimals, no leading ~) — it's just today's known cost.
+// Savings figures are estimates, so they're rounded to whole numbers with a
+// leading ~. Neither has a space before the currency symbol. Mirrors
+// formatExact()/formatApprox() in animations.js.
 $fmt = function (float $n) use ($currency) {
-    return number_format($n, 2, '.', ',') . ' ' . $currency;
+    return number_format($n, 2, '.', ',') . $currency;
+};
+$fmt_approx = function (float $n) use ($currency) {
+    return '~' . number_format(round($n), 0, '.', ',') . $currency;
 };
 
 $classes = workernu_section_classes($data, 'calculator');
@@ -132,18 +139,19 @@ $uid     = sanitize_html_class((string) ($data['_id'] ?? uniqid('calc-')));
         // Result numbers (wrappers 4 + 5 + 6): each is its own direct child of
         // __widget, with the final yearly figure marked --total for emphasis.
         $results = [
-            ['key' => 'spend',   'label' => $lbl_spend,   'val' => $spend,   'em' => false],
-            ['key' => 'savings', 'label' => $lbl_savings, 'val' => $savings, 'em' => false],
-            ['key' => 'yearly',  'label' => $lbl_yearly,  'val' => $yearly,  'em' => true],
+            ['key' => 'spend',   'label' => $lbl_spend,   'val' => $spend,   'em' => false, 'approx' => false],
+            ['key' => 'savings', 'label' => $lbl_savings, 'val' => $savings, 'em' => false, 'approx' => true],
+            ['key' => 'yearly',  'label' => $lbl_yearly,  'val' => $yearly,  'em' => true,  'approx' => true],
         ];
         foreach ($results as $r):
             if ($r['label'] === '') continue;
             $row_class = 'section--calculator__result' . ($r['em'] ? ' section--calculator__result--total' : '');
+            $value_str = $r['approx'] ? $fmt_approx($r['val']) : $fmt($r['val']);
             ?>
             <div class="<?php echo esc_attr($row_class); ?>" data-animate-item="result">
                 <span class="section--calculator__result-label"><?php echo wp_kses_post($r['label']); ?></span>
                 <span class="section--calculator__result-value" data-calc-result="<?php echo esc_attr($r['key']); ?>">
-                    <?php echo wp_kses_post($fmt($r['val'])); ?>
+                    <?php echo wp_kses_post($value_str); ?>
                 </span>
             </div>
         <?php endforeach; ?>

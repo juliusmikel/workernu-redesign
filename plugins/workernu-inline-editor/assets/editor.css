@@ -80,7 +80,16 @@
     width: 100%;
     min-width: 12ch;
     font: inherit;
-    color: inherit;
+    /* Fixed, not inherit: .wn-editable__input is a sibling of
+       .wn-editable__content inside .wn-editable, which — for a
+       gradient-text heading — carries color: transparent (see the
+       .wn-editable, .wn-editable__content rule above). `color: inherit`
+       here picked that up too, making typed text invisible against this
+       element's own fixed white background. The input always has that
+       same white background regardless of section tone/gradient, so its
+       text color needs to be equally fixed, not inherited. */
+    color: #18181b;
+    -webkit-text-fill-color: #18181b;
     background: #fff;
     border: 1px solid #2563eb;
     border-radius: 3px;

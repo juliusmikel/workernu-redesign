@@ -68,8 +68,10 @@ $tabs = array_values(array_filter(
                     $body_raw      = workernu_t($t['panel_body']['value'] ?? '');
                     $cta_label     = workernu_t($t['cta_label'] ?? '');
                     $cta_url       = (string) ($t['cta_url'] ?? '');
+                    $cta_icon      = !empty($t['cta_icon']);
                     $cta2_label    = workernu_t($t['cta2_label'] ?? '');
                     $cta2_url      = (string) ($t['cta2_url'] ?? '');
+                    $cta2_icon     = !empty($t['cta2_icon']);
                     // image may be an int (legacy) or a { lt: id, en: id } map.
                     $image_value   = $t['image'] ?? 0;
                     $image_url     = workernu_image_url($image_value, 'large');
@@ -93,11 +95,13 @@ $tabs = array_values(array_filter(
                                 <div class="section--tabs__ctas">
                                     <?php if ($cta_label !== '' && $cta_url !== ''): ?>
                                         <a class="btn btn--primary" href="<?php echo esc_url(workernu_localize_url($cta_url)); ?>">
+                                            <?php if ($cta_icon): ?><i class="fa-solid fa-circle-play" aria-hidden="true"></i><?php endif; ?>
                                             <?php echo workernu_inline_editable($data, "tabs.{$t['orig_i']}.cta_label", 'text', wp_kses_post($cta_label), $cta_label); ?>
                                         </a>
                                     <?php endif; ?>
                                     <?php if ($cta2_label !== '' && $cta2_url !== ''): ?>
                                         <a class="btn btn--outline" href="<?php echo esc_url(workernu_localize_url($cta2_url)); ?>">
+                                            <?php if ($cta2_icon): ?><i class="fa-solid fa-circle-play" aria-hidden="true"></i><?php endif; ?>
                                             <?php echo workernu_inline_editable($data, "tabs.{$t['orig_i']}.cta2_label", 'text', wp_kses_post($cta2_label), $cta2_label); ?>
                                         </a>
                                     <?php endif; ?>

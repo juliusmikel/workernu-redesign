@@ -70,6 +70,7 @@ foreach (array_values($items_raw) as $orig_i => $item) {
             'url'     => $cta_url,
             'variant' => (string) ($item["cta{$n}_variant"] ?? 'primary'),
             'target'  => (string) ($item["cta{$n}_target"]  ?? '_self'),
+            'icon'    => !empty($item["cta{$n}_icon"]),
         ];
     }
 
@@ -130,6 +131,7 @@ foreach (array_values($items_raw) as $orig_i => $item) {
                                                        href="<?php echo esc_url(workernu_localize_url($cta['url'])); ?>"
                                                        target="<?php echo esc_attr($cta['target']); ?>"
                                                        <?php echo $cta['target'] === '_blank' ? 'rel="noopener"' : ''; ?>>
+                                                        <?php if ($cta['icon']): ?><i class="fa-solid fa-circle-play" aria-hidden="true"></i><?php endif; ?>
                                                         <?php echo workernu_inline_editable($data, "items.{$item['orig_i']}.{$cta['field']}", 'text', wp_kses_post($cta['label']), $cta['label']); ?>
                                                     </a>
                                                 <?php endforeach; ?>

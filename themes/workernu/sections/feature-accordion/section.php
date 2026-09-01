@@ -71,6 +71,8 @@ return [
                  'options' => ['primary' => 'Primary', 'outline' => 'Outline', 'subtle' => 'Subtle', 'ghost' => 'Ghost']],
                 ['name' => 'cta1_target',  'type' => 'select', 'label' => 'CTA 1 opens', 'render_as' => 'buttons',
                  'options' => ['_self' => 'Same tab', '_blank' => 'New tab']],
+                ['name' => 'cta1_icon',    'type' => 'boolean', 'label' => 'CTA 1 play icon',
+                 'hint' => 'Adds a play-circle icon before the label, same color as the button text.'],
 
                 ['name' => 'cta2_label',   'type' => 'text',   'label' => 'CTA 2 label',  'translatable' => true],
                 ['name' => 'cta2_url',     'type' => 'text',   'label' => 'CTA 2 URL'],
@@ -78,6 +80,8 @@ return [
                  'options' => ['primary' => 'Primary', 'outline' => 'Outline', 'subtle' => 'Subtle', 'ghost' => 'Ghost']],
                 ['name' => 'cta2_target',  'type' => 'select', 'label' => 'CTA 2 opens', 'render_as' => 'buttons',
                  'options' => ['_self' => 'Same tab', '_blank' => 'New tab']],
+                ['name' => 'cta2_icon',    'type' => 'boolean', 'label' => 'CTA 2 play icon',
+                 'hint' => 'Adds a play-circle icon before the label, same color as the button text.'],
             ],
         ],
     ],

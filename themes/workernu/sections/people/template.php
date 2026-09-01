@@ -9,6 +9,7 @@ $body      = workernu_t($data['body']    ?? '');
 $people    = is_array($data['people'] ?? null) ? $data['people'] : [];
 $cta_label = workernu_t($data['cta_label'] ?? '');
 $cta_url   = (string) ($data['cta_url'] ?? '');
+$cta_icon  = !empty($data['cta_icon']);
 $layout    = (string) ($data['layout'] ?? '3');
 $classes   = workernu_section_classes($data, 'people');
 ?>
@@ -29,6 +30,7 @@ $classes   = workernu_section_classes($data, 'people');
         <?php if ($cta_label !== '' && $cta_url !== ''): ?>
             <div class="section--people__cta-wrap" data-animate-item="cta">
                 <a class="btn btn--primary" href="<?php echo esc_url(workernu_localize_url($cta_url)); ?>">
+                    <?php if ($cta_icon): ?><i class="fa-solid fa-circle-play" aria-hidden="true"></i><?php endif; ?>
                     <?php echo wp_kses_post($cta_label); ?>
                 </a>
             </div>

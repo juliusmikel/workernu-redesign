@@ -63,6 +63,8 @@ return [
                  'hint' => 'One feature per line. Rendered with check icons.'],
                 ['name' => 'cta_label',    'type' => 'text',     'label' => 'CTA label',    'translatable' => true, 'width' => 'half'],
                 ['name' => 'cta_url',      'type' => 'text',     'label' => 'CTA URL',      'width' => 'half'],
+                ['name' => 'cta_icon',     'type' => 'boolean',  'label' => 'CTA play icon',
+                 'hint' => 'Adds a play-circle icon before the label, same color as the button text.'],
                 ['name' => 'badge',        'type' => 'text',     'label' => 'Badge',        'translatable' => true,
                  'hint' => 'Optional. Shows a badge above the card and applies the accent border. e.g. "Populiariausias".'],
             ],

@@ -35,6 +35,7 @@ $classes        = workernu_section_classes($data, 'pricing');
                     $feat_raw = workernu_t($tier['features']   ?? '');
                     $cta_l  = workernu_t($tier['cta_label']    ?? '');
                     $cta_u  = (string) ($tier['cta_url'] ?? '');
+                    $cta_ic = !empty($tier['cta_icon']);
                     $badge  = workernu_t($tier['badge']        ?? '');
                     $features = array_values(array_filter(array_map('trim', preg_split('/\r?\n/', $feat_raw) ?: [])));
                     $is_highlighted = $badge !== '';
@@ -74,6 +75,7 @@ $classes        = workernu_section_classes($data, 'pricing');
 
                         <?php if ($cta_l !== '' && $cta_u !== ''): ?>
                             <a class="btn btn--primary" href="<?php echo esc_url(workernu_localize_url($cta_u)); ?>">
+                                <?php if ($cta_ic): ?><i class="fa-solid fa-circle-play" aria-hidden="true"></i><?php endif; ?>
                                 <?php echo wp_kses_post($cta_l); ?>
                             </a>
                         <?php endif; ?>

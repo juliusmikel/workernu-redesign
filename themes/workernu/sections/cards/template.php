@@ -9,6 +9,7 @@ $subheading = workernu_t($data['subheading'] ?? '');
 $cards      = is_array($data['cards'] ?? null) ? $data['cards'] : [];
 $cta_label  = workernu_t($data['cta_label']  ?? '');
 $cta_url    = (string) ($data['cta_url'] ?? '');
+$cta_icon   = !empty($data['cta_icon']);
 $link_style = (string) ($data['link_style'] ?? 'corner-arrow');
 $link_label = workernu_t($data['link_label'] ?? '');
 if ($link_label === '') $link_label = 'Sužinoti daugiau';
@@ -78,6 +79,7 @@ $classes    = workernu_section_classes($data, 'cards');
         <?php if ($cta_label !== '' && $cta_url !== ''): ?>
             <div class="section--cards__cta-wrap" data-animate-item="cta">
                 <a class="btn btn--primary" href="<?php echo esc_url(workernu_localize_url($cta_url)); ?>">
+                    <?php if ($cta_icon): ?><i class="fa-solid fa-circle-play" aria-hidden="true"></i><?php endif; ?>
                     <?php echo workernu_inline_editable($data, 'cta_label', 'text', wp_kses_post($cta_label), $cta_label); ?>
                 </a>
             </div>

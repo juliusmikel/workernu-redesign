@@ -49,6 +49,8 @@ return [
 
         ['name' => 'cta_label', 'type' => 'text', 'label' => 'CTA label', 'translatable' => true, 'width' => 'half'],
         ['name' => 'cta_url',   'type' => 'text', 'label' => 'CTA URL', 'width' => 'half'],
+        ['name' => 'cta_icon',  'type' => 'boolean', 'label' => 'Play icon',
+         'hint' => 'Adds a play-circle icon before the label, same color as the button text.'],
     ],
 
     'modifiers' => [

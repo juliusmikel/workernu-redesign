@@ -52,6 +52,8 @@ return [
                  'hint' => 'For list displays, put each item on its own line.'],
                 ['name' => 'cta_label',     'type' => 'text',      'label' => 'CTA label', 'translatable' => true, 'width' => 'half'],
                 ['name' => 'cta_url',       'type' => 'text',      'label' => 'CTA URL',   'width' => 'half'],
+                ['name' => 'cta_icon',      'type' => 'boolean',   'label' => 'CTA play icon',
+                 'hint' => 'Adds a play-circle icon before the label, same color as the button text.'],
             ],
         ],
     ],

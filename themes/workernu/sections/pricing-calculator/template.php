@@ -18,6 +18,7 @@ $summary_per_label     = workernu_t($data['summary_per_label']     ?? '');
 $placeholder           = workernu_t($data['placeholder_label']     ?? __('Pasirinkite planą', 'workernu'));
 $cta_label             = workernu_t($data['cta_label']             ?? '');
 $cta_url               = (string) ($data['cta_url']                ?? '');
+$cta_icon              = !empty($data['cta_icon']);
 $cta_note              = workernu_t($data['cta_note']              ?? '');
 
 $classes = workernu_section_classes($data, 'pricing-calculator');
@@ -263,6 +264,7 @@ foreach ($plans as $i => $plan) {
                     <div class="section--pricing-calculator__cta-wrap">
                         <a class="btn btn--primary section--pricing-calculator__cta"
                            href="<?php echo $cta_url !== '' ? esc_url(workernu_localize_url($cta_url)) : '#'; ?>">
+                            <?php if ($cta_icon): ?><i class="fa-solid fa-circle-play" aria-hidden="true"></i><?php endif; ?>
                             <?php echo workernu_inline_editable($data, 'cta_label', 'text', wp_kses_post($cta_label), $cta_label); ?>
                         </a>
                         <?php if ($cta_note !== ''): ?>

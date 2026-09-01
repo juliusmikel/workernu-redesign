@@ -43,6 +43,7 @@ $lbl_yearly  = workernu_t($data['result_yearly_label']  ?? '');
 
 $cta_label   = workernu_t($data['cta_label'] ?? '');
 $cta_url     = (string) ($data['cta_url'] ?? '');
+$cta_icon    = !empty($data['cta_icon']);
 
 // Clamp defaults into range.
 $emp_def  = max($emp_min,  min($emp_max,  $emp_def));
@@ -159,6 +160,7 @@ $uid     = sanitize_html_class((string) ($data['_id'] ?? uniqid('calc-')));
 
         <?php if ($cta_label !== '' && $cta_url !== ''): ?>
             <a class="btn btn--primary section--calculator__cta" href="<?php echo esc_url(workernu_localize_url($cta_url)); ?>">
+                <?php if ($cta_icon): ?><i class="fa-solid fa-circle-play" aria-hidden="true"></i><?php endif; ?>
                 <?php echo wp_kses_post($cta_label); ?>
             </a>
         <?php endif; ?>

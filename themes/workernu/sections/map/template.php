@@ -15,6 +15,7 @@ if ($image_alt === '') $image_alt = workernu_image_alt($image_id);
 $pins      = is_array($data['pins'] ?? null) ? $data['pins'] : [];
 $cta_label = workernu_t($data['cta_label'] ?? '');
 $cta_url   = (string) ($data['cta_url'] ?? '');
+$cta_icon  = !empty($data['cta_icon']);
 $classes   = workernu_section_classes($data, 'map');
 ?>
 <section class="<?php echo esc_attr($classes); ?>" data-animate="map">
@@ -51,6 +52,7 @@ $classes   = workernu_section_classes($data, 'map');
         <?php if ($cta_label !== '' && $cta_url !== ''): ?>
             <div class="section--map__cta-wrap" data-animate-item="cta">
                 <a class="btn btn--primary" href="<?php echo esc_url(workernu_localize_url($cta_url)); ?>">
+                    <?php if ($cta_icon): ?><i class="fa-solid fa-circle-play" aria-hidden="true"></i><?php endif; ?>
                     <?php echo workernu_inline_editable($data, 'cta_label', 'text', wp_kses_post($cta_label), $cta_label); ?>
                 </a>
             </div>

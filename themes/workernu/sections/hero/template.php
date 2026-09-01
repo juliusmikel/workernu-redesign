@@ -100,12 +100,14 @@ $classes     = workernu_section_classes($data, 'hero');
                         $cta_url     = (string) ($cta['url']     ?? '');
                         $cta_variant = (string) ($cta['variant'] ?? 'primary');
                         $cta_target  = (string) ($cta['target']  ?? '_self');
+                        $cta_icon    = !empty($cta['icon']);
                         if ($cta_label === '' || $cta_url === '') continue;
                         ?>
                         <a class="btn btn--<?php echo esc_attr($cta_variant); ?>"
                            href="<?php echo esc_url(workernu_localize_url($cta_url)); ?>"
                            target="<?php echo esc_attr($cta_target); ?>"
                            <?php echo $cta_target === '_blank' ? 'rel="noopener"' : ''; ?>>
+                            <?php if ($cta_icon): ?><i class="fa-solid fa-circle-play" aria-hidden="true"></i><?php endif; ?>
                             <?php echo workernu_inline_editable($data, "ctas.$cta_i.label", 'text', wp_kses_post($cta_label), $cta_label); ?>
                         </a>
                     <?php endforeach; ?>

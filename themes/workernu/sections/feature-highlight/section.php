@@ -50,6 +50,8 @@ return [
                  'options' => ['primary' => 'Primary', 'outline' => 'Outline', 'subtle' => 'Subtle', 'ghost' => 'Ghost']],
                 ['name' => 'target',  'type' => 'select', 'label' => 'Opens', 'render_as' => 'buttons',
                  'options' => ['_self' => 'Same tab', '_blank' => 'New tab']],
+                ['name' => 'icon', 'type' => 'boolean', 'label' => 'Play icon',
+                 'hint' => 'Adds a play-circle icon before the label, same color as the button text.'],
             ],
         ],
 

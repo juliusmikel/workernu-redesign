@@ -46,6 +46,7 @@ $classes    = workernu_section_classes($data, 'zigzag-rows');
                     $body_raw      = workernu_t($row['body']['value'] ?? '');
                     $cta_label     = workernu_t($row['cta_label'] ?? '');
                     $cta_url       = (string) ($row['cta_url'] ?? '');
+                    $cta_icon      = !empty($row['cta_icon']);
                     if ($title === '' && $body_html === '' && $image_url === '') continue;
 
                     // Image side: row 0 uses the section's first_side modifier;
@@ -68,6 +69,7 @@ $classes    = workernu_section_classes($data, 'zigzag-rows');
                             <?php endif; ?>
                             <?php if ($cta_label !== '' && $cta_url !== ''): ?>
                                 <a class="btn btn--primary" href="<?php echo esc_url(workernu_localize_url($cta_url)); ?>">
+                                    <?php if ($cta_icon): ?><i class="fa-solid fa-circle-play" aria-hidden="true"></i><?php endif; ?>
                                     <?php echo workernu_inline_editable($data, "rows.$i.cta_label", 'text', wp_kses_post($cta_label), $cta_label); ?>
                                 </a>
                             <?php endif; ?>

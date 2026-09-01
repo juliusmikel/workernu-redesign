@@ -40,7 +40,6 @@ $classes    = workernu_section_classes($data, 'zigzag-rows');
                     if ($image_alt === '') $image_alt = workernu_image_alt($image_value);
 
                     $eyebrow       = workernu_t($row['eyebrow'] ?? '');
-                    $eyebrow_style = (string) ($row['eyebrow_style'] ?? 'plain');
                     $title         = workernu_t($row['title']   ?? '');
                     $body_html     = workernu_text($row['body'] ?? null, 'section--zigzag-rows__body');
                     $body_raw      = workernu_t($row['body']['value'] ?? '');
@@ -59,7 +58,7 @@ $classes    = workernu_section_classes($data, 'zigzag-rows');
 
                         <div class="section--zigzag-rows__content">
                             <?php if ($eyebrow !== ''): ?>
-                                <span class="section--zigzag-rows__eyebrow section--zigzag-rows__eyebrow--<?php echo esc_attr($eyebrow_style); ?>"><?php echo workernu_inline_editable($data, "rows.$i.eyebrow", 'text', wp_kses_post($eyebrow), $eyebrow); ?></span>
+                                <span class="section--zigzag-rows__eyebrow"><?php echo workernu_inline_editable($data, "rows.$i.eyebrow", 'text', wp_kses_post($eyebrow), $eyebrow); ?></span>
                             <?php endif; ?>
                             <?php if ($title !== ''): ?>
                                 <h3 class="section--zigzag-rows__title"><?php echo workernu_inline_editable($data, "rows.$i.title", 'text', wp_kses_post($title), $title); ?></h3>

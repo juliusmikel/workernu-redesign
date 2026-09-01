@@ -12,8 +12,8 @@
  *   rows[]       — repeater (one entry per feature row)
  *       └─ image          — image (translatable; the screenshot)
  *       └─ image_alt      — text (translatable; only shown when image set)
- *       └─ eyebrow        — text (translatable; small label above title)
- *       └─ eyebrow_style  — select (plain | pill) — pill renders the eyebrow as a rounded badge
+ *       └─ eyebrow        — text (translatable; small label above title; renders as a
+ *                            rounded pill, same style as the hero section's eyebrow)
  *       └─ title          — text (translatable, required)
  *       └─ body           — rich_text (translatable; paragraph | bullets | numbered | checks)
  *       └─ cta_label      — text (translatable; optional)
@@ -50,9 +50,7 @@ return [
                 ['name' => 'image_alt',     'type' => 'text',      'label' => 'Image alt text', 'translatable' => true,
                  'show_if_not_empty' => 'image',
                  'hint' => 'Describes the screenshot for screen readers and search engines. Falls back to the attachment\'s alt if blank.'],
-                ['name' => 'eyebrow',       'type' => 'text',      'label' => 'Eyebrow',       'translatable' => true, 'width' => 'half'],
-                ['name' => 'eyebrow_style', 'type' => 'select',    'label' => 'Eyebrow style', 'render_as' => 'buttons', 'width' => 'half',
-                 'options' => ['plain' => 'Plain', 'pill' => 'Pill'], 'default' => 'plain'],
+                ['name' => 'eyebrow',       'type' => 'text',      'label' => 'Eyebrow',       'translatable' => true],
                 ['name' => 'title',         'type' => 'text',      'label' => 'Title',     'translatable' => true, 'required' => true],
                 ['name' => 'body',          'type' => 'rich_text', 'label' => 'Body',      'translatable' => true, 'rows' => 3,
                  'hint' => 'For list displays, put each item on its own line.'],

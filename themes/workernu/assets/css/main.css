@@ -657,6 +657,28 @@ a { color: inherit; }
     color: var(--color-fg);
 }
 
+/* On an inverted (dark) section, --color-accent-fg is #ffffff in BOTH
+   tones — .btn--primary's text never changed color at all, and its
+   background only shifted within the blue family (#2563eb -> #60a5fa), so
+   the button read as "basically the same" rather than genuinely inverted.
+   Swap primary/outline to the same light-fill / light-border treatment
+   .btn--ghost already uses for dark backgrounds, so a CTA on a dark
+   section visibly contrasts instead of just changing shade. */
+.section--tone-inverted .btn--primary {
+    background: var(--color-fg);
+    color: var(--color-bg);
+    border-color: var(--color-fg);
+}
+.section--tone-inverted .btn--outline {
+    background: transparent;
+    color: var(--color-fg);
+    border-color: var(--color-fg);
+}
+.section--tone-inverted .btn--outline:hover {
+    background: var(--color-fg);
+    color: var(--color-bg);
+}
+
 /* ─── Global section margins ───────────────────────────────────────────
  * Applied by the workernu-sections plugin via two global modifiers
  * (`margin_top`, `margin_bottom`). Each emits `section--<modifier>-<value>`
@@ -695,8 +717,13 @@ a { color: inherit; }
     --color-line:      #33333a;
     --color-accent:    #60a5fa;
     --color-accent-fg: #ffffff;
-    --color-accent-grad-from: #93c5fd;
-    --color-accent-grad-to:   #60a5fa;
+    /* White-family, not a blue shade: the gradient-text headings this
+       feeds (see "Gradient text utility" below) previously stayed
+       #93c5fd -> #60a5fa here — still recognizably "the same blue" as the
+       light-theme heading, just lighter, so inverting a section didn't
+       read as a real change. */
+    --color-accent-grad-from: #ffffff;
+    --color-accent-grad-to:   #e4e4e7;
     background: var(--color-bg);
     color: var(--color-fg);
 }

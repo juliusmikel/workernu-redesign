@@ -1,11 +1,15 @@
 <?php
 /**
- * Calculator — savings calculator with sliders.
+ * Savings Calculator — savings calculator with sliders.
  * Receives $data — all field + modifier values for this section instance.
  *
  * Config (rates, ranges, currency) is emitted onto the wrapper as data-*
  * attributes; animations.js reads them and recomputes results on slider input.
  * Server renders sane initial values so it's meaningful before/without JS.
+ *
+ * spend depends only on employee count; monthly and yearly savings are each
+ * an independent linear function of (employees, projects) — yearly is NOT
+ * monthly * 12. See section.php's header comment for the fitted constants.
  */
 
 $heading    = workernu_t($data['heading']    ?? '');
@@ -21,9 +25,15 @@ $proj_min    = (float) ($data['projects_min']     ?? 0);
 $proj_max    = (float) ($data['projects_max']     ?? 50);
 $proj_def    = (float) ($data['projects_default'] ?? $proj_min);
 
-$cost_emp    = (float) ($data['cost_per_employee'] ?? 0);
-$cost_proj   = (float) ($data['cost_per_project']  ?? 0);
-$rate        = (float) ($data['savings_rate']      ?? 0);
+// Defaults here are the fitted constants themselves, not 0 — every page
+// using this section gets the corrected model immediately, without needing
+// an admin to re-enter five new rate fields first. See section.php's
+// header comment for the (E, P) -> spend/savings formulas these come from.
+$spend_rate_emp      = (float) ($data['spend_rate_employee']           ?? 5);
+$savings_emp_month   = (float) ($data['savings_rate_employee_monthly'] ?? 16.6666667);
+$savings_proj_month  = (float) ($data['savings_rate_project_monthly']  ?? 18.9333333);
+$savings_emp_year    = (float) ($data['savings_rate_employee_yearly']  ?? 202.6666667);
+$savings_proj_year   = (float) ($data['savings_rate_project_yearly']   ?? 224);
 $currency    = (string) ($data['currency'] ?? '');
 if ($currency === '') $currency = '€';
 
@@ -38,10 +48,12 @@ $cta_url     = (string) ($data['cta_url'] ?? '');
 $emp_def  = max($emp_min,  min($emp_max,  $emp_def));
 $proj_def = max($proj_min, min($proj_max, $proj_def));
 
-// Server-side initial results (mirrors the JS model).
-$spend   = $emp_def * $cost_emp + $proj_def * $cost_proj;
-$savings = $spend * ($rate / 100);
-$yearly  = $savings * 12;
+// Server-side initial results (mirrors the JS model). yearlySavings is an
+// independently fit linear function, not monthlySavings * 12 — see the
+// header comment in section.php.
+$spend   = $emp_def * $spend_rate_emp;
+$savings = $emp_def * $savings_emp_month + $proj_def * $savings_proj_month;
+$yearly  = $emp_def * $savings_emp_year  + $proj_def * $savings_proj_year;
 $fmt = function (float $n) use ($currency) {
     return number_format($n, 2, '.', ',') . ' ' . $currency;
 };
@@ -50,9 +62,11 @@ $classes = workernu_section_classes($data, 'calculator');
 $uid     = sanitize_html_class((string) ($data['_id'] ?? uniqid('calc-')));
 ?>
 <section class="<?php echo esc_attr($classes); ?>" data-animate="calculator"
-         data-cost-employee="<?php echo esc_attr($cost_emp); ?>"
-         data-cost-project="<?php echo esc_attr($cost_proj); ?>"
-         data-savings-rate="<?php echo esc_attr($rate); ?>"
+         data-spend-rate-employee="<?php echo esc_attr($spend_rate_emp); ?>"
+         data-savings-rate-employee-monthly="<?php echo esc_attr($savings_emp_month); ?>"
+         data-savings-rate-project-monthly="<?php echo esc_attr($savings_proj_month); ?>"
+         data-savings-rate-employee-yearly="<?php echo esc_attr($savings_emp_year); ?>"
+         data-savings-rate-project-yearly="<?php echo esc_attr($savings_proj_year); ?>"
          data-currency="<?php echo esc_attr($currency); ?>">
     <div class="section--calculator__inner container">
 

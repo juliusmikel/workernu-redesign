@@ -1,16 +1,21 @@
-/* Calculator — live savings maths. Vanilla JS, multi-instance safe.
+/* Savings Calculator — live savings maths. Vanilla JS, multi-instance safe.
  *
  * Reads rates from the section's data-* attributes and recomputes the three
- * results whenever a slider moves. Mirrors the server-side model in template.php:
- *   monthlySpend   = employees * costEmployee + projects * costProject
- *   monthlySavings = monthlySpend * (savingsRate / 100)
- *   yearlySavings  = monthlySavings * 12
+ * results whenever a slider moves. Mirrors the server-side model in
+ * template.php — spend depends only on employees; monthly and yearly savings
+ * are each an independent linear function of (employees, projects):
+ *   spend          = employees * spendRateEmployee
+ *   monthlySavings = employees * savingsRateEmployeeMonthly + projects * savingsRateProjectMonthly
+ *   yearlySavings  = employees * savingsRateEmployeeYearly  + projects * savingsRateProjectYearly
+ * yearlySavings is NOT monthlySavings * 12 — it's fit independently.
  */
 (function () {
     function initCalc(root) {
-        var costEmployee = parseFloat(root.getAttribute('data-cost-employee')) || 0;
-        var costProject  = parseFloat(root.getAttribute('data-cost-project'))  || 0;
-        var savingsRate  = parseFloat(root.getAttribute('data-savings-rate'))  || 0;
+        var spendRateEmployee        = parseFloat(root.getAttribute('data-spend-rate-employee'))          || 0;
+        var savingsRateEmployeeMonth = parseFloat(root.getAttribute('data-savings-rate-employee-monthly')) || 0;
+        var savingsRateProjectMonth  = parseFloat(root.getAttribute('data-savings-rate-project-monthly'))  || 0;
+        var savingsRateEmployeeYear  = parseFloat(root.getAttribute('data-savings-rate-employee-yearly'))  || 0;
+        var savingsRateProjectYear   = parseFloat(root.getAttribute('data-savings-rate-project-yearly'))   || 0;
         var currency     = root.getAttribute('data-currency') || '';
 
         var sliders = Array.prototype.slice.call(root.querySelectorAll('[data-calc-input]'));
@@ -33,9 +38,9 @@
         function recompute() {
             var employees = readValue('employees');
             var projects  = readValue('projects');
-            var spend   = employees * costEmployee + projects * costProject;
-            var savings = spend * (savingsRate / 100);
-            var yearly  = savings * 12;
+            var spend   = employees * spendRateEmployee;
+            var savings = employees * savingsRateEmployeeMonth + projects * savingsRateProjectMonth;
+            var yearly  = employees * savingsRateEmployeeYear  + projects * savingsRateProjectYear;
             setResult('spend', spend);
             setResult('savings', savings);
             setResult('yearly', yearly);

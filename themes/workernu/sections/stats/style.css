@@ -1,22 +1,28 @@
-/* Stats — optional section title above + a card with heading left / stats right.
+/* Stats — 2–3 stat items, in one of two layouts (the `layout` modifier):
  *
- * Structure:
+ * Structure (both layouts):
  *   .section--stats
  *   └─ .section--stats__inner.container          (flex column)
- *      ├─ .section--stats__title                 (optional; large accent heading above)
- *      └─ .section--stats__card                  (flex row: heading | stats)
- *         .section--stats__card--count-{2|3}
- *         ├─ .section--stats__heading-wrap        (left column)
+ *      ├─ .section--stats__header                (optional; title + subheading)
+ *      │  ├─ .section--stats__title
+ *      │  └─ .section--stats__subheading          (split layout only)
+ *      └─ .section--stats__card                  (flex row)
+ *         │  card layout:  .section--stats__card--count-{2|3}
+ *         │  split layout: .section--stats__card--split
+ *         ├─ .section--stats__heading-wrap        (card layout only, left column)
  *         │  └─ .section--stats__heading
- *         └─ .section--stats__stats              (right column: flex row of items)
- *            └─ .section--stats__stat
- *               ├─ .section--stats__number
- *               ├─ .section--stats__label
- *               └─ .section--stats__caption
+ *         └─ .section--stats__stats              (flex row of items — the
+ *            └─ .section--stats__stat              only column in split
+ *               ├─ .section--stats__number          layout, so it and its
+ *               ├─ .section--stats__label           stats naturally fill
+ *               └─ .section--stats__caption         100% width evenly)
  *
- * Width splits (grow ratios, gap absorbed automatically):
+ * card layout's width split (grow ratios, gap absorbed automatically):
  *   2 stats → heading 40 / stats 60
  *   3 stats → heading 30 / stats 70
+ * split layout has no heading-wrap to split against, so .stats (and each
+ * .stat inside it, already flex:1 1 0) fills the full row evenly on its
+ * own — no extra width-split CSS needed for it.
  */
 
 .section--stats__inner {
@@ -26,7 +32,13 @@
     gap: var(--space-6);
 }
 
-/* ─── Section title — large accent heading above the card ─── */
+/* ─── Header — title + (split layout only) subheading ─── */
+.section--stats__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+}
 .section--stats__title {
     margin: 0;
     font-size: clamp(1.875rem, 4vw, 3rem);
@@ -36,6 +48,14 @@
     color: var(--color-accent);
     text-align: center;
     max-width: 22ch;
+}
+.section--stats__subheading {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+    text-align: center;
+    max-width: 52ch;
 }
 
 /* ─── Card — two-column flex row ─── */
@@ -115,6 +135,16 @@
     color: var(--color-muted);
 }
 
+/* ─── Modifier: layout — split ───
+ * No heading-wrap at all (see template.php), so .stats/.stat need no width-
+ * split CSS of their own — they already fill 100% evenly (see the file's
+ * header comment). The only thing split needs here is centering each stat's
+ * text, versus card layout's left alignment. ─── */
+.section--stats__card--split .section--stats__stat {
+    align-items: center;
+    text-align: center;
+}
+
 /* ─── Responsive: stack on narrow viewports ─── */
 @media (max-width: 800px) {
     .section--stats__card {
@@ -129,7 +159,11 @@
     .section--stats__card--count-3 .section--stats__heading-wrap {
         flex: 0 0 auto;
     }
-    .section--stats__title {
+    /* Card layout's title left-aligns to match the card's own left-aligned
+       heading-wrap once it stacks on top on mobile. Split layout has no
+       heading-wrap to match, so its header stays centered like any other
+       section's title/subheading block. */
+    .section--stats--layout-card .section--stats__title {
         max-width: none;
         text-align: left;
         align-self: flex-start;

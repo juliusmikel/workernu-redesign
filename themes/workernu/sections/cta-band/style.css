@@ -2,11 +2,19 @@
  *
  * Class structure produced by workernu_section_classes():
  *   .section--cta-band
- *   .section--cta-band--tone-default | --tone-inverted
  *   .section--cta-band--align-left | --align-center
  *
  * Tone strategy: muted text / hairlines derive from currentColor via color-mix,
- * so both tones stay token-only — no hardcoded palette.
+ * so both tones stay token-only — no hardcoded palette. `tone` itself is a
+ * GLOBAL modifier (see global-modifiers.php + .section--tone-inverted in
+ * main.css) — this section used to declare its own local `tone` modifier
+ * too, with a matching .section--cta-band--tone-inverted rule here that did
+ * nothing but crudely swap background/color (no real dark palette). That
+ * duplicated the global modifier under the same field name — see
+ * section.php's header comment for what that broke — and even when it
+ * "worked," this rule's background/color won the cascade over the global
+ * rule's real dark-palette token redefinition, since it loaded after
+ * main.css. Removed; the section now inherits the global treatment only.
  */
 
 .section--cta-band {
@@ -47,12 +55,6 @@
 }
 /* Button styling is global — see .btn / .btn--* in main.css.
    .section--cta-band__ctas above only handles the flex row layout. */
-
-/* ─── Modifier: tone (inverted = dark band) ─── */
-.section--cta-band--tone-inverted {
-    background: var(--color-fg);
-    color: var(--color-bg);
-}
 
 /* ─── Modifier: alignment ─── */
 .section--cta-band--align-left .section--cta-band__inner {

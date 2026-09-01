@@ -3,8 +3,7 @@
  * CTA Band — closing call-to-action band.
  *
  * Homepage footer band ("Valdykite darbus paprasčiau jau šiandien"): a heading,
- * optional body, and CTA button(s), centered on a full-width band. The `tone`
- * modifier inverts the page tokens for a dark band.
+ * optional body, and CTA button(s), centered on a full-width band.
  *
  * Field map for the frontend dev:
  *   heading   — text (translatable, required)
@@ -16,9 +15,21 @@
  *       └─ target   — select (_self | _blank)
  *
  * Modifiers (rendered as BEM classes via workernu_section_classes()):
- *   tone     — color treatment: default | inverted (dark band)
- *   spacing  — vertical padding: tight | normal (default) | loose
  *   align    — content alignment: left | center (default)
+ *
+ * `tone` is a GLOBAL modifier, not declared here (see
+ * global-modifiers.php + .section--tone-inverted in main.css) — this
+ * section used to declare its own local `tone` modifier too, which
+ * duplicated the globally-injected one under the same field name. That
+ * caused two "tone" radio groups sharing one form field name (the
+ * browser silently collapsed them into a single group, so the visible
+ * selection jumped to whichever rendered last on reload), and the
+ * section's own now-removed `.section--cta-band--tone-inverted` CSS rule
+ * (a crude fg/bg swap, no real dark palette) won the cascade over the
+ * global rule's actual dark-palette token redefinition since it loaded
+ * after main.css — so even the "working" control never applied real
+ * inverted colors. Same call as the one already made on feature-highlight
+ * and the other content_defaults sections — just belatedly applied here.
  */
 
 return [
@@ -47,13 +58,6 @@ return [
 
     'modifiers' => [
         [
-            'name'    => 'tone',
-            'type'    => 'select',
-            'label'   => 'Color tone',
-            'options' => ['default' => 'Default', 'inverted' => 'Inverted (dark)'],
-            'default' => 'inverted',
-        ],
-[
             'name'    => 'align',
             'type'    => 'select',
             'label'   => 'Content alignment',

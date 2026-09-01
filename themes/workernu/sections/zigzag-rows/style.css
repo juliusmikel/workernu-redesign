@@ -42,13 +42,17 @@
     max-width: 64ch;
     align-self: center;
 }
+/* No color here on purpose — main.css's gradient-text utility already
+   styles .section--zigzag-rows__heading (it's on the auto-applied selector
+   list). A leftover solid color: var(--color-accent) here, loaded after
+   main.css at equal specificity, would win the cascade and mask the
+   gradient behind a flat, non-inverting fill. */
 .section--zigzag-rows__heading {
     margin: 0;
     font-size: clamp(1.875rem, 4vw, 3rem);
     line-height: 1.1;
     font-weight: 700;
     letter-spacing: -0.025em;
-    color: var(--color-accent);
 }
 .section--zigzag-rows__sub {
     margin: 0;

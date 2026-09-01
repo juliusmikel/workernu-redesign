@@ -117,9 +117,16 @@ foreach ($plans as $i => $plan) {
                     <p class="section--pricing-calculator__step-label"><?php echo workernu_inline_editable($data, 'addons_label', 'text', wp_kses_post($addons_label), $addons_label); ?></p>
                 <?php endif; ?>
 
-                <!-- Plan addon rows (other plans; selected plan hidden by JS) -->
+                <!-- Plan addon rows (other plans; selected plan hidden by JS).
+                     Per the "Addon price per worker / month" field's own hint
+                     ("Leave 0 if this plan cannot be combined"), a plan with
+                     no addon price isn't rendered as a combinable row at all
+                     — previously every plan showed up here regardless,
+                     including "+0 €" ones that were never meant to combine. -->
+                <?php $plan_addon_rows = array_filter($plan_data, fn(array $p): bool => $p['addon_price'] > 0); ?>
+                <?php if ($plan_addon_rows): ?>
                 <div class="section--pricing-calculator__addon-rows" data-pc="plan-rows">
-                    <?php foreach ($plan_data as $i => $p): ?>
+                    <?php foreach ($plan_addon_rows as $i => $p): ?>
                         <button type="button"
                                 class="section--pricing-calculator__row section--pricing-calculator__row--plan"
                                 data-pc="plan-row"
@@ -146,6 +153,7 @@ foreach ($plans as $i => $plan) {
                         </button>
                     <?php endforeach; ?>
                 </div>
+                <?php endif; ?>
 
                 <!-- Regular addon rows -->
                 <?php if (!empty($addons)): ?>

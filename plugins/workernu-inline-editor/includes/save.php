@@ -1,60 +1,21 @@
 <?php
-namespace WorkerNu\InlineEditor\Draft;
+namespace WorkerNu\InlineEditor\Save;
 
 use function WorkerNu\Sections\Registry\get as get_section_def;
 use function WorkerNu\Sections\Fields\sanitize_value;
 
 if (!defined('ABSPATH')) exit;
 
-const META_KEY = '_page_sections_draft';
-
 /**
- * The draft sections array, creating it as a copy of the live array on
- * first call for this post. Always returns an array (possibly empty).
- */
-function ensure_draft(int $post_id): array {
-    $draft = get_post_meta($post_id, META_KEY, true);
-    if (is_array($draft)) return $draft;
-
-    $live = get_post_meta($post_id, WORKERNU_SECTIONS_META_KEY, true);
-    $live = is_array($live) ? $live : [];
-    update_post_meta($post_id, META_KEY, $live);
-    return $live;
-}
-
-/**
- * True when this post has a draft copy that differs from its live meta.
- */
-function has_pending_changes(int $post_id): bool {
-    $draft = get_post_meta($post_id, META_KEY, true);
-    if (!is_array($draft)) return false;
-
-    $live = get_post_meta($post_id, WORKERNU_SECTIONS_META_KEY, true);
-    $live = is_array($live) ? $live : [];
-    return $draft !== $live;
-}
-
-/**
- * Copies the draft array over the live meta key — the same effect as
- * clicking Update in wp-admin. Returns false if there's no draft to publish.
- */
-function publish(int $post_id): bool {
-    $draft = get_post_meta($post_id, META_KEY, true);
-    if (!is_array($draft)) return false;
-
-    update_post_meta($post_id, WORKERNU_SECTIONS_META_KEY, $draft);
-    return true;
-}
-
-/**
- * Writes one field's new value into the draft copy of $post_id's sections,
+ * Writes one field's new value directly into $post_id's live sections meta,
  * sanitized through the section type's own field schema. $field_path is
  * either a top-level field name ("heading") or a one-level-deep repeater
  * path ("ctas.0.label"). Returns false if the post, section, or field can't
  * be resolved, or the field type isn't editable.
  */
 function save_field(int $post_id, string $section_id, string $field_path, $raw_value): bool {
-    $sections = ensure_draft($post_id);
+    $sections = get_post_meta($post_id, WORKERNU_SECTIONS_META_KEY, true);
+    $sections = is_array($sections) ? $sections : [];
 
     foreach ($sections as $i => $section) {
         if (!is_array($section) || ($section['_id'] ?? '') !== $section_id) continue;
@@ -67,7 +28,7 @@ function save_field(int $post_id, string $section_id, string $field_path, $raw_v
         if ($updated === null) return false;
 
         $sections[$i] = $updated;
-        update_post_meta($post_id, META_KEY, $sections);
+        update_post_meta($post_id, WORKERNU_SECTIONS_META_KEY, $sections);
         return true;
     }
 

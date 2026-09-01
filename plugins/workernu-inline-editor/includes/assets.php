@@ -29,11 +29,9 @@ function enqueue(): void {
         'nonce'   => wp_create_nonce(\WorkerNu\InlineEditor\Ajax\NONCE_ACTION),
         'postId'  => $post_id,
         'i18n'    => [
-            'save'    => __('Save Draft', 'workernu-inline-editor'),
-            'publish' => __('Publish', 'workernu-inline-editor'),
+            'save'    => __('Save', 'workernu-inline-editor'),
             'cancel'  => __('Cancel', 'workernu-inline-editor'),
             'saving'  => __('Saving…', 'workernu-inline-editor'),
-            'saved'   => __('Draft saved', 'workernu-inline-editor'),
             'error'   => __('Something went wrong.', 'workernu-inline-editor'),
         ],
     ]);

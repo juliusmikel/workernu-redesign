@@ -12,6 +12,30 @@
     border-radius: 3px;
     transition: outline-color 0.12s ease;
 }
+/* Re-declares (via `inherit`) whatever background/clip/fill-color the
+   ancestor heading has. Needed because main.css's automatic gradient-text
+   treatment sets background-clip: text + color: transparent directly on
+   the heading element (e.g. <h2 class="section--hero__heading">) — but
+   .wn-editable's own text now lives one level deeper, inside these two
+   nested spans. background-clip: text clips to a box's OWN text run, and
+   since the heading itself no longer has any direct text (it's all inside
+   the nested spans now), the heading's clip region has nothing left to
+   clip, and — because background/background-clip aren't inherited
+   properties — the nested spans don't get a background of their own to
+   clip either. Net effect: text painted fully transparent with nothing
+   behind it, i.e. invisible. Forcing an explicit inherit here gives both
+   nested spans their own copy of the same background + clip + transparent
+   fill, so the gradient renders regardless of nesting depth. A no-op for
+   any non-gradient heading or plain body text, since inherit there just
+   copies the parent's already-default values. */
+.wn-editable,
+.wn-editable__content {
+    background: inherit;
+    -webkit-background-clip: inherit;
+            background-clip: inherit;
+    color: inherit;
+    -webkit-text-fill-color: inherit;
+}
 .wn-editable:hover {
     outline-color: #2563eb;
 }
@@ -82,11 +106,6 @@ textarea.wn-editable__input {
     background: #fff;
     cursor: pointer;
 }
-.wn-editable__toolbar button[data-wn-action="publish"] {
-    background: #16a34a;
-    border-color: #16a34a;
-    color: #fff;
-}
 .wn-editable__toolbar button[data-wn-action="save"] {
     background: #2563eb;
     border-color: #2563eb;
@@ -96,9 +115,4 @@ textarea.wn-editable__input {
     font-size: 0.75rem;
     color: #6b7280;
     margin-left: 0.25rem;
-}
-
-#wpadminbar .wn-admin-bar-publish.is-disabled {
-    opacity: 0.5;
-    pointer-events: none;
 }

@@ -29,14 +29,6 @@
         startEdit(pencil.closest('.wn-editable'));
     }, true);
 
-    document.addEventListener('click', function (e) {
-        var publishNode = e.target.closest('.wn-admin-bar-publish');
-        if (publishNode && !publishNode.classList.contains('is-disabled')) {
-            e.preventDefault();
-            publishAll();
-        }
-    });
-
     function startEdit(wrapper) {
         if (!wrapper || wrapper.classList.contains('is-editing')) return;
 
@@ -54,7 +46,6 @@
         toolbar.className = 'wn-editable__toolbar';
         toolbar.innerHTML =
             '<button type="button" data-wn-action="save">' + cfg.i18n.save + '</button>' +
-            '<button type="button" data-wn-action="publish">' + cfg.i18n.publish + '</button>' +
             '<button type="button" data-wn-action="cancel">' + cfg.i18n.cancel + '</button>' +
             '<span class="wn-editable__status"></span>';
 
@@ -83,12 +74,8 @@
                 return;
             }
             if (action === 'save') {
-                saveDraft(wrapper, input.value, toolbar.querySelector('.wn-editable__status'));
-                return;
-            }
-            if (action === 'publish') {
-                saveDraft(wrapper, input.value, toolbar.querySelector('.wn-editable__status'), function () {
-                    publishAll();
+                save(wrapper, input.value, toolbar.querySelector('.wn-editable__status'), function () {
+                    endEdit(wrapper, input, toolbar, content);
                 });
             }
         });
@@ -103,7 +90,7 @@
         content.style.display = '';
     }
 
-    function saveDraft(wrapper, value, statusEl, onDone) {
+    function save(wrapper, value, statusEl, onDone) {
         var field = wrapper.dataset.wnField; // "<section_id>::<field_path>"
         var sep   = field.indexOf('::');
         var sectionId = field.slice(0, sep);
@@ -112,7 +99,7 @@
         if (statusEl) statusEl.textContent = cfg.i18n.saving;
 
         var body = new URLSearchParams();
-        body.set('action', 'workernu_inline_save_draft');
+        body.set('action', 'workernu_inline_save');
         body.set('nonce', cfg.nonce);
         body.set('post_id', cfg.postId);
         body.set('section_id', sectionId);
@@ -128,32 +115,10 @@
                 }
                 wrapper.dataset.wnRaw = value;
                 wrapper.querySelector('.wn-editable__content').textContent = value;
-                if (statusEl) statusEl.textContent = cfg.i18n.saved;
-                refreshPublishNode(res.data.has_pending);
                 if (onDone) onDone();
             })
             .catch(function () {
                 if (statusEl) statusEl.textContent = cfg.i18n.error;
             });
-    }
-
-    function publishAll() {
-        var body = new URLSearchParams();
-        body.set('action', 'workernu_inline_publish');
-        body.set('nonce', cfg.nonce);
-        body.set('post_id', cfg.postId);
-
-        fetch(cfg.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body })
-            .then(function (r) { return r.json(); })
-            .then(function (res) {
-                if (res.success) refreshPublishNode(false);
-            });
-    }
-
-    function refreshPublishNode(hasPending) {
-        var node = document.querySelector('.wn-admin-bar-publish');
-        if (!node) return;
-        node.classList.toggle('is-disabled', !hasPending);
-        node.textContent = hasPending ? cfg.i18n.publish : cfg.i18n.saved;
     }
 })();

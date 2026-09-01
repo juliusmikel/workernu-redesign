@@ -16,18 +16,4 @@ function register(\WP_Admin_Bar $bar): void {
         'title' => $active ? __('Exit Edit Text', 'workernu-inline-editor') : __('Edit Text', 'workernu-inline-editor'),
         'href'  => \WorkerNu\InlineEditor\Mode\toggle_url(!$active),
     ]);
-
-    if (!$active) return;
-
-    $pending = \WorkerNu\InlineEditor\Draft\has_pending_changes($post_id);
-
-    $bar->add_node([
-        'id'     => 'wn-inline-publish',
-        'parent' => 'wn-inline-edit-toggle',
-        'title'  => $pending ? __('Publish changes', 'workernu-inline-editor') : __('No changes to publish', 'workernu-inline-editor'),
-        'href'   => '#',
-        'meta'   => [
-            'class' => 'wn-admin-bar-publish' . ($pending ? '' : ' is-disabled'),
-        ],
-    ]);
 }

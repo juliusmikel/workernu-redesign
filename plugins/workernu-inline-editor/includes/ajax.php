@@ -1,9 +1,7 @@
 <?php
 namespace WorkerNu\InlineEditor\Ajax;
 
-use function WorkerNu\InlineEditor\Draft\save_field;
-use function WorkerNu\InlineEditor\Draft\publish;
-use function WorkerNu\InlineEditor\Draft\has_pending_changes;
+use function WorkerNu\InlineEditor\Save\save_field;
 
 if (!defined('ABSPATH')) exit;
 
@@ -18,7 +16,7 @@ function require_access(int $post_id): void {
     }
 }
 
-function handle_save_draft(): void {
+function handle_save(): void {
     $post_id = (int) ($_POST['post_id'] ?? 0);
     require_access($post_id);
 
@@ -34,16 +32,5 @@ function handle_save_draft(): void {
         wp_send_json_error(['message' => __('Could not save that field.', 'workernu-inline-editor')]);
     }
 
-    wp_send_json_success(['has_pending' => has_pending_changes($post_id)]);
-}
-
-function handle_publish(): void {
-    $post_id = (int) ($_POST['post_id'] ?? 0);
-    require_access($post_id);
-
-    if (!publish($post_id)) {
-        wp_send_json_error(['message' => __('Nothing to publish.', 'workernu-inline-editor')]);
-    }
-
-    wp_send_json_success(['has_pending' => false]);
+    wp_send_json_success();
 }

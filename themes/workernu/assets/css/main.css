@@ -501,6 +501,12 @@ a { color: inherit; }
         flex: 1 1 auto;
         position: relative;
         overflow-y: auto;
+        /* Explicit, not left to default: an inactive .mobile-nav__view sits
+           translateX(12px) past this box's right edge (see below) — without
+           this, setting only overflow-y makes overflow-x compute to `auto`
+           too (per spec, when exactly one axis is `visible`), turning that
+           12px slide-offset into a real horizontal scrollbar. */
+        overflow-x: hidden;
     }
     .mobile-nav__view {
         position: absolute;
@@ -510,6 +516,7 @@ a { color: inherit; }
         transform: translateX(12px);
         transition: opacity 180ms ease, transform 180ms ease, visibility 180ms;
         overflow-y: auto;
+        overflow-x: hidden;   /* same overflow-x/-y coupling as .mobile-nav__views above */
     }
     .mobile-nav__view.is-active {
         opacity: 1;

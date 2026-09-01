@@ -20,9 +20,15 @@
  *       └─ cta_url        — text
  *
  * Modifiers (rendered as BEM classes via workernu_section_classes()):
- *   spacing     — vertical padding: tight | normal (default) | loose
  *   first_side  — first row's image side: right (default) | left;
  *                 subsequent rows automatically alternate from there.
+ *                 Desktop only: below 900px every row is a single column, so
+ *                 both options render identically.
+ *
+ * `spacing` (tight | normal | loose) was documented here but was never in the
+ * modifiers array and no stylesheet defines .section--zigzag-rows--spacing-*.
+ * Removed rather than implemented — it was documentation of a control that
+ * never existed.
  */
 
 return [

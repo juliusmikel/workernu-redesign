@@ -274,6 +274,29 @@ foreach ($plans as $i => $plan) {
                 <?php endif; ?>
             </div>
 
+            <?php
+            // Mobile only (style.css). A duplicate of the summary's total,
+            // pinned to the viewport bottom — but only once a plan is
+            // actually chosen (a total of "0" isn't worth surfacing) and
+            // only once the real summary card has scrolled out of view
+            // (animations wired in the script below via IntersectionObserver
+            // on .summary). aria-hidden since it mirrors visible content.
+            ?>
+            <div class="section--pricing-calculator__sticky-total" data-pc="sticky-total" aria-hidden="true">
+                <div class="section--pricing-calculator__sticky-info">
+                    <span class="section--pricing-calculator__sticky-per" data-pc="sticky-per">0 <?php echo esc_html($currency); ?></span>
+                    <span class="section--pricing-calculator__sticky-total-label" data-pc="sticky-total-label"></span>
+                    <span class="section--pricing-calculator__sticky-total-value" data-pc="sticky-total-value">0 <?php echo esc_html($currency); ?></span>
+                </div>
+                <?php if ($cta_label !== ''): ?>
+                    <a class="section--pricing-calculator__sticky-cta"
+                       href="<?php echo $cta_url !== '' ? esc_url(workernu_localize_url($cta_url)) : '#'; ?>">
+                        <?php if ($cta_icon): ?><i class="fa-solid fa-circle-play" aria-hidden="true"></i><?php endif; ?>
+                        <?php echo wp_kses_post($cta_label); ?>
+                    </a>
+                <?php endif; ?>
+            </div>
+
         <?php endif; ?>
     </div>
 </section>
@@ -294,6 +317,11 @@ foreach ($plans as $i => $plan) {
     var elTotal      = section.querySelector('[data-pc="summary-total"]');
     var elMeta       = section.querySelector('[data-pc="summary-meta"]');
     var elPer        = section.querySelector('[data-pc="summary-per"]');
+    var summaryEl    = section.querySelector('.section--pricing-calculator__summary');
+    var stickyTotal  = section.querySelector('[data-pc="sticky-total"]');
+    var stickyPer    = section.querySelector('[data-pc="sticky-per"]');
+    var stickyLabel  = section.querySelector('[data-pc="sticky-total-label"]');
+    var stickyValue  = section.querySelector('[data-pc="sticky-total-value"]');
 
     var currency    = <?php echo json_encode($currency); ?>;
     var placeholder = <?php echo json_encode($placeholder); ?>;
@@ -311,6 +339,16 @@ foreach ($plans as $i => $plan) {
         return ((n === Math.floor(n)) ? n.toString() : n.toFixed(2)) + ' ' + currency;
     }
 
+    // The sticky bar mirrors .summary's total, but only earns its keep once
+    // there's a real number to show (a plan is chosen) AND the real summary
+    // card isn't already on screen — summaryVisible is kept current by the
+    // IntersectionObserver set up below.
+    var summaryVisible = true;
+    function syncStickyVisibility() {
+        if (!stickyTotal) return;
+        stickyTotal.classList.toggle('is-visible', selectedPlanIndex !== null && !summaryVisible);
+    }
+
     function updateSummary() {
         decBtn.disabled   = workers <= workersMin;
         incBtn.disabled   = workers >= workersMax;
@@ -321,6 +359,10 @@ foreach ($plans as $i => $plan) {
             elPlanName.textContent = placeholder;
             elTotal.textContent    = '0 ' + currency;
             elPer.textContent      = '0 ' + currency + ' / darb.';
+            if (stickyPer)   stickyPer.textContent   = '0 ' + currency + ' / mėn.';
+            if (stickyLabel) stickyLabel.textContent = '';
+            if (stickyValue) stickyValue.textContent = '0 ' + currency;
+            syncStickyVisibility();
             return;
         }
         var planAddonSum = Object.values(checkedPlanAddons).reduce(function (a, b) { return a + b; }, 0);
@@ -330,6 +372,17 @@ foreach ($plans as $i => $plan) {
         elPlanName.textContent = selectedPlanName;
         elTotal.textContent    = fmt(total);
         elPer.textContent      = fmt(perWorker) + ' / darb.';
+        if (stickyPer)   stickyPer.textContent   = fmt(perWorker) + ' / mėn.';
+        if (stickyLabel) stickyLabel.textContent = 'Iš viso (' + workers + ' darb.)';
+        if (stickyValue) stickyValue.textContent = fmt(total);
+        syncStickyVisibility();
+    }
+
+    if (stickyTotal && summaryEl && 'IntersectionObserver' in window) {
+        new IntersectionObserver(function (entries) {
+            summaryVisible = entries[0].isIntersecting;
+            syncStickyVisibility();
+        }).observe(summaryEl);
     }
 
     function updateAddonAvailability(planIndex) {

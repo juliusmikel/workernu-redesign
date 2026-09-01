@@ -22,7 +22,6 @@
  *                         link_style is "inline-text"; defaults to "Sužinoti daugiau")
  *
  * Modifiers (rendered as BEM classes via workernu_section_classes()):
- *   spacing     — vertical padding: tight | normal (default) | loose
  *   align       — heading + subheading alignment: left | center (default)
  *   size        — minimum card width: sm (≤4/row) | md (≤3/row, default) | lg (≤2/row)
  *   aspect      — card height bucket: portrait | square | landscape (default) | wide

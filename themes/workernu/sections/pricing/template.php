@@ -25,63 +25,94 @@ $classes        = workernu_section_classes($data, 'pricing');
             </header>
         <?php endif; ?>
 
-        <?php if ($tiers): ?>
-            <ul class="section--pricing__tiers" data-animate-item="tiers">
-                <?php foreach ($tiers as $tier):
-                    $title  = workernu_t($tier['title']        ?? '');
-                    $price  = workernu_t($tier['price']        ?? '');
-                    $suffix = workernu_t($tier['price_suffix'] ?? '');
-                    $unit   = workernu_t($tier['unit']         ?? '');
-                    $feat_raw = workernu_t($tier['features']   ?? '');
-                    $cta_l  = workernu_t($tier['cta_label']    ?? '');
-                    $cta_u  = (string) ($tier['cta_url'] ?? '');
-                    $cta_ic = !empty($tier['cta_icon']);
-                    $badge  = workernu_t($tier['badge']        ?? '');
-                    $features = array_values(array_filter(array_map('trim', preg_split('/\r?\n/', $feat_raw) ?: [])));
-                    $is_highlighted = $badge !== '';
-                    if ($title === '' && $price === '') continue;
-                    ?>
-                    <li class="section--pricing__tier<?php echo $is_highlighted ? ' is-highlighted' : ''; ?>" data-animate-item="tier">
-                        <?php if ($badge !== ''): ?>
-                            <span class="section--pricing__badge"><?php echo wp_kses_post($badge); ?></span>
-                        <?php endif; ?>
+        <?php
+        // Pre-filtered once so the dots below index-match the cards exactly —
+        // the old inline loop's `continue` on an empty tier would otherwise
+        // let a dot and a card fall out of sync.
+        $visible_tiers = [];
+        foreach ($tiers as $tier) {
+            $t_title = workernu_t($tier['title'] ?? '');
+            $t_price = workernu_t($tier['price'] ?? '');
+            if ($t_title === '' && $t_price === '') continue;
+            $visible_tiers[] = [
+                'title'    => $t_title,
+                'price'    => $t_price,
+                'suffix'   => workernu_t($tier['price_suffix'] ?? ''),
+                'unit'     => workernu_t($tier['unit']         ?? ''),
+                'features' => array_values(array_filter(array_map('trim',
+                                preg_split('/\r?\n/', workernu_t($tier['features'] ?? '')) ?: []))),
+                'cta_l'    => workernu_t($tier['cta_label'] ?? ''),
+                'cta_u'    => (string) ($tier['cta_url']    ?? ''),
+                'cta_ic'   => !empty($tier['cta_icon']),
+                'badge'    => workernu_t($tier['badge']     ?? ''),
+            ];
+        }
+        ?>
+        <?php if ($visible_tiers): ?>
+            <?php
+            // __tiers-wrap: below 600px this becomes the swipeable-carousel
+            // viewport (see style.css) and __dots becomes its pagination —
+            // above that it's a plain wrapper, desktop is unchanged.
+            ?>
+            <div class="section--pricing__tiers-wrap" data-animate-item="tiers">
+                <ul class="section--pricing__tiers">
+                    <?php foreach ($visible_tiers as $t):
+                        $is_highlighted = $t['badge'] !== '';
+                        ?>
+                        <li class="section--pricing__tier<?php echo $is_highlighted ? ' is-highlighted' : ''; ?>" data-animate-item="tier">
+                            <?php if ($t['badge'] !== ''): ?>
+                                <span class="section--pricing__badge"><?php echo wp_kses_post($t['badge']); ?></span>
+                            <?php endif; ?>
 
-                        <?php if ($title !== ''): ?>
-                            <h3 class="section--pricing__title"><?php echo wp_kses_post($title); ?></h3>
-                        <?php endif; ?>
+                            <?php if ($t['title'] !== ''): ?>
+                                <h3 class="section--pricing__title"><?php echo wp_kses_post($t['title']); ?></h3>
+                            <?php endif; ?>
 
-                        <?php if ($price !== '' || $suffix !== ''): ?>
-                            <div class="section--pricing__price-row">
-                                <?php if ($price !== ''): ?>
-                                    <span class="section--pricing__price"><?php echo wp_kses_post($price); ?></span>
-                                <?php endif; ?>
-                                <?php if ($suffix !== ''): ?>
-                                    <span class="section--pricing__price-suffix"><?php echo wp_kses_post($suffix); ?></span>
-                                <?php endif; ?>
-                            </div>
-                        <?php endif; ?>
+                            <?php if ($t['price'] !== '' || $t['suffix'] !== ''): ?>
+                                <div class="section--pricing__price-row">
+                                    <?php if ($t['price'] !== ''): ?>
+                                        <span class="section--pricing__price"><?php echo wp_kses_post($t['price']); ?></span>
+                                    <?php endif; ?>
+                                    <?php if ($t['suffix'] !== ''): ?>
+                                        <span class="section--pricing__price-suffix"><?php echo wp_kses_post($t['suffix']); ?></span>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
 
-                        <?php if ($unit !== ''): ?>
-                            <p class="section--pricing__unit"><?php echo wp_kses_post($unit); ?></p>
-                        <?php endif; ?>
+                            <?php if ($t['unit'] !== ''): ?>
+                                <p class="section--pricing__unit"><?php echo wp_kses_post($t['unit']); ?></p>
+                            <?php endif; ?>
 
-                        <?php if ($features): ?>
-                            <ul class="section--pricing__features">
-                                <?php foreach ($features as $f): ?>
-                                    <li><i class="fa-solid fa-check" aria-hidden="true"></i><span><?php echo wp_kses_post($f); ?></span></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        <?php endif; ?>
+                            <?php if ($t['features']): ?>
+                                <ul class="section--pricing__features">
+                                    <?php foreach ($t['features'] as $f): ?>
+                                        <li><i class="fa-solid fa-check" aria-hidden="true"></i><span><?php echo wp_kses_post($f); ?></span></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php endif; ?>
 
-                        <?php if ($cta_l !== '' && $cta_u !== ''): ?>
-                            <a class="btn btn--primary" href="<?php echo esc_url(workernu_localize_url($cta_u)); ?>">
-                                <?php if ($cta_ic): ?><i class="fa-solid fa-circle-play" aria-hidden="true"></i><?php endif; ?>
-                                <?php echo wp_kses_post($cta_l); ?>
-                            </a>
-                        <?php endif; ?>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
+                            <?php if ($t['cta_l'] !== '' && $t['cta_u'] !== ''): ?>
+                                <a class="btn btn--primary" href="<?php echo esc_url(workernu_localize_url($t['cta_u'])); ?>">
+                                    <?php if ($t['cta_ic']): ?><i class="fa-solid fa-circle-play" aria-hidden="true"></i><?php endif; ?>
+                                    <?php echo wp_kses_post($t['cta_l']); ?>
+                                </a>
+                            <?php endif; ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+
+                <?php if (count($visible_tiers) > 1): ?>
+                    <div class="section--pricing__dots" role="group" aria-label="<?php esc_attr_e('Pricing plans', 'workernu'); ?>">
+                        <?php foreach ($visible_tiers as $i => $t): ?>
+                            <button type="button"
+                                    class="section--pricing__dot<?php echo $i === 0 ? ' is-active' : ''; ?>"
+                                    data-pricing-dot="<?php echo esc_attr($i); ?>"
+                                    aria-label="<?php echo esc_attr($t['title'] !== '' ? $t['title'] : sprintf(__('Plan %d', 'workernu'), $i + 1)); ?>"
+                                    <?php echo $i === 0 ? 'aria-current="true"' : ''; ?>></button>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
         <?php endif; ?>
 
         <?php if ($addons): ?>

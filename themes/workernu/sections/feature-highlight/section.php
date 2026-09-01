@@ -23,9 +23,14 @@
  *       └─ description     — textarea (translatable; optional)
  *
  * Modifiers (rendered as BEM classes via workernu_section_classes()):
- *   tone     — background: match page theme | opposite of page theme (auto-contrasts the active theme)
  *   layout   — split (intro left, items right; default) | stacked
- *   spacing  — vertical padding: tight | normal (default) | loose
+ *
+ * `tone` is a GLOBAL modifier, not declared here: .section--tone-inverted in
+ * main.css swaps the page palette and converts this section's margins into
+ * padding. A `spacing` modifier was documented here too, but it was never
+ * declared below and no stylesheet defines
+ * .section--feature-highlight--spacing-* — the line was removed rather than
+ * given CSS to match. Same call as the one made on the logos section.
  */
 
 return [

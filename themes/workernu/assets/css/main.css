@@ -440,6 +440,13 @@ a { color: inherit; }
 .site-header.is-open .site-header__toggle-bars::before { transform: translateX(-50%) translateY(6px) rotate(45deg); }
 .site-header.is-open .site-header__toggle-bars::after  { transform: translateX(-50%) translateY(-6px) rotate(-45deg); }
 
+/* Hidden by default (same pattern as .site-header__toggle above) — only the
+   @media (max-width: 900px) block below ever turns this back on, gated on
+   .site-header.is-open. Without a base rule out here, the panel had no
+   `display` at all above 900px and rendered as a plain visible <div> in
+   normal flow instead of staying hidden. */
+.mobile-nav { display: none; }
+
 /* ─── Mobile: hamburger opens a full-screen multi-view panel instead of the
  *     desktop's inline dropdown. .site-nav (the desktop menu) is hidden
  *     outright below 900px; .mobile-nav is separate markup built for a

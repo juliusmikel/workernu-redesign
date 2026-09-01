@@ -22,9 +22,11 @@
  * layout per breakpoint with no duplicated markup and no JS repositioning:
  *   desktop: label + value share a row, the slider fills the row below them,
  *            the dec/inc buttons are display:none (unused, no area named).
- *   mobile:  label alone on its own row; below it, dec / value / inc share
- *            one row (value directly between the two buttons) and the slider
- *            itself is display:none.
+ *   mobile:  one row — label, dec, value, inc (value directly between the
+ *            two buttons). label takes the flexible remaining column and
+ *            wraps onto a second line if it doesn't fit; dec/value/inc stay
+ *            put, sized to their own content. The slider itself is
+ *            display:none at this breakpoint.
  * __value is a real <input type=number>, visible and directly editable at
  * every breakpoint, not just a mobile-only readout — typing into it moves
  * the slider (see animations.js).
@@ -250,13 +252,14 @@
 
 /* ─── Mobile: stepper card ───
  * __widget becomes a bordered card; within each __slider-block, the grid
- * reassigns to label-alone-on-top / dec+value+inc sharing the row below
- * (the range input hands off to the two buttons, value now sits directly
- * between them instead of next to the label). A border marks the
- * sliders/results seam, and the yearly total becomes a tinted callout row
- * (its huge-number sizing/gradient is the base rule above, unchanged here —
- * same treatment on every breakpoint now). Desktop is untouched — every
- * rule here is additive. */
+ * reassigns to a single row — label, dec, value, inc — with label flexible
+ * (wraps if it doesn't fit) and dec/value/inc staying grouped together at
+ * their own content size (the range input hands off to the two buttons,
+ * value sits directly between them). A border marks the sliders/results
+ * seam, and the yearly total becomes a tinted callout row (its huge-number
+ * sizing/gradient is the base rule above, unchanged here — same treatment
+ * on every breakpoint now). Desktop is untouched — every rule here is
+ * additive. */
 @media (max-width: 600px) {
     .section--calculator__widget {
         gap: var(--space-4);
@@ -266,11 +269,17 @@
         border-radius: 16px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
+    /* One row: label, dec, value, inc — label takes the flexible remaining
+       column and wraps onto a second line if it doesn't fit, instead of
+       pushing the dec/value/inc group (which stays put, tightly grouped,
+       sized to its own content) further along the row. */
     .section--calculator__slider-block {
-        grid-template-columns: auto 1fr auto;
-        grid-template-areas:
-            "label label label"
-            "dec value inc";
+        grid-template-columns: 1fr auto auto auto;
+        grid-template-areas: "label dec value inc";
+        column-gap: var(--space-2);
+    }
+    .section--calculator__label {
+        min-width: 0;
     }
     .section--calculator__value {
         text-align: center;

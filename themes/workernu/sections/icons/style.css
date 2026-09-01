@@ -186,6 +186,9 @@
     margin-left: calc(50% - 50vw);
     overflow: hidden;
     padding-block: var(--space-3);
+    /* Same edge-fade treatment as the testimonials marquee row. */
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, black 6%, black 94%, transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, black 6%, black 94%, transparent 100%);
 }
 .section--icons__track {
     list-style: none;

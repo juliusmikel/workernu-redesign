@@ -1,9 +1,9 @@
 <?php
 /**
  * Admin pages for editing site-wide "default" content on sections that opted
- * into `'content_defaults' => true` (calculator, pricing, testimonials, people
- * — see each section's section.php). One sub-page per section type under
- * Settings → WorkerNu.
+ * into `'content_defaults' => true` (calculator, pricing, testimonials,
+ * people, pricing-calculator — see each section's section.php). One sub-page
+ * per section type under Settings → WorkerNu.
  *
  * Reuses workernu-sections' own field-rendering engine (Fields\render_field /
  * Fields\sanitize_value) instead of a second implementation — these fields
@@ -23,10 +23,11 @@ const SAVE_ACTION  = 'workernu_save_section_default';
 const NONCE_ACTION = 'workernu_save_section_default';
 
 const SECTION_TYPES = [
-    'calculator'   => 'Savings Calculator',
-    'pricing'      => 'Pricing',
-    'testimonials' => 'Reviews',
-    'people'       => 'People',
+    'calculator'         => 'Savings Calculator',
+    'pricing'            => 'Pricing',
+    'testimonials'       => 'Reviews',
+    'people'             => 'People',
+    'pricing-calculator' => 'Pricing Calculator',
 ];
 
 /**

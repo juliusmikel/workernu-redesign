@@ -1,7 +1,16 @@
 <?php
+/**
+ * `content_defaults: true` — this section carries a `content_source` toggle
+ * (custom | default, injected automatically by Registry\discover()). When set
+ * to "Site default", its content comes from Settings → WorkerNu → Pricing
+ * Calculator instead of this instance's own fields — see
+ * WorkerNu\Sections\Defaults\resolve(). Display modifiers always stay
+ * per-instance regardless of content_source.
+ */
 return [
-    'label'       => 'Pricing Calculator',
-    'description' => 'Pick a base plan (radio) + optional addons (checkboxes) × worker count = live price.',
+    'label'            => 'Pricing Calculator',
+    'description'      => 'Pick a base plan (radio) + optional addons (checkboxes) × worker count = live price.',
+    'content_defaults' => true,
 
     'fields' => [
         ['name' => 'heading',    'type' => 'text',     'label' => 'Heading',    'translatable' => true],

@@ -539,11 +539,16 @@ function sanitize_boolean(array $field, $raw): bool {
 
 function render_number(array $field, $value, string $input_name): void {
     $val  = is_numeric($value) ? (string) $value : '';
-    $min  = isset($field['min'])  ? ' min="'  . esc_attr((string) $field['min'])  . '"' : '';
-    $max  = isset($field['max'])  ? ' max="'  . esc_attr((string) $field['max'])  . '"' : '';
     $step = isset($field['step']) ? ' step="' . esc_attr((string) $field['step']) . '"' : '';
     open_field($field);
-    echo '<input type="number" class="ws-input ws-input--number" name="' . esc_attr($input_name) . '" value="' . esc_attr($val) . '"' . $min . $max . $step . '>';
+    // No min/max attributes: they're pure client-side HTML5 constraints with
+    // no server-side enforcement (sanitize_number() below never clamps to
+    // them either), yet the browser silently blocks the ENTIRE form submit
+    // — including every other field's changes, and regardless of whether
+    // this particular field is even in use (e.g. a content_defaults section
+    // set to "Site default", where its own field values are ignored at
+    // render time) — the moment one number field's value falls outside them.
+    echo '<input type="number" class="ws-input ws-input--number" name="' . esc_attr($input_name) . '" value="' . esc_attr($val) . '"' . $step . '>';
     close_field();
 }
 

@@ -75,25 +75,26 @@
     outline-color: #2563eb;
 }
 
+/* Deliberately NOT `font: inherit` — a heading's actual font-size (up to
+   ~4rem) made this box huge and unwieldy to type into. A plain, fixed-size
+   textarea/input reads as an editing tool, not a preview of the final
+   heading, and — since it no longer inherits anything from the ancestor —
+   sidesteps the gradient-heading color: transparent problem entirely
+   rather than needing to override it. */
 .wn-editable__input {
     display: block;
     width: 100%;
     min-width: 12ch;
-    font: inherit;
-    /* Fixed, not inherit: .wn-editable__input is a sibling of
-       .wn-editable__content inside .wn-editable, which — for a
-       gradient-text heading — carries color: transparent (see the
-       .wn-editable, .wn-editable__content rule above). `color: inherit`
-       here picked that up too, making typed text invisible against this
-       element's own fixed white background. The input always has that
-       same white background regardless of section tone/gradient, so its
-       text color needs to be equally fixed, not inherited. */
+    font-family: inherit;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.5;
     color: #18181b;
     -webkit-text-fill-color: #18181b;
     background: #fff;
     border: 1px solid #2563eb;
-    border-radius: 3px;
-    padding: 0.15em 0.3em;
+    border-radius: 4px;
+    padding: 0.5em 0.6em;
     box-sizing: border-box;
 }
 textarea.wn-editable__input {
@@ -106,6 +107,10 @@ textarea.wn-editable__input {
     gap: 0.4rem;
     margin-top: 0.35rem;
 }
+/* color set explicitly (not left to inherit/UA default) for the same
+   reason .wn-editable__input now hardcodes its own — a button sitting
+   inside a gradient-text heading's .wn-editable would otherwise pick up
+   color: transparent too. */
 .wn-editable__toolbar button {
     font-size: 0.75rem;
     line-height: 1;
@@ -113,6 +118,7 @@ textarea.wn-editable__input {
     border-radius: 4px;
     border: 1px solid #d1d5db;
     background: #fff;
+    color: #18181b;
     cursor: pointer;
 }
 .wn-editable__toolbar button[data-wn-action="save"] {

@@ -5,28 +5,37 @@
  *   └─ .section--calculator__inner.container        (flex column)
  *      ├─ .section--calculator__header              (wrapper 1: heading + sub)
  *      ├─ .section--calculator__widget               (wrapper 2: sliders + results)
- *      │  ├─ .section--calculator__slider-block      (slider 1)
- *      │  │  ├─ .section--calculator__slider-row     (label + editable __value count)
- *      │  │  └─ .section--calculator__control        (dec button, range input, inc button)
+ *      │  ├─ .section--calculator__slider-block      (slider 1 — CSS grid, see below)
+ *      │  │  ├─ .section--calculator__label
+ *      │  │  ├─ .section--calculator__value          (editable count <input>)
+ *      │  │  ├─ .section--calculator__stepper-btn--dec
+ *      │  │  ├─ .section--calculator__slider         (range input)
+ *      │  │  └─ .section--calculator__stepper-btn--inc
  *      │  ├─ .section--calculator__slider-block      (slider 2, same shape)
  *      │  ├─ .section--calculator__result            (spend)
  *      │  ├─ .section--calculator__result            (savings)
  *      │  └─ .section--calculator__result --total    (yearly)
  *      └─ .section--calculator__cta                  (optional, only if cta set)
  *
- * __value (the live count next to each slider) is a real <input type=number>,
- * visible and directly editable at every breakpoint, not just a mobile-only
- * readout — typing into it moves the slider (see animations.js). Both
- * __result and __result--total show huge numbers at every breakpoint too
- * (the calculator's entire point); --total additionally gets the gradient-
- * text treatment main.css uses for section headings.
+ * __slider-block's five children are flat siblings, not nested — deliberately,
+ * so `grid-template-areas` can reassign them to a completely different 2D
+ * layout per breakpoint with no duplicated markup and no JS repositioning:
+ *   desktop: label + value share a row, the slider fills the row below them,
+ *            the dec/inc buttons are display:none (unused, no area named).
+ *   mobile:  label alone on its own row; below it, dec / value / inc share
+ *            one row (value directly between the two buttons) and the slider
+ *            itself is display:none.
+ * __value is a real <input type=number>, visible and directly editable at
+ * every breakpoint, not just a mobile-only readout — typing into it moves
+ * the slider (see animations.js).
  *
- * Below 600px: __widget becomes a bordered card (same box on desktop, no
- * visual change there); within __control, the range input hands off to its
- * flanking dec/inc buttons (both always exist in the markup and drive the
- * same underlying input via animations.js — only one is ever visible per
- * breakpoint). A border marks the seam between the sliders and the results,
- * and the yearly total additionally becomes a centered, tinted callout.
+ * __result and __result--total are a plain label/number row at every
+ * breakpoint (space-between, vertically centered); --total additionally
+ * gets the gradient-text treatment main.css uses for section headings.
+ *
+ * Below 600px: __widget additionally becomes a bordered card (same box on
+ * desktop, no visual change there), and the yearly total becomes a tinted
+ * callout row instead of a plain one.
  */
 
 .section--calculator__inner {
@@ -65,21 +74,21 @@
     color: var(--color-muted);
 }
 
-/* ─── Wrappers 2 + 3: sliders. Each is a flex column: label + editable count
- *     on top, then __control (the range input, flanked by mobile-only +/-
- *     buttons that drive the same input — see animations.js). ─── */
+/* ─── Wrappers 2 + 3: sliders — a grid so label/value/dec/slider/inc can be
+ *     reassigned to a different visual layout per breakpoint. Desktop: label
+ *     + value share row 1, the slider spans row 2 alone (dec/inc unused). ─── */
 .section--calculator__slider-block {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-}
-.section--calculator__slider-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--space-3);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+        "label value"
+        "slider slider";
+    align-items: center;
+    column-gap: var(--space-3);
+    row-gap: var(--space-2);
 }
 .section--calculator__label {
+    grid-area: label;
     font-size: 1rem;
     font-weight: 500;
     color: var(--color-fg);
@@ -88,6 +97,7 @@
  * chrome (border/background/spinner) so it reads as plain big text until
  * focused, matching the "huge number" treatment used for the results below. */
 .section--calculator__value {
+    grid-area: value;
     appearance: textfield;
     -moz-appearance: textfield;
     width: 4ch;
@@ -111,13 +121,9 @@
     outline: 2px solid var(--color-accent);
     outline-offset: 4px;
 }
-.section--calculator__control {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-}
-/* Mobile-only alternate to dragging __slider — hidden here, shown below
- * 600px, flanking the (hidden, at that breakpoint) range input. */
+/* Mobile-only alternate to dragging __slider — unused (no grid-area, so no
+ * cell to occupy) and display:none on desktop; shown below 600px, flanking
+ * the (hidden, at that breakpoint) range input. */
 .section--calculator__stepper-btn {
     all: unset;
     display: none;
@@ -130,13 +136,14 @@
     font-weight: 700;
     line-height: 1;
     cursor: pointer;
-    flex: 0 0 auto;
 }
 .section--calculator__stepper-btn--dec {
+    grid-area: dec;
     background: var(--color-line);
     color: var(--color-fg);
 }
 .section--calculator__stepper-btn--inc {
+    grid-area: inc;
     background: var(--color-accent);
     color: var(--color-accent-fg);
 }
@@ -149,6 +156,7 @@
     outline-offset: 2px;
 }
 .section--calculator__slider {
+    grid-area: slider;
     appearance: none;
     -webkit-appearance: none;
     width: 100%;
@@ -188,13 +196,15 @@
     outline-offset: 4px;
 }
 
-/* ─── Wrappers 4 + 5 + 6: one block per result number. Label small and
- *     muted above, number huge below — deliberately, these three figures
- *     are the entire point of the calculator, so they carry the section. ─── */
+/* ─── Wrappers 4 + 5 + 6: one row per result number — label and number on
+ *     either side, vertically centered, at every breakpoint. Numbers are
+ *     still large (these three figures are the entire point of the
+ *     calculator) but not as large as a stacked layout could support. ─── */
 .section--calculator__result {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
     padding-bottom: var(--space-4);
     border-bottom: 1px solid var(--color-line);
 }
@@ -203,19 +213,20 @@
     color: var(--color-muted);
 }
 .section--calculator__result-value {
-    font-size: clamp(2.5rem, 5vw, 3.75rem);
+    font-size: clamp(1.875rem, 3.75vw, 2.8125rem);
     line-height: 1.05;
     font-weight: 800;
     letter-spacing: -0.02em;
     color: var(--color-fg);
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
 }
 .section--calculator__result--total {
     border-bottom: 0;
     padding-bottom: 0;
 }
 .section--calculator__result--total .section--calculator__result-value {
-    font-size: clamp(3rem, 6.5vw, 5rem);
+    font-size: clamp(2.25rem, 4.875vw, 3.75rem);
     /* Same vertical gradient-text treatment main.css applies to section
        headings (.has-gradient-text) — reused via its tokens rather than
        the class, since this element isn't a heading. */
@@ -238,11 +249,14 @@
 .section--calculator--align-center .section--calculator__header { align-self: center;     text-align: center; }
 
 /* ─── Mobile: stepper card ───
- * __widget becomes a bordered card, the range input hands off to the
- * stepper buttons, a border marks the sliders/results seam, and the yearly
- * total becomes a centered, tinted callout (its huge-number sizing/gradient
- * itself is the base rule above, unchanged here — same treatment on every
- * breakpoint now). Desktop is untouched — every rule here is additive. */
+ * __widget becomes a bordered card; within each __slider-block, the grid
+ * reassigns to label-alone-on-top / dec+value+inc sharing the row below
+ * (the range input hands off to the two buttons, value now sits directly
+ * between them instead of next to the label). A border marks the
+ * sliders/results seam, and the yearly total becomes a tinted callout row
+ * (its huge-number sizing/gradient is the base rule above, unchanged here —
+ * same treatment on every breakpoint now). Desktop is untouched — every
+ * rule here is additive. */
 @media (max-width: 600px) {
     .section--calculator__widget {
         gap: var(--space-4);
@@ -251,6 +265,15 @@
         border: 1px solid var(--color-line);
         border-radius: 16px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .section--calculator__slider-block {
+        grid-template-columns: auto 1fr auto;
+        grid-template-areas:
+            "label label label"
+            "dec value inc";
+    }
+    .section--calculator__value {
+        text-align: center;
     }
     .section--calculator__slider {
         display: none;
@@ -265,8 +288,6 @@
         padding-top: var(--space-4);
     }
     .section--calculator__result--total {
-        align-items: center;
-        text-align: center;
         padding: var(--space-4);
         border-radius: 12px;
         background: color-mix(in srgb, var(--color-accent) 8%, transparent);

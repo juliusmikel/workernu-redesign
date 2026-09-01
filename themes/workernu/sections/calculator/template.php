@@ -84,12 +84,15 @@ $uid     = sanitize_html_class((string) ($data['_id'] ?? uniqid('calc-')));
         <div class="section--calculator__widget" data-animate-item="widget">
         <?php
         // Sliders (wrapper 2 + 3): each slider is its own direct child of
-        // __widget — label + live editable count row, then the slider itself
-        // flanked by mobile-only +/- stepper buttons (style.css shows the
-        // slider or the buttons per breakpoint, never both; both drive the
-        // same underlying range input, so recompute logic lives once, in
-        // animations.js). The count input is visible and editable at every
-        // breakpoint — typing a number moves the slider directly.
+        // __widget, itself a CSS grid (see style.css) — label, the editable
+        // count input, both stepper buttons, and the range input are all
+        // flat siblings so style.css can reassign them to a different
+        // grid-template-areas layout per breakpoint (desktop: label+count
+        // above the slider; mobile: count between the two stepper buttons,
+        // slider hidden) without any duplicated markup. Every one of these
+        // controls drives the same underlying range input, so recompute
+        // logic lives once, in animations.js — it doesn't know or care which
+        // layout is currently visible.
         $sliders = [
             ['key' => 'employees', 'label' => $emp_label,  'min' => $emp_min,  'max' => $emp_max,  'val' => $emp_def],
             ['key' => 'projects',  'label' => $proj_label, 'min' => $proj_min, 'max' => $proj_max, 'val' => $proj_def],
@@ -98,34 +101,30 @@ $uid     = sanitize_html_class((string) ($data['_id'] ?? uniqid('calc-')));
             $sid = $uid . '-' . $s['key'];
             ?>
             <div class="section--calculator__slider-block" data-animate-item="slider">
-                <div class="section--calculator__slider-row">
-                    <label class="section--calculator__label" for="<?php echo esc_attr($sid); ?>">
-                        <?php echo wp_kses_post($s['label']); ?>
-                    </label>
-                    <input class="section--calculator__value"
-                           type="number"
-                           inputmode="numeric"
-                           id="<?php echo esc_attr($sid); ?>-out"
-                           data-calc-count-target="<?php echo esc_attr($sid); ?>"
-                           value="<?php echo esc_attr((int) $s['val']); ?>"
-                           min="<?php echo esc_attr($s['min']); ?>"
-                           max="<?php echo esc_attr($s['max']); ?>"
-                           aria-label="<?php echo esc_attr(wp_strip_all_tags($s['label'])); ?>">
-                </div>
-                <div class="section--calculator__control">
-                    <button type="button" class="section--calculator__stepper-btn section--calculator__stepper-btn--dec" data-calc-step="-1" data-calc-step-target="<?php echo esc_attr($sid); ?>" aria-label="<?php esc_attr_e('Decrease', 'workernu'); ?>">&minus;</button>
-                    <input class="section--calculator__slider"
-                           type="range"
-                           id="<?php echo esc_attr($sid); ?>"
-                           name="<?php echo esc_attr($s['key']); ?>"
-                           data-calc-input="<?php echo esc_attr($s['key']); ?>"
-                           data-calc-output="<?php echo esc_attr($sid); ?>-out"
-                           min="<?php echo esc_attr($s['min']); ?>"
-                           max="<?php echo esc_attr($s['max']); ?>"
-                           value="<?php echo esc_attr($s['val']); ?>"
-                           step="1">
-                    <button type="button" class="section--calculator__stepper-btn section--calculator__stepper-btn--inc" data-calc-step="1" data-calc-step-target="<?php echo esc_attr($sid); ?>" aria-label="<?php esc_attr_e('Increase', 'workernu'); ?>">+</button>
-                </div>
+                <label class="section--calculator__label" for="<?php echo esc_attr($sid); ?>">
+                    <?php echo wp_kses_post($s['label']); ?>
+                </label>
+                <input class="section--calculator__value"
+                       type="number"
+                       inputmode="numeric"
+                       id="<?php echo esc_attr($sid); ?>-out"
+                       data-calc-count-target="<?php echo esc_attr($sid); ?>"
+                       value="<?php echo esc_attr((int) $s['val']); ?>"
+                       min="<?php echo esc_attr($s['min']); ?>"
+                       max="<?php echo esc_attr($s['max']); ?>"
+                       aria-label="<?php echo esc_attr(wp_strip_all_tags($s['label'])); ?>">
+                <button type="button" class="section--calculator__stepper-btn section--calculator__stepper-btn--dec" data-calc-step="-1" data-calc-step-target="<?php echo esc_attr($sid); ?>" aria-label="<?php esc_attr_e('Decrease', 'workernu'); ?>">&minus;</button>
+                <input class="section--calculator__slider"
+                       type="range"
+                       id="<?php echo esc_attr($sid); ?>"
+                       name="<?php echo esc_attr($s['key']); ?>"
+                       data-calc-input="<?php echo esc_attr($s['key']); ?>"
+                       data-calc-output="<?php echo esc_attr($sid); ?>-out"
+                       min="<?php echo esc_attr($s['min']); ?>"
+                       max="<?php echo esc_attr($s['max']); ?>"
+                       value="<?php echo esc_attr($s['val']); ?>"
+                       step="1">
+                <button type="button" class="section--calculator__stepper-btn section--calculator__stepper-btn--inc" data-calc-step="1" data-calc-step-target="<?php echo esc_attr($sid); ?>" aria-label="<?php esc_attr_e('Increase', 'workernu'); ?>">+</button>
             </div>
         <?php endforeach; ?>
 

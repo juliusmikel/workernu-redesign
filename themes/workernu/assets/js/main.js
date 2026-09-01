@@ -6,21 +6,44 @@
 
     /* ─── Header: mobile nav toggle ───
      * Desktop dropdowns are pure CSS (hover + focus-within). On mobile the
-     * hamburger toggles the whole nav panel; submenus render inline. */
+     * hamburger opens .mobile-nav, a separate full-screen multi-view panel
+     * (see workernu_mobile_nav_menu() in functions.php) — a "main" view plus
+     * one view per top-level item that has children, switched by toggling
+     * which [data-mobile-nav-view] carries .is-active. */
     function initHeaderNav() {
         var header = document.querySelector('[data-site-header]');
         if (!header) return;
         var toggle = header.querySelector('[data-nav-toggle]');
-        var nav = header.querySelector('#site-nav');
-        if (!toggle || !nav) return;
+        var panel = header.querySelector('[data-mobile-nav]');
+        if (!toggle || !panel) return;
+
+        var views = Array.prototype.slice.call(panel.querySelectorAll('[data-mobile-nav-view]'));
+
+        function showView(key) {
+            views.forEach(function (v) {
+                v.classList.toggle('is-active', v.getAttribute('data-mobile-nav-view') === key);
+            });
+        }
 
         function setOpen(open) {
             header.classList.toggle('is-open', open);
             toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            document.body.classList.toggle('has-mobile-nav-open', open);
+            // Always land back on the main view next time the panel opens.
+            if (!open) showView('main');
         }
 
         toggle.addEventListener('click', function () {
             setOpen(!header.classList.contains('is-open'));
+        });
+
+        panel.addEventListener('click', function (e) {
+            var openBtn = e.target.closest('[data-mobile-nav-open]');
+            if (openBtn) { showView(openBtn.getAttribute('data-mobile-nav-open')); return; }
+            var backBtn = e.target.closest('[data-mobile-nav-back]');
+            if (backBtn) { showView('main'); return; }
+            var closeBtn = e.target.closest('[data-mobile-nav-close]');
+            if (closeBtn) { setOpen(false); return; }
         });
 
         // Close on Escape.

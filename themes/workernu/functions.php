@@ -227,3 +227,119 @@ add_filter('wp_nav_menu_objects', function (array $items, $args): array {
 
     return $items;
 }, 10, 2);
+
+/**
+ * Mobile nav panel — separate markup from the desktop wp_nav_menu() dropdown,
+ * because the mobile design isn't a CSS reskin of the same list: it's a
+ * full-screen panel with one "view" per top-level item that has children,
+ * swapped via main.js instead of floating open on hover.
+ *
+ * Same last/penultimate convention as the wp_nav_menu_objects filter above:
+ * the last top-level item is the CTA and the penultimate is the login link.
+ * Both are pulled out of the list and rendered as the two footer buttons.
+ *
+ * Icons on child items come from the menu item's built-in Description field
+ * (Appearance → Menus → Screen Options → check "Description" to reveal the
+ * box under each item) — a Font Awesome class string like "fa-solid fa-clock",
+ * the same format workernu_icon() already takes everywhere else on the site.
+ * Blank description = no icon, not a broken one.
+ */
+function workernu_mobile_nav_menu(): void {
+    $menu_id = has_nav_menu('primary') ? (get_nav_menu_locations()['primary'] ?? 0) : 0;
+    $items   = $menu_id ? wp_get_nav_menu_items($menu_id) : false;
+    if (!$items) return;
+
+    $top_level = [];
+    $children  = [];
+    foreach ($items as $item) {
+        $parent = (int) $item->menu_item_parent;
+        if ($parent === 0) {
+            $top_level[] = $item;
+        } else {
+            $children[$parent][] = $item;
+        }
+    }
+    if (!$top_level) return;
+
+    $count      = count($top_level);
+    $cta_item   = $top_level[$count - 1];
+    $login_item = $count >= 2 ? $top_level[$count - 2] : null;
+    $list_items = array_slice($top_level, 0, max(0, $count - ($login_item ? 2 : 1)));
+    ?>
+    <div class="mobile-nav" data-mobile-nav id="mobile-nav">
+        <div class="mobile-nav__header">
+            <?php
+            if (function_exists('the_custom_logo') && has_custom_logo()) {
+                the_custom_logo();
+            } else {
+                printf(
+                    '<a class="site-header__logo-text" href="%s">%s</a>',
+                    esc_url(home_url('/')),
+                    esc_html(get_bloginfo('name'))
+                );
+            }
+            ?>
+            <button type="button" class="mobile-nav__close" data-mobile-nav-close aria-label="<?php esc_attr_e('Close menu', 'workernu'); ?>">
+                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <div class="mobile-nav__views">
+            <div class="mobile-nav__view is-active" data-mobile-nav-view="main">
+                <ul class="mobile-nav__list">
+                    <?php foreach ($list_items as $item):
+                        $has_children = !empty($children[$item->ID]);
+                        $view_key     = 'view-' . $item->ID;
+                        ?>
+                        <li class="mobile-nav__item">
+                            <?php if ($has_children): ?>
+                                <button type="button" class="mobile-nav__link" data-mobile-nav-open="<?php echo esc_attr($view_key); ?>">
+                                    <span class="mobile-nav__label"><?php echo esc_html($item->title); ?></span>
+                                    <i class="fa-solid fa-chevron-right mobile-nav__chevron" aria-hidden="true"></i>
+                                </button>
+                            <?php else: ?>
+                                <a class="mobile-nav__link" href="<?php echo esc_url($item->url); ?>"<?php echo $item->target !== '' ? ' target="' . esc_attr($item->target) . '"' : ''; ?>>
+                                    <span class="mobile-nav__label"><?php echo esc_html($item->title); ?></span>
+                                </a>
+                            <?php endif; ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+
+            <?php foreach ($list_items as $item):
+                if (empty($children[$item->ID])) continue;
+                $view_key = 'view-' . $item->ID;
+                ?>
+                <div class="mobile-nav__view" data-mobile-nav-view="<?php echo esc_attr($view_key); ?>">
+                    <button type="button" class="mobile-nav__back" data-mobile-nav-back>
+                        <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+                        <span><?php echo esc_html($item->title); ?></span>
+                    </button>
+                    <ul class="mobile-nav__list">
+                        <?php foreach ($children[$item->ID] as $child):
+                            $icon = trim((string) $child->description);
+                            ?>
+                            <li class="mobile-nav__item">
+                                <a class="mobile-nav__link mobile-nav__link--child" href="<?php echo esc_url($child->url); ?>"<?php echo $child->target !== '' ? ' target="' . esc_attr($child->target) . '"' : ''; ?>>
+                                    <?php if ($icon !== ''): ?>
+                                        <span class="mobile-nav__icon" aria-hidden="true"><?php echo workernu_icon($icon); ?></span>
+                                    <?php endif; ?>
+                                    <span class="mobile-nav__label"><?php echo esc_html($child->title); ?></span>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="mobile-nav__footer">
+            <?php if ($login_item): ?>
+                <a class="btn btn--outline mobile-nav__footer-btn" href="<?php echo esc_url($login_item->url); ?>"><?php echo esc_html($login_item->title); ?></a>
+            <?php endif; ?>
+            <a class="btn btn--primary mobile-nav__footer-btn" href="<?php echo esc_url($cta_item->url); ?>"><?php echo esc_html($cta_item->title); ?></a>
+        </div>
+    </div>
+    <?php
+}

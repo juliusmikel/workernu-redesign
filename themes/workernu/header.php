@@ -34,7 +34,7 @@ $current_lang = function_exists('workernu_lang') ? workernu_lang() : 'lt';
                 class="site-header__toggle"
                 data-nav-toggle
                 aria-expanded="false"
-                aria-controls="site-nav"
+                aria-controls="mobile-nav"
                 aria-label="<?php esc_attr_e('Toggle menu', 'workernu'); ?>">
             <span class="site-header__toggle-bars" aria-hidden="true"></span>
         </button>
@@ -59,6 +59,8 @@ $current_lang = function_exists('workernu_lang') ? workernu_lang() : 'lt';
                 </div>
             <?php endif; ?>
         </nav>
+
+        <?php if (function_exists('workernu_mobile_nav_menu')) workernu_mobile_nav_menu(); ?>
 
         </div>
     </div>

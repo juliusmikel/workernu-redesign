@@ -440,48 +440,142 @@ a { color: inherit; }
 .site-header.is-open .site-header__toggle-bars::before { transform: translateX(-50%) translateY(6px) rotate(45deg); }
 .site-header.is-open .site-header__toggle-bars::after  { transform: translateX(-50%) translateY(-6px) rotate(-45deg); }
 
-/* ─── Responsive: collapse nav into a panel ─── */
+/* ─── Mobile: hamburger opens a full-screen multi-view panel instead of the
+ *     desktop's inline dropdown. .site-nav (the desktop menu) is hidden
+ *     outright below 900px; .mobile-nav is separate markup built for a
+ *     phone — see workernu_mobile_nav_menu() in functions.php — one
+ *     scrollable list of top-level items, plus one full "view" per item
+ *     that has children, swapped via a data-mobile-nav-view active-class
+ *     toggle in main.js. The last two top-level menu items (login + CTA)
+ *     never appear in the list; they're the two footer buttons instead,
+ *     matching how they render as buttons on desktop. ─── */
 @media (max-width: 900px) {
     .site-header__toggle { display: inline-flex; align-items: center; justify-content: center; }
-    .site-nav {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        flex-direction: column;
-        align-items: stretch;
-        justify-content: flex-start;
-        gap: var(--space-3);
-        padding: var(--space-3);
-        background: var(--color-bg);
-        border-top: 1px solid var(--color-line);
-        box-shadow: 0 16px 32px -16px rgba(0, 0, 0, 0.3);
-        max-height: calc(100vh - 72px);
-        overflow-y: auto;
+    .site-nav { display: none; }
+
+    .mobile-nav {
         display: none;
-    }
-    .site-header.is-open .site-nav { display: flex; }
-    .site-nav__menu {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
         flex-direction: column;
-        align-items: stretch;
-        gap: 2px;
-        width: 100%;
+        background: var(--color-bg);
     }
-    .site-nav__menu a { padding: 0.75rem; }
-    /* Submenus render inline (expanded), not as floating cards. */
-    .site-nav__menu .sub-menu {
-        position: static;
+    .site-header.is-open .mobile-nav { display: flex; }
+    body.has-mobile-nav-open { overflow: hidden; }
+
+    .mobile-nav__header {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-4);
+        border-bottom: 1px solid var(--color-line);
+    }
+    .mobile-nav__header .custom-logo {
+        display: block;
+        height: auto;
+        max-height: 32px;
+        width: auto;
+    }
+    .mobile-nav__close {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border: 0;
+        border-radius: 50%;
+        background: var(--color-surface-2);
+        color: var(--color-fg);
+        font-size: 1rem;
+        cursor: pointer;
+    }
+
+    /* Views share one relatively-positioned box; only the active one is
+       visible. A cross-fade + slight slide reads as "multiple views"
+       without needing to track which direction each transition goes. */
+    .mobile-nav__views {
+        flex: 1 1 auto;
+        position: relative;
+        overflow-y: auto;
+    }
+    .mobile-nav__view {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(12px);
+        transition: opacity 180ms ease, transform 180ms ease, visibility 180ms;
+        overflow-y: auto;
+    }
+    .mobile-nav__view.is-active {
         opacity: 1;
         visibility: visible;
         transform: none;
-        border: 0;
-        box-shadow: none;
-        padding: 0 0 0 var(--space-3);
-        min-width: 0;
     }
-    .site-nav__menu > .menu-item-has-children > a::after { margin-left: auto; }
-    .site-nav__menu .is-cta { margin-left: 0; }
-    .site-nav__menu .is-cta > a { justify-content: center; }
+
+    .mobile-nav__back {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        width: 100%;
+        padding: var(--space-4);
+        border: 0;
+        border-bottom: 1px solid var(--color-line);
+        background: var(--color-surface-2);
+        color: var(--color-fg);
+        font-size: 1rem;
+        font-weight: 600;
+        text-align: left;
+        cursor: pointer;
+    }
+    .mobile-nav__back i { color: var(--color-muted); font-size: 0.875rem; }
+
+    .mobile-nav__list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    .mobile-nav__item { border-bottom: 1px solid var(--color-line); }
+    .mobile-nav__link {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        width: 100%;
+        padding: var(--space-4);
+        border: 0;
+        background: none;
+        color: var(--color-fg);
+        font-size: 1rem;
+        font-weight: 500;
+        text-decoration: none;
+        text-align: left;
+        cursor: pointer;
+    }
+    .mobile-nav__label { flex: 1 1 auto; }
+    .mobile-nav__chevron { color: var(--color-muted); font-size: 0.8125rem; }
+    .mobile-nav__icon {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.5rem;
+        color: var(--color-accent);
+        font-size: 1.0625rem;
+    }
+
+    .mobile-nav__footer {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+        padding: var(--space-4);
+        border-top: 1px solid var(--color-line);
+    }
+    .mobile-nav__footer-btn { width: 100%; }
 }
 
 /* ────────────────────────────────────────────────────────────────

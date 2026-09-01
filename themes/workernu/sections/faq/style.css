@@ -108,6 +108,24 @@
 .section--faq--layout-open .section--faq__icon    { display: none; }
 .section--faq--layout-open .section--faq__question { cursor: default; }
 
+/* ─── Modifier: columns = 2 — desktop only. Plain CSS grid (not a
+ *     multi-column layout): each item is a single grid cell, so nothing
+ *     ever splits an accordion item's box across a column boundary, and
+ *     reading order stays left-right-left-right per row instead of a
+ *     newspaper-style top-to-bottom-then-next-column flow. Collapses to the
+ *     single-column list below 900px, same breakpoint as the mobile block
+ *     underneath. ─── */
+.section--faq--columns-2 .section--faq__inner {
+    max-width: 1200px;
+}
+@media (min-width: 901px) {
+    .section--faq--columns-2 .section--faq__list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-4) var(--space-5);
+    }
+}
+
 /* ─── Mobile ─── */
 @media (max-width: 640px) {
     .section--faq__question     { padding: var(--space-4) var(--space-4); }

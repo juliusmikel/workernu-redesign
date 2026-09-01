@@ -14,6 +14,9 @@
  *   layout      — accordion (default) | open (all answers visible at once)
  *   first_open  — whether the first item is expanded on load:
  *                 yes (default) | no
+ *   columns     — 1 (default) | 2 (two columns on desktop; below 900px
+ *                 always collapses to a single column, same as `columns` on
+ *                 the icons/cards sections)
  *
  * Accessibility: built on native <details>/<summary>, so keyboard nav, screen
  * reader announcement, and graceful no-JS fallback all come for free.
@@ -61,6 +64,15 @@ return [
             'label'   => 'First item expanded',
             'options' => ['yes' => 'Yes', 'no' => 'No'],
             'default' => 'yes',
+        ],
+        [
+            'name'    => 'columns',
+            'type'    => 'select',
+            'label'   => 'Columns',
+            'render_as' => 'buttons',
+            'hint'    => 'Two columns only applies at desktop widths; always a single column below 900px.',
+            'options' => ['1' => 'One column', '2' => 'Two columns'],
+            'default' => '1',
         ],
     ],
 

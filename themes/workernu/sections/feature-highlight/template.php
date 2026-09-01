@@ -4,14 +4,57 @@
  * Receives $data — all field + modifier values for this section instance.
  */
 
-$eyebrow = workernu_t($data['eyebrow'] ?? '');
-$heading = workernu_t($data['heading'] ?? '');
-$body    = workernu_t($data['body']    ?? '');
-$ctas    = is_array($data['ctas']  ?? null) ? $data['ctas']  : [];
-$items   = is_array($data['items'] ?? null) ? $data['items'] : [];
-$classes = workernu_section_classes($data, 'feature-highlight');
+$eyebrow    = workernu_t($data['eyebrow'] ?? '');
+$heading    = workernu_t($data['heading'] ?? '');
+$body       = workernu_t($data['body']    ?? '');
+$ctas       = is_array($data['ctas']  ?? null) ? $data['ctas']  : [];
+$items      = is_array($data['items'] ?? null) ? $data['items'] : [];
+$layout     = (string) ($data['layout'] ?? 'split');
+$is_columns = $layout === 'columns';
+$classes    = workernu_section_classes($data, 'feature-highlight');
 
 $has_intro = $eyebrow !== '' || $heading !== '' || $body !== '' || $ctas;
+
+// Columns layout: two headed lists of bold-title + bulleted-description
+// pairs, no icons — a different shape than items[]'s icon+title+desc rows,
+// so it gets its own pair of fields/repeaters rather than reusing items[].
+$col1_heading = workernu_t($data['column_1_heading'] ?? '');
+$col1_items   = is_array($data['column_1_items'] ?? null) ? $data['column_1_items'] : [];
+$col2_heading = workernu_t($data['column_2_heading'] ?? '');
+$col2_items   = is_array($data['column_2_items'] ?? null) ? $data['column_2_items'] : [];
+$has_columns  = $col1_heading !== '' || $col1_items || $col2_heading !== '' || $col2_items;
+
+$render_column = function (string $heading_field, string $items_field, string $heading, array $col_items) use ($data) {
+    if ($heading === '' && !$col_items) return;
+    ?>
+    <div class="section--feature-highlight__column">
+        <?php if ($heading !== ''): ?>
+            <h3 class="section--feature-highlight__column-heading"><?php echo workernu_inline_editable($data, $heading_field, 'text', wp_kses_post($heading), $heading); ?></h3>
+        <?php endif; ?>
+        <?php if ($col_items): ?>
+            <ul class="section--feature-highlight__column-list">
+                <?php foreach ($col_items as $it_i => $it):
+                    $it_title = workernu_t($it['title']       ?? '');
+                    $it_desc  = workernu_t($it['description'] ?? '');
+                    if ($it_title === '' && $it_desc === '') continue;
+                    ?>
+                    <li class="section--feature-highlight__column-item">
+                        <?php if ($it_title !== ''): ?>
+                            <p class="section--feature-highlight__column-item-title"><?php echo workernu_inline_editable($data, "$items_field.$it_i.title", 'text', wp_kses_post($it_title), $it_title); ?></p>
+                        <?php endif; ?>
+                        <?php if ($it_desc !== ''): ?>
+                            <div class="section--feature-highlight__column-item-row">
+                                <span class="section--feature-highlight__column-dot" aria-hidden="true"></span>
+                                <p class="section--feature-highlight__column-item-desc"><?php echo workernu_inline_editable($data, "$items_field.$it_i.description", 'textarea', nl2br(wp_kses_post($it_desc)), $it_desc); ?></p>
+                            </div>
+                        <?php endif; ?>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+    </div>
+    <?php
+};
 ?>
 <section class="<?php echo esc_attr($classes); ?>" data-animate="feature-highlight">
     <div class="section--feature-highlight__inner container">
@@ -51,7 +94,14 @@ $has_intro = $eyebrow !== '' || $heading !== '' || $body !== '' || $ctas;
             </div>
         <?php endif; ?>
 
-        <?php if ($items): ?>
+        <?php if ($has_columns): ?>
+            <div class="section--feature-highlight__columns" data-animate-item="columns">
+                <?php $render_column('column_1_heading', 'column_1_items', $col1_heading, $col1_items); ?>
+                <?php $render_column('column_2_heading', 'column_2_items', $col2_heading, $col2_items); ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!$is_columns && $items): ?>
             <ul class="section--feature-highlight__items" data-animate-item="items">
                 <?php foreach ($items as $item_i => $item):
                     $icon             = (string) ($item['icon'] ?? '');

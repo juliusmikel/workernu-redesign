@@ -33,13 +33,14 @@
         if (!wrapper || wrapper.classList.contains('is-editing')) return;
 
         var content = wrapper.querySelector('.wn-editable__content');
-        var type    = wrapper.dataset.wnType;
         var raw     = wrapper.dataset.wnRaw || '';
-        var isMulti = type !== 'text';
 
-        var input = document.createElement(isMulti ? 'textarea' : 'input');
+        // Always a <textarea>, even for single-line "text" fields — a plain
+        // <input> clips a long heading/label to one scrolling line, which
+        // makes editing it awkward. A short textarea still reads as "one
+        // field" but lets the text wrap into view.
+        var input = document.createElement('textarea');
         input.className = 'wn-editable__input';
-        if (!isMulti) input.type = 'text';
         input.value = raw;
 
         var toolbar = document.createElement('div');

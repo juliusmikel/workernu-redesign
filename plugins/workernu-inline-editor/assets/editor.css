@@ -75,16 +75,20 @@
     outline-color: #2563eb;
 }
 
-/* Deliberately NOT `font: inherit` — a heading's actual font-size (up to
-   ~4rem) made this box huge and unwieldy to type into. A plain, fixed-size
-   textarea/input reads as an editing tool, not a preview of the final
-   heading, and — since it no longer inherits anything from the ancestor —
-   sidesteps the gradient-heading color: transparent problem entirely
-   rather than needing to override it. */
+/* Always a <textarea> now (see editor.js) — even single-line fields like a
+   heading get real room to show their full text instead of clipping to one
+   scrolling line. Deliberately NOT `font: inherit` — a heading's actual
+   font-size (up to ~4rem) made this box huge and unwieldy to type into. A
+   plain, fixed-size box reads as an editing tool, not a preview of the
+   final heading, and — since it no longer inherits anything from the
+   ancestor — sidesteps the gradient-heading color: transparent problem
+   entirely rather than needing to override it. */
 .wn-editable__input {
     display: block;
     width: 100%;
     min-width: 12ch;
+    min-height: 4.5em;
+    resize: vertical;
     font-family: inherit;
     font-size: 0.9375rem;
     font-weight: 400;
@@ -96,10 +100,6 @@
     border-radius: 4px;
     padding: 0.5em 0.6em;
     box-sizing: border-box;
-}
-textarea.wn-editable__input {
-    min-height: 4.5em;
-    resize: vertical;
 }
 
 .wn-editable__toolbar {
